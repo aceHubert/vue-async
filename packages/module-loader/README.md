@@ -1,0 +1,1 @@
+# @vue-async/module-loader

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "rootDir": "src",
+    "outDir": "../../dist/module-loader",
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "types",
+    "resolveJsonModule": true,
+    "composite": true
+  },
+  "include": ["src/**/*.ts", "src/*.d.ts"]
+}
