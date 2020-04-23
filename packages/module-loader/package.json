@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "private": false,
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
@@ -39,7 +39,7 @@
     "vue": "^2.6.0"
   },
   "dependencies": {
-    "@vue-async/utils": "0.1.0"
+    "@vue-async/utils": "^0.1.1-alpha.0"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.0.2",

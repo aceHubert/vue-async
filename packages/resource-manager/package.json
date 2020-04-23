@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/resource-manager",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "private": false,
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Resource Manager.",
@@ -36,7 +36,6 @@
   "peerDependencies": {
     "vue": "^2.6.0"
   },
-  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-json": "^4.0.2",
     "@rollup/plugin-node-resolve": "^7.1.3",
