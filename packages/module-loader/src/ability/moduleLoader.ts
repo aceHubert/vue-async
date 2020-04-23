@@ -2,7 +2,9 @@
  * moduleLoader
  */
 import _Vue, { VueConstructor } from 'vue';
-import { isProduction, print, warn } from '../tool/index';
+import { print, warn, error } from '@vue-async/utils';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 export interface MutableRefObject<T> {
   current: T;
@@ -22,15 +24,10 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
   ): Promise<void> {
     status.current = false;
     if (Array.isArray(moduleData) && moduleData.length) {
-      return Promise.all(
-        moduleData.map(module => loader.call(this, module, { __isArray__: true })),
-      ).then(() => {
+      return Promise.all(moduleData.map(module => loader.call(this, module, { __isArray__: true }))).then(() => {
         status.current = true;
       });
-    } else if (
-      typeof moduleData === 'object' &&
-      Object.getPrototypeOf(moduleData) === Object.prototype
-    ) {
+    } else if (typeof moduleData === 'object' && Object.getPrototypeOf(moduleData) === Object.prototype) {
       /** 通过模块清单加载模块 */
       const promiseAll = [];
       for (const moduleName in moduleData) {
@@ -45,14 +42,16 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
                   typeof window[moduleName as any] === 'function'
                     ? (window[moduleName as any] as any).call(this, Vue)
                     : (window[moduleName as any] as any).default.call(this, Vue);
-                  print(moduleName, 'loaded');
+                  if (!isProduction) {
+                    print(moduleName, 'loaded');
+                  }
                 } else {
-                  warn(!isProduction, `module "${moduleName}" loaded failed，ignored it.`);
+                  warn(isProduction, `module "${moduleName}" loaded failed，ignored it.`);
                 }
                 resolve();
               };
               script.onerror = () => {
-                warn(!isProduction, `module "${moduleName}" had a problem to create, ignored it.`);
+                warn(isProduction, `module "${moduleName}" had a problem to create, ignored it.`);
                 resolve();
               };
               document.body.appendChild(script);
@@ -81,7 +80,7 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
         return Promise.resolve();
       }
     } else {
-      console.error('模块加载方法只接受模块列表对象或者模块函数对象作为参数。');
+      error(isProduction, '模块加载方法只接受模块列表对象或者模块函数对象作为参数。');
       if (!__isArray__) {
         status.current = true;
       }

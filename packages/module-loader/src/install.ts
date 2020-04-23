@@ -1,17 +1,18 @@
 import _Vue from 'vue';
 import { Store } from 'vuex';
 import _VueRouter, { Route, RawLocation } from 'vue-router';
-import dynamicComponent from './ability/dynamicComponent/index';
+import { setCurrentVue } from '@vue-async/utils';
+import dynamicComponent from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import eventBus from './ability/eventBus';
 import moduleLoader from './ability/moduleLoader';
 
-export type Options = {
+export type UseOptions = {
   store?: Store<any>;
   router?: _VueRouter;
 };
 
-export default function install(Vue: typeof _Vue, options: Options = {}) {
+export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
   if ((install as any).installed) return;
   (install as any).installed = true;
 
@@ -20,7 +21,7 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
     data() {
       return {
         status: {
-          current: true,
+          current: false, // 默认必须为 true
         },
       };
     },
@@ -28,7 +29,7 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
 
   Object.defineProperties(Vue.prototype, {
     $eventBus: {
-      value: eventBus(),
+      value: eventBus(Vue),
       writable: false,
     },
     $moduleLoader: {
@@ -44,7 +45,7 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
     store.registerModule('dynamicComponent', dynamicComponentState);
     // define $dynamicComponent
     Object.defineProperty(Vue.prototype, '$dynamicComponent', {
-      value: dynamicComponent(store),
+      value: dynamicComponent(Vue, store),
       writable: false,
     });
   }
@@ -52,15 +53,13 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
   // router
   // 解决动态路由404问题
   if (router) {
-    const resolveRoute = (
-      to: Route,
-      next: (to?: RawLocation | false | ((vm: _Vue) => any) | void) => void,
-    ) => {
+    const resolveRoute = (to: Route, next: (to?: RawLocation | false | ((vm: _Vue) => any) | void) => void) => {
       const fullPath = to.redirectedFrom || to.fullPath;
-      const { location } = router.resolve(fullPath);
+
+      const { resolved, location } = router.resolve(fullPath);
       // 在加载完组件后resolve的地址与原来要跳转的地址不一致时跳转
       // 以免造成404死循环
-      if (location.name !== to.name) {
+      if (resolved.name !== to.name) {
         next(location);
       } else {
         next();
@@ -68,23 +67,20 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
     };
 
     router.beforeEach((to, from, next) => {
-      if (!to.name || to.name === '404') {
-        // 前 ModuleLoader 被 use 前添加的 beforeEach阻止时间过长，vm.$watch还没开始监听
-        // 模块已经被加载完成时
+      if (!to.name || to.name === '404' || to.name === 'page-not-found') {
+        // 模块已经被加载完成, 但由于在其之前添加 beforeEach 阻止时间过长，vm.$watch还没开始监听
         if (vm.status.current) {
           resolveRoute(to, next);
-        } else {
-          vm.$watch(
-            () => vm.status.current,
-            (newVal, oldVal) => {
-              console.log(newVal, oldVal);
-              // false => true
-              if (newVal && !oldVal) {
-                resolveRoute(to, next);
-              }
-            },
-          );
         }
+        vm.$watch(
+          () => vm.status.current,
+          (newVal, oldVal) => {
+            // false => true
+            if (newVal && !oldVal) {
+              resolveRoute(to, next);
+            }
+          },
+        );
       } else {
         next();
       }
@@ -94,8 +90,18 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
   // Used to avoid multiple mixins being setup
   // when in dev mode and hot module reload
   // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
-  if (Vue.$_module_loader_installed) return;
-  Vue.$_module_loader_installed = true;
+  if (Vue.$__module_loader_installed__) return;
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  Vue.$__module_loader_installed__ = true;
+
+  // 设置当前运行时 Vue 对象
+  setCurrentVue(Vue);
+
+  // 设置子模块中的运行时 Vue 对象与主框架一致
+  // 或使用 '--inline-vue' 使用独立 Vue 对象
+  if (!window.Vue) {
+    window.Vue = Vue;
+  }
 
   Vue.mixin({
     beforeCreate() {
@@ -103,12 +109,18 @@ export default function install(Vue: typeof _Vue, options: Options = {}) {
 
       if (options.moduleLoader) {
         options.moduleLoader.init(this, options.ssrContext);
-        this.$moduleLoaderManager = Vue.observable(options.moduleLoader.framework);
+        this.$moduleLoadManager = Vue.observable(options.moduleLoader.framework);
         // 初始化实例中的 modules
-        // 放在最后执行，module 入口可以使用 this.$moduleLoaderManager中的功能
-        options.moduleLoader.initModules(this);
+        // 放在最后执行，module 入口可以使用 this.$moduleLoadManager中的功能
+        options.moduleLoader.initModules(this).finally(() => {
+          // 在没有模块被加载时，这个值必须要手动改成 true
+          // 使 router.beforeEach 正确执行
+          if (!vm.status.current) {
+            vm.status.current = true;
+          }
+        });
       } else {
-        this.$moduleLoaderManager = (options.parent && options.parent.$moduleLoaderManager) || this;
+        this.$moduleLoadManager = (options.parent && options.parent.$moduleLoadManager) || this;
       }
     },
   });

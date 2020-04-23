@@ -1,0 +1,14 @@
+{
+  "verbose": true,
+  "setupFiles": ["<rootDir>/test/setEnv.ts"],
+  "setupFilesAfterEnv": ["<rootDir>/test/helpers/wait-for-update.ts"],
+  "moduleFileExtensions": ["ts", "js"],
+  "testMatch": ["<rootDir>/test/**/*.(test|spec).{js,ts}"],
+  "transform": {},
+  "globals": {
+    "ts-jest": {
+      "tsConfig": "<rootDir>/tsconfig.test.json"
+    }
+  },
+  "preset": "ts-jest"
+}

@@ -1,9 +1,13 @@
 /**
  * eventBus
  */
-import { isProduction, warn, error } from '../tool';
+import _Vue from 'vue';
+import { warn, error } from '@vue-async/utils';
 
-export default function() {
+const isProduction = process.env.NODE_ENF === 'production';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function(Vue: typeof _Vue) {
   let events: {
     [eventName: string]: any;
   } = {};
@@ -16,10 +20,7 @@ export default function() {
      */
     emit(eventName: string, payload: any) {
       if (!events[eventName]) {
-        return warn(
-          !isProduction,
-          `event "${eventName}" is triggered, but no listeners，nothing will be happening.`,
-        );
+        return warn(isProduction, `event "${eventName}" is triggered, but no listeners，nothing will be happening.`);
       }
       for (const func of events[eventName].values()) {
         func(payload);
@@ -35,7 +36,7 @@ export default function() {
         if (!events[eventName]) events[eventName] = new Set();
         events[eventName].add(handler);
       } else {
-        error(!isProduction, `handler must be a function, but recived ${typeof handler}`);
+        error(isProduction, `handler must be a function, but recived ${typeof handler}`);
       }
     },
     /**
@@ -47,7 +48,7 @@ export default function() {
       if (!handler) {
         return warn(!isProduction, 'handler must be a valid event function');
       } else if (!events.hasOwnProperty(eventName)) {
-        return error(!isProduction, `no event name of "${eventName}" is on listening`);
+        return error(isProduction, `no event name of "${eventName}" is on listening`);
       }
       events[eventName].delete(handler);
     },

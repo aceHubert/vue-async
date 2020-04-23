@@ -1,22 +1,29 @@
-import { Component as VueComponent } from 'vue';
+/**
+ * dynamicComponent
+ */
+import _Vue from 'vue';
 import { Store } from 'vuex';
-import { isProduction, error } from '../../tool';
+import { error } from '@vue-async/utils';
+import { DynamicComponent } from './storeModule';
 
-export default function(store: Store<any>) {
+const isProduction = process.env.NODE_ENF === 'production';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function(Vue: typeof _Vue, store: Store<any>) {
   return {
     /**
      * add component to store
      * @param component vue component
      * @param position position
      */
-    create(component: VueComponent, position: string) {
-      if (typeof component !== 'object') {
+    add(component: DynamicComponent, position: string) {
+      if (!(typeof component === 'object' || typeof component === 'function')) {
         return error(
-          !isProduction,
-          'dynamicComponent function "create" only accept object component as param.',
+          isProduction,
+          'dynamicComponent function "add" only accept object or function component as param.',
         );
       }
-      store.commit('dynamicComponent/create', {
+      store.commit('dynamicComponent/add', {
         component,
         position,
       });
@@ -26,14 +33,11 @@ export default function(store: Store<any>) {
      * @param name component name
      * @param position position
      */
-    destroy(name: string, position: string) {
+    remove(name: string, position: string) {
       if (typeof name !== 'string') {
-        return error(
-          !isProduction,
-          'dynamicComponent function only accept string name of component as param.',
-        );
+        return error(isProduction, 'dynamicComponent function "remoce" only accept string name of component as param.');
       }
-      store.commit('dynamicComponent/destroy', {
+      store.commit('dynamicComponent/remove', {
         name,
         position,
       });

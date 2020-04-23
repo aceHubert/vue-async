@@ -1,15 +1,7 @@
 {
-  "packages": ["packages/*", "docs"],
+  "packages": ["packages/*", "admin-ui", "modules"],
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "command": {
-    "bootstrap": {
-      "hoist": true
-    },
-    "version": {
-      "conventionalCommits": true
-    }
-  },
   "ignoreChanges": ["**/*.md"],
   "version": "independent"
 }

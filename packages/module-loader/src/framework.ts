@@ -1,25 +1,35 @@
 import _Vue, { Component as VueComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
+import { error } from '@vue-async/utils';
+import { ModuleData } from './ability/moduleLoader';
 import install from './install';
+
+export type ModuleLoaderOptions = {
+  modules?: ModuleData | ModuleData[];
+  [key: string]: any;
+};
 
 export default class ModuleLoader {
   static install = install;
 
   // static installed = false
 
-  static version = '0.1.0';
+  static version = '__VERSION__';
 
-  __initModules__ = [];
+  __initModules__?: ModuleData | ModuleData[];
+  __ExtraParams__?: { [key: string]: any };
 
   framework = {
     loaded: false,
     layouts: {},
   };
 
-  constructor({ modules = [] } = {}) {
+  constructor({ modules, ...rest }: ModuleLoaderOptions = {}) {
     this.__initModules__ = modules;
+    this.__ExtraParams__ = rest;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   init(root: _Vue, ssrContext: any) {
     Object.defineProperties(this.framework, {
       addRoutes: {
@@ -31,13 +41,24 @@ export default class ModuleLoader {
         writable: false,
       },
     });
+
+    this.__ExtraParams__ &&
+      Object.entries(this.__ExtraParams__).map(([key, value]) => {
+        if (!this.framework.hasOwnProperty(key)) {
+          // @ts-ignore
+          this.framework[key] = value;
+        }
+      });
   }
 
   initModules(root: _Vue) {
-    if (this.__initModules__ && this.__initModules__.length) {
-      root.$moduleLoader(this.__initModules__).then(_ => {
+    if (this.__initModules__) {
+      return root.$moduleLoader(this.__initModules__).then(() => {
         this.framework.loaded = true;
       });
+    } else {
+      this.framework.loaded = true;
+      return Promise.resolve();
     }
   }
 
@@ -46,7 +67,7 @@ export default class ModuleLoader {
       if (root.$router) {
         root.$router.addRoutes(routes);
       } else {
-        console.error('vm.$router未定义');
+        error(process.env.NODE_ENV === 'production', 'vm.$router未定义');
       }
     };
   }
@@ -64,7 +85,7 @@ export default class ModuleLoader {
         const layouts = key;
         this.framework.layouts = Object.assign(this.framework.layouts, layouts);
       } else {
-        console.error('addLayouts中支持字符串(key)或 Object(key/value)格式');
+        error(process.env.NODE_ENV === 'production', 'addLayouts中支持字符串(key)或 Object(key/value)格式');
       }
     };
   }
