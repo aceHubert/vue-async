@@ -1,0 +1,6 @@
+
+/test
+/src
+
+!./package.json
+!./README.md

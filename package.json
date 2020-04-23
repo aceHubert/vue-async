@@ -2,6 +2,9 @@
   "name": "vue-async",
   "version": "0.1.0",
   "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "serve": "lerna run serve --sort --parallel",
     "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,utils}",
