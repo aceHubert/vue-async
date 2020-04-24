@@ -2,6 +2,11 @@
   "packages": ["packages/*", "admin-ui", "modules"],
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "ignoreChanges": ["**/*.md"],
+  "command": {
+    "publish": {
+      "ignoreChanges": ["ignored-file", "*.md"],
+      "message": "chore(release): publish"
+    }
+  },
   "version": "independent"
 }

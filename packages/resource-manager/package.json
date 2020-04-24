@@ -2,6 +2,9 @@
   "name": "@vue-async/resource-manager",
   "version": "0.1.0-alpha.0",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Resource Manager.",
   "main": "dist/index.common.js",
