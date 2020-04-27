@@ -6,37 +6,34 @@ import { print, warn, error } from '@vue-async/utils';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-export interface MutableRefObject<T> {
+interface MutableRefObject<T> {
   current: T;
 }
 
-export type ModuleData =
+type ModuleData =
   | {
       [moduleName: string]: string;
     }
   | ((vue: VueConstructor) => Promise<boolean> | null);
 
+export type Modules = ModuleData | ModuleData[];
+
 export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
-  return function loader(
-    this: VueConstructor,
-    moduleData: ModuleData | Array<ModuleData>,
-    { __isArray__ = false } = {},
-  ): Promise<void> {
+  return function loader(this: VueConstructor, modules: Modules, { __isArray__ = false } = {}): Promise<void> {
     status.current = false;
-    if (Array.isArray(moduleData) && moduleData.length) {
-      return Promise.all(moduleData.map(module => loader.call(this, module, { __isArray__: true }))).then(() => {
+    if (Array.isArray(modules) && modules.length) {
+      return Promise.all(modules.map(module => loader.call(this, module, { __isArray__: true }))).then(() => {
         status.current = true;
       });
-    } else if (typeof moduleData === 'object' && Object.getPrototypeOf(moduleData) === Object.prototype) {
+    } else if (typeof modules === 'object' && Object.getPrototypeOf(modules) === Object.prototype) {
       /** 通过模块清单加载模块 */
       const promiseAll = [];
-      for (const moduleName in moduleData) {
+      for (const moduleName in modules) {
         if (!window[moduleName as any]) {
           promiseAll.push(
             new Promise(resolve => {
               const script = document.createElement('script');
-              // @ts-ignore
-              script.src = moduleData[moduleName];
+              script.src = (modules as any)[moduleName];
               script.onload = () => {
                 if (window[moduleName as any]) {
                   typeof window[moduleName as any] === 'function'
@@ -64,9 +61,9 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
           status.current = true;
         }
       });
-    } else if (typeof moduleData === 'function') {
+    } else if (typeof modules === 'function') {
       /** 通过模块函数加载模块 */
-      const result = moduleData.call(this, Vue);
+      const result = modules.call(this, Vue);
       if (result && result instanceof Promise) {
         return result.then(() => {
           if (!__isArray__) {

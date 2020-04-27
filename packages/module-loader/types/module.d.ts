@@ -2,7 +2,7 @@ import { Component as VueComponent, PluginFunction } from 'vue';
 import { RouteConfig } from 'vue-router';
 import { ModuleLoaderOptions } from '../src/framework';
 import { UseOptions } from '../src/install';
-import { ModuleData, DynamicComponent } from '../src';
+import { Modules, DynamicComponent } from '../src';
 
 export declare const ModuleLoader: ModuleLoader;
 
@@ -25,4 +25,4 @@ export interface Framework {
   [key: string]: any;
 }
 
-export { ModuleData, DynamicComponent };
+export { Modules, DynamicComponent };

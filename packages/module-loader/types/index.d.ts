@@ -3,4 +3,4 @@ import { ModuleLoader } from './module';
 
 export default ModuleLoader;
 
-export { Framework, ModuleData, DynamicComponent } from './module';
+export { Framework, Modules, DynamicComponent } from './module';

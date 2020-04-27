@@ -1,11 +1,11 @@
-import _Vue, { Component as VueComponent } from 'vue';
+import _Vue, { Component as VueComponent, AsyncComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
-import { error } from '@vue-async/utils';
-import { ModuleData } from './ability/moduleLoader';
+import { error, warn, hasOwn, isPlainObject } from '@vue-async/utils';
+import { Modules } from './ability/moduleLoader';
 import install from './install';
 
 export type ModuleLoaderOptions = {
-  modules?: ModuleData | ModuleData[];
+  modules?: Modules;
   [key: string]: any;
 };
 
@@ -16,10 +16,10 @@ export default class ModuleLoader {
 
   static version = '__VERSION__';
 
-  __initModules__?: ModuleData | ModuleData[];
+  __initModules__?: Modules;
   __ExtraParams__?: { [key: string]: any };
 
-  framework = {
+  framework: { [key: string]: any } = {
     loaded: false,
     layouts: {},
   };
@@ -31,24 +31,18 @@ export default class ModuleLoader {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   init(root: _Vue, ssrContext: any) {
-    Object.defineProperties(this.framework, {
-      addRoutes: {
-        value: this.initAddRoutes(root),
-        writable: false,
-      },
-      addLayouts: {
-        value: this.initAddLayouts(root),
-        writable: false,
-      },
-    });
-
     this.__ExtraParams__ &&
       Object.entries(this.__ExtraParams__).map(([key, value]) => {
-        if (!this.framework.hasOwnProperty(key)) {
-          // @ts-ignore
+        if (!hasOwn(this.framework, key)) {
           this.framework[key] = value;
+        } else {
+          warn(process.env.NODE_ENV === 'production', `参数 ${key} 已在在`);
         }
       });
+
+    // 默认方法
+    !hasOwn(this.framework, 'addRoutes') && (this.framework.addRoutes = this.initAddRoutes(root));
+    !hasOwn(this.framework, 'addLayouts') && (this.framework.addLayouts = this.initAddLayouts(root));
   }
 
   initModules(root: _Vue) {
@@ -73,14 +67,10 @@ export default class ModuleLoader {
   }
 
   initAddLayouts(root: _Vue) {
-    return (key: string, layout: VueComponent) => {
+    return (key: string | { [key: string]: VueComponent | AsyncComponent }, layout: VueComponent | AsyncComponent) => {
       if (typeof key === 'string') {
         root.$set(this.framework.layouts, key, layout);
-      } else if (
-        key !== null &&
-        (typeof key === 'object' || typeof key === 'function') &&
-        Object.getPrototypeOf(key) === Object.prototype
-      ) {
+      } else if (isPlainObject(key)) {
         // plain object
         const layouts = key;
         this.framework.layouts = Object.assign(this.framework.layouts, layouts);
