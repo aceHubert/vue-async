@@ -1,9 +1,9 @@
 import { VueConstructor } from 'vue';
-// import { ComponentInstance } from './component';
+import { ComponentInstance } from './component';
 import { assert } from '../tools';
 
 let currentVue: VueConstructor | null = null;
-// let currentVM: ComponentInstance | null = null;
+let currentVM: ComponentInstance | null = null;
 
 export function getCurrentVue(): VueConstructor {
   if (process.env.NODE_ENV === 'productment') {
@@ -16,12 +16,12 @@ export function setCurrentVue(vue: VueConstructor) {
   currentVue = vue;
 }
 
-// export function getCurrentVM(): ComponentInstance | null {
-//   return currentVM;
-// }
+export function getCurrentVM(): ComponentInstance | null {
+  return currentVM;
+}
 
-// export function setCurrentVM(vm: ComponentInstance | null) {
-//   currentVM = vm;
-// }
+export function setCurrentVM(vm: ComponentInstance | null) {
+  currentVM = vm;
+}
 
-export { currentVue };
+export { currentVue, currentVM };
