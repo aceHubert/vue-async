@@ -13,7 +13,7 @@
   "typings": "types/index.d.ts",
   "keywords": [
     "vue",
-    "vue-component",
+    "vue-async",
     "utils",
     "async-module",
     "async-loader"
