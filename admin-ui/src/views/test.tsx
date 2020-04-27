@@ -15,6 +15,9 @@ export default class Test extends Mixins(MixinLang) {
         <router-link to={{ name: 'index' }}>Index</router-link>
         <br />
         <router-link to="/">Index</router-link>
+        <br />
+        <router-link to={{ name: 'test', query: { newtab: true } }}>NewTab</router-link>
+
         <v-radio-group value={this.locale} mandatory={false} onChange={this.setLanguage}>
           {this.supportLanguages.map(config => (
             <v-radio label={config.name} value={config.alternate || config.locale}></v-radio>

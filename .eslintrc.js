@@ -28,7 +28,9 @@ module.exports = {
     // 语句强制分号结尾
     semi: 2,
     //空行最多不能超过2行
-    'no-multiple-empty-lines': [0, { max: 2 }],
+    'no-multiple-empty-lines': [2, { max: 2 }],
+    //三元运算符换行
+    'multiline-ternary': [2, 'always-multiline'],
     //关闭禁止混用tab和空格
     'no-mixed-spaces-and-tabs': [0],
     //换行使用CRLF

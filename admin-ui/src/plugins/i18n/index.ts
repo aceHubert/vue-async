@@ -2,7 +2,7 @@
  * i18n
  */
 import Vue from 'vue';
-import VueI18n from 'vue-i18n';
+import VueI18n, { Path, Locale, TranslateResult } from 'vue-i18n';
 import { Route } from 'vue-router';
 import languages from '@/data/i18n/languages.json';
 
@@ -12,17 +12,36 @@ Vue.use(VueI18n);
  * 扩展方法
  * tv(key, default, locale)
  */
-Object.defineProperties(VueI18n, {
+Object.defineProperties(VueI18n.prototype, {
   tv: {
-    value: function(key: string, fallbackStr: string, locale?: string) {
-      return (this.t && this.te ? (this.te(key, locale) ? this.t(key, locale) : fallbackStr) : fallbackStr) || key;
+    value: function(key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
+      return (
+        (this.t && this.te
+          ? this.te(key, locale)
+            ? this.t(key, locale)
+            : this.te(key, this.fallbackLocale)
+            ? this.t(key, this.fallbackLocale)
+            : fallbackStr
+          : fallbackStr) || key
+      );
+    },
+    writable: false,
+  },
+});
+
+Object.defineProperties(Vue.prototype, {
+  $tv: {
+    value: function(key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
+      const i18n = this.$i18n;
+      return i18n.tv(key, fallbackStr, locale);
     },
     writable: false,
   },
 });
 
 export function createI18n(ssrContext: any, router: any) {
-  const fallbackLocale: string = (languages.find((l: LangConfig) => l.fallback) || languages[0]).locale;
+  const fallbackConfig = languages.find((l: LangConfig) => l.fallback) || languages[0];
+  const fallbackLocale: string = fallbackConfig.alternate || fallbackConfig.locale;
   const globalLanguages: { [locale: string]: any } = {};
   const hasDocument: boolean = typeof document !== 'undefined';
   const loadedLanguages: string[] = [fallbackLocale]; // 预装默认语言
@@ -39,13 +58,13 @@ export function createI18n(ssrContext: any, router: any) {
     locale,
     fallbackLocale,
     messages: {
-      [fallbackLocale]: require(`@/lang/${fallbackLocale}`).default,
+      [fallbackLocale]: require(`@/lang/${fallbackConfig.locale}`).default,
     },
     dateTimeFormats: {
-      [fallbackLocale]: require(`@/lang/${fallbackLocale}`).dateTimeFormat,
+      [fallbackLocale]: require(`@/lang/${fallbackConfig.locale}`).dateTimeFormat,
     },
     numberFormats: {
-      [fallbackLocale]: require(`@/lang/${fallbackLocale}`).numberFormat,
+      [fallbackLocale]: require(`@/lang/${fallbackConfig.locale}`).numberFormat,
     },
     silentFallbackWarn: true,
   });

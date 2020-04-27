@@ -4,9 +4,7 @@ import { Vue, Component, Watch } from 'vue-property-decorator';
 import { sanitizeComponent, hasOwn } from '@vue-async/utils';
 import { languagePattern } from '@/router/utils';
 import { AppStore } from '@/store/modules';
-import { DarkThemeStorageKey } from '@/plugins/vuetify';
-
-const TabsStorageKey = 'currentTabs';
+import { DarkThemeStorageKey, TabsStorageKey } from '@/data/storage/keys';
 
 // layouts
 const defaultLayouts: { [name: string]: VueComponent | AsyncComponent } = {
@@ -83,7 +81,7 @@ export default class Index extends Vue {
       this.tabs.push({
         title: val.meta.title || val.name,
         name: val.name || '',
-        to: val.fullPath,
+        to: { name: val.name!, query: val.query },
         closeable: val.meta.closeable === undefined ? true : !!val.meta.closeable,
         exact: val.meta.exact === undefined ? true : !!val.meta.exact,
       });

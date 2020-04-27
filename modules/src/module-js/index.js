@@ -22,7 +22,7 @@ export default function (Vue) {
   // 此方法为主程序中的扩展
   this.$moduleLoadManager.addMenus([
     {
-      title: 'Remote',
+      title: 'js.remote',
       icon: 'mdi-menu',
       index: 0,
       children: [
@@ -39,6 +39,23 @@ export default function (Vue) {
       ],
     },
   ]);
+
+  // 添加语言
+  // 此方法为主程序中的扩展
+  const loadedLangs = new Set()
+  const languages = this.$moduleLoadManager.languages
+  // set fallback
+  const fallbackLocale = this.$i18n.fallbackLocale
+  const { locale } = languages.find(l => l.alternate === fallbackLocale || l.locale === fallbackLocale);
+  this.$moduleLoadManager.addLocaleMessage(fallbackLocale, { js: require(`./lang/${locale}`).default })
+    .then(lang => loadedLangs.add(lang))
+  // change locale
+  this.$watch(() => this.$i18n.locale, (lang) => {
+    const { locale } = languages.find(l => l.alternate === lang || l.locale === lang);
+    !loadedLangs.has(lang)
+      && this.$moduleLoadManager.addLocaleMessage(lang, { js: require(`./lang/${locale}`).default })
+        .then(lang => loadedLangs.add(lang))
+  }, { immediate: true })
 
   // 注册组件
   // 主程序调用前需要检查是否已经被加载成功

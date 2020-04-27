@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueMeta from 'vue-meta';
-import { root } from './utils';
+import { root, layout } from './utils';
 
 // routes
 import { BaseRoutes } from './routes/base';
@@ -23,7 +23,7 @@ const routes = root([
     path: '*',
     children: [
       {
-        name: 'not-found',
+        name: 'page-not-found',
         path: '',
         component: () => import('@/views/404'),
         meta: {
@@ -34,12 +34,12 @@ const routes = root([
   },
 ]);
 
-console.log(routes);
-
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
 });
+
+export { root, layout };
 
 export default router;

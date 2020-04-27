@@ -1,6 +1,8 @@
+import { Component as VeuCompoent, AsyncComponent } from 'vue';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import languages from '@/data/i18n/languages.json';
 import classes from './styles/index.module';
+import ThemeComponent from '../components/theme';
 
 @Component({
   name: 'layout-default',
@@ -19,12 +21,15 @@ export default class LayoutDefault extends Vue {
   languageMenu = false;
   messages = '9+';
   currentDark = false;
+  dialogShown: boolean = false;
+  dialogComponent: VeuCompoent | AsyncComponent | null = null;
 
   // computed
   get currentLanguage() {
     return languages.find((l: LangConfig) => l.alternate === this.$i18n.locale || l.locale === this.$i18n.locale);
   }
 
+  // watch
   @Watch('dark', { immediate: true })
   watchDark(val: boolean) {
     if (val !== this.currentDark) {
@@ -37,12 +42,20 @@ export default class LayoutDefault extends Vue {
     this.$emit('update:dark', val);
   }
 
+  @Watch('dialogShown')
+  watchDialogShown(val: boolean) {
+    if (!val) {
+      // 清除组件
+      this.dialogComponent = null;
+    }
+  }
+
   // methods
   getNestedMenus(h: any, menus: Array<Menu> = [], subGroup: boolean = false) {
     return menus.map(menu =>
       menu.children && menu.children.length ? (
         <v-list-group prepend-icon={!subGroup ? menu.icon : null} sub-group={subGroup}>
-          <v-list-item-title slot="activator">{this.$t(menu.title)}</v-list-item-title>
+          <v-list-item-title slot="activator">{this.$tv(String(menu.title))}</v-list-item-title>
           {this.getNestedMenus(h, menu.children, true)}
         </v-list-group>
       ) : (
@@ -51,7 +64,7 @@ export default class LayoutDefault extends Vue {
             <v-icon>{menu.icon}</v-icon>
           </v-list-item-action>
 
-          <v-list-item-title>{this.$t(menu.title)}</v-list-item-title>
+          <v-list-item-title>{this.$tv(String(menu.title))}</v-list-item-title>
         </v-list-item>
       ),
     );
@@ -76,10 +89,14 @@ export default class LayoutDefault extends Vue {
     if (this.$vuetify.breakpoint.mdAndUp) {
     } else {
     }
+    this.dialogComponent = ThemeComponent;
+    this.dialogShown = true;
   }
 
   // lifeCycle
   render(h: any) {
+    const { dialogComponent } = this;
+
     return (
       <v-app id="layout-default">
         <v-navigation-drawer
@@ -288,7 +305,7 @@ export default class LayoutDefault extends Vue {
           <v-tabs vModel={this.acticeTab} color="white" show-arrows>
             {this.tabs.map((tab, index) => (
               <v-tab to={tab.to} class={classes.nav} exact={tab.exact}>
-                {this.$t(tab.title)}
+                {this.$tv(String(tab.title))}
                 {tab.closeable === true ? (
                   <v-icon small class={classes.navClose} onClick={(e: Event) => this.handleRemoveTab(e, index)}>
                     mdi-close
@@ -306,6 +323,22 @@ export default class LayoutDefault extends Vue {
             </keep-alive>
           </v-container>
         </v-content>
+
+        <v-dialog
+          vModel={this.dialogShown}
+          fullscreen={this.$vuetify.breakpoint.smAndDown}
+          scrollable
+          persistent
+          width="560px"
+        >
+          {dialogComponent ? (
+            <dialogComponent
+              onClose={() => {
+                this.dialogShown = false;
+              }}
+            />
+          ) : null}
+        </v-dialog>
       </v-app>
     );
   }

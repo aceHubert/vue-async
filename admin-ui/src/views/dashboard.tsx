@@ -1,6 +1,7 @@
 import { DynamicComponent } from '@vue-async/module-loader';
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { namespace } from 'vuex-class';
+import classes from './styles/dashboard.module';
 
 const dynamicComponentStore = namespace('dynamicComponent');
 
@@ -11,6 +12,7 @@ const dynamicComponentStore = namespace('dynamicComponent');
   },
 })
 export default class Index extends Vue {
+  // route 注入
   @Prop(String) lang!: string;
 
   @dynamicComponentStore.State('dashboard') components!: { [name: string]: DynamicComponent };
@@ -37,8 +39,7 @@ export default class Index extends Vue {
 
   render(h: any) {
     return (
-      <v-container fluid>
-        <router-link to={{ name: 'test' }}>Test</router-link>
+      <v-container fluid class={classes.dashboard}>
         <v-row gutter={20}>
           {this.sortComponents.map(({ component: dynamicComponent, cols, icon, title, type }) => (
             <v-col cols="12" sm={cols * (12 / 8)} md={cols}>

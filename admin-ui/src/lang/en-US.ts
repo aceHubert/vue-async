@@ -15,7 +15,7 @@ export default {
     setting: 'Settings',
     language: 'Languages',
     new_message: 'New Messages',
-    customize_theme: 'Customize Theme',
+    customize_theme: 'Theme',
     dark: 'Dark Theme',
     light: 'Light Theme',
   },
