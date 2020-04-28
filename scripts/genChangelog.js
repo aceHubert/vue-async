@@ -12,6 +12,9 @@ async function genNewRelease() {
 
 const gen = (module.exports = async () => {
   const newRelease = await genNewRelease();
+  if (!newRelease) {
+    return;
+  }
   const changelogPath = path.resolve(__dirname, '../CHANGELOG.md');
 
   const newChangelog = newRelease + '\n\n\n' + fs.readFileSync(changelogPath, { encoding: 'utf8' });

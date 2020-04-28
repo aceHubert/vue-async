@@ -4,9 +4,21 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
+      "conventionalCommits": true,
       "ignoreChanges": ["ignored-file", "*.md"],
       "message": "chore(release): publish"
     }
   },
-  "version": "independent"
+  "version": "independent",
+  "changelog": {
+    "repo": "aceHubert/vue-async",
+    "labels": {
+      "feat": ":rocket: New Feature",
+      "fix": ":bug: Bug Fix",
+      "doc": ":memo: Documentation",
+      "internal": ":house: Internal",
+      "breaking": ":boom: Breaking Change"
+    },
+    "cacheDir": ".changelog"
+  }
 }
