@@ -14,9 +14,7 @@
     "repo": "aceHubert/vue-async",
     "labels": {
       "feat": ":rocket: New Feature",
-      "fix": ":bug: Bug Fix",
-      "doc": ":memo: Documentation",
-      "internal": ":house: Internal",
+      "bug": ":bug: Bug Fix",
       "breaking": ":boom: Breaking Change"
     },
     "cacheDir": ".changelog"
