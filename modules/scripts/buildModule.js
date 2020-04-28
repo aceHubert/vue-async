@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const execa = require('execa');
 
-async function exec(name, execFile) {
+async function exec (name, execFile) {
   const { stdout } = await execa(require.resolve('@vue/cli-service/bin/vue-cli-service'), [
     'build',
     '--target',
@@ -19,16 +19,16 @@ async function exec(name, execFile) {
   return stdout;
 }
 
-async function findIndexFile(rootDir) {
+async function findIndexFile (rootDir) {
   const dir = await fs.promises.opendir(rootDir);
   for await (const dirent of dir) {
-    if (dirent.isFile() && path.basename(dirent.name, path.extname(dirent.name)) === 'index') {
+    if (dirent.isFile() && !dirent.name.endsWith('.d.ts') && path.basename(dirent.name, path.extname(dirent.name)) === 'index') {
       return path.resolve(rootDir, dirent.name);
     }
   }
 }
 
-async function run(files) {
+async function run (files) {
   if (files && files.length) {
     for (file of files) {
       const fullpath = path.resolve(__dirname, '../', file);
@@ -51,8 +51,12 @@ async function run(files) {
 
     const dir = await fs.promises.opendir(rootDir);
     for await (const dirent of dir) {
-      if (dirent.isFile()) {
+      if (dirent.isFile() ) {
         // 文件
+        if(dirent.name.endsWith('.d.ts')){
+          continue;
+        }
+
         const rootFile = path.resolve(rootDir, dirent.name);
         const result = await exec(path.basename(dirent.name, path.extname(dirent.name)), rootFile);
         console.log(result);

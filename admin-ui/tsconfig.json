@@ -12,7 +12,10 @@
     }
   },
   // scoped package types missing
-  "files": ["node_modules/@vue-async/module-loader/types/index.d.ts"],
+  "files": [
+    "node_modules/@vue-async/module-loader/types/index.d.ts",
+    "node_modules/@vue-async/module-loader/src/globals.d.ts"
+  ],
   "include": [
     "src/**/*",
     // https://github.com/TypeStrong/ts-loader/issues/905

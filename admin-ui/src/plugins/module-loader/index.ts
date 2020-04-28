@@ -34,12 +34,22 @@ const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) => {
 };
 
 export function createModuleLoader(modules?: Modules, { i18n }: { i18n?: VueI18n } = {}) {
+  const defaultModules =
+    process.env.NODE_ENV === 'production'
+      ? {
+          'module-js': '/modules/module-js/module-js.umd.js',
+          'module-ts': '/modules/module-ts/module-ts.umd.js',
+        }
+      : {
+          'module-js': 'http://localhost:3000/module-js/module-js.umd.js',
+          'module-ts': 'http://localhost:3000/module-ts/module-ts.umd.js',
+        };
+
   const moduleLoader = new ModuleLoader(
     Object.assign(
       {
         modules: {
-          'module-js': 'http://localhost:3000/module-js/module-js.umd.js',
-          'module-ts': 'http://localhost:3000/module-ts/module-ts.umd.js',
+          ...defaultModules,
           ...modules,
         },
         addMenus: (menus: Menu | Array<Menu>) => {
