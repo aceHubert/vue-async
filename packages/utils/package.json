@@ -1,10 +1,6 @@
 {
   "name": "@vue-async/utils",
   "version": "0.1.3-alpha.0",
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "dist/index.common.ts",
@@ -16,7 +12,8 @@
     "vue-async",
     "utils",
     "async-module",
-    "async-loader"
+    "async-loader",
+    "microfront"
   ],
   "files": [
     "dist/*.js",

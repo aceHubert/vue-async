@@ -1,10 +1,6 @@
 {
   "name": "@vue-async/resource-manager",
   "version": "0.1.1-alpha.0",
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Resource Manager.",
   "main": "dist/index.common.js",
@@ -13,9 +9,11 @@
   "typings": "types/index.d.ts",
   "keywords": [
     "vue",
-    "vue-component",
     "vue-async",
-    "resource-mananger"
+    "resource-mananger",
+    "async-module",
+    "async-loader",
+    "microfront"
   ],
   "files": [
     "dist/",

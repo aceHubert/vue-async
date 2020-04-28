@@ -92,7 +92,7 @@ module.exports = {
       css: {
         // 模块定义设置
         modules: {
-          localIdentName: isProduction ? ['hash:base64'] : '[path]_[name]_[local]_[hash:base64:5]'
+          localIdentName: isProduction ? '[hash:base64]' : '[path]_[name]_[local]_[hash:base64:5]'
         },
         localsConvention: 'camelCaseOnly'
       }
