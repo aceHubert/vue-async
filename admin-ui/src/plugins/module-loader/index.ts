@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import VueI18n, { Path, LocaleMessageObject } from 'vue-i18n';
+import VueI18n, { LocaleMessageObject } from 'vue-i18n';
 import ModuleLoader, { Modules } from '@vue-async/module-loader';
 import router, { root } from '@/router';
 import store from '@/store';
