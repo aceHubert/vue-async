@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
-import {DarkThemeStorageKey, ThemesStorageKey} from '@/data/storage/keys'
-import 'vuetify/dist/vuetify.min.css';
+import { DarkThemeStorageKey, ThemesStorageKey } from '@/data/storage/keys';
+import './index.scss';
 
 Vue.use(Vuetify);
 

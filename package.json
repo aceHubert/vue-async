@@ -55,7 +55,7 @@
     "jest": "^24.9.0",
     "lerna": "^3.20.2",
     "lerna-changelog": "^1.0.1",
-    "lint-staged": ">=8",
+    "lint-staged": "^10.2.0",
     "prettier": "^1.19.1",
     "regenerator-runtime": "^0.13.5",
     "ts-jest": "^24.2.0",
@@ -68,25 +68,11 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "lint-staged": {
-    "*.js(x)": [
-      "prettier --write",
-      "git add"
-    ],
-    "*.ts(x)": [
-      "prettier --parser=typescript --write",
-      "git add"
-    ]
-  },
   "workspaces": {
     "packages": [
       "packages/*",
       "admin-ui",
       "modules"
-    ],
-    "nohoist": [
-      "admin-ui/**",
-      "modules/@vue/**"
     ]
   }
 }
