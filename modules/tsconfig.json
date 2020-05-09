@@ -4,6 +4,7 @@
     "baseUrl": "src",
     "outDir": "dist",
     "importHelpers": true,
+    "noImplicitAny": false,
     "types": ["webpack-env"],
     "jsx": "preserve"
   },

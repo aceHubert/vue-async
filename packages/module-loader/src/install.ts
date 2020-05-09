@@ -53,7 +53,7 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
   // router
   // 解决动态路由404问题
   if (router) {
-    const resolveRoute = (to: Route, next: (to?: RawLocation | false | ((vm: _Vue) => any) | void) => void) => {
+    const resolveRoute = (to: Route, next: (to?: RawLocation | false | ((vm: _Vue) => void) | void) => void) => {
       const fullPath = to.redirectedFrom || to.fullPath;
 
       const { resolved, location } = router.resolve(fullPath);

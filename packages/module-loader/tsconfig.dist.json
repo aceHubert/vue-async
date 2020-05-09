@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es5",
     "module": "esnext",
     // "sourceMap": false,
     "inlineSourceMap": true,

@@ -1,14 +1,15 @@
-
-export default [{
-  path: 'remote-page-a',
-  name: 'remote-page-a',
-  component: () => import('../pages/pageA.vue')
-},
-{
-  path: 'remote-page-b',
-  name: 'remote-page-b',
-  component: () => import('../pages/pageB.vue'),
-  meta: {
-    title: 'js.page_b'
-  }
-}]
+export default [
+  {
+    path: 'remote-page-a',
+    name: 'remote-page-a',
+    component: () => import('../pages/pageA.vue'),
+  },
+  {
+    path: 'remote-page-b',
+    name: 'remote-page-b',
+    component: () => import('../pages/pageB.vue'),
+    meta: {
+      title: 'js.page_b',
+    },
+  },
+];

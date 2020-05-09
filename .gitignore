@@ -14,8 +14,9 @@ lerna-debug.log*
 
 # Editor directories and files
 .idea
-.vscode
+# .vscode
 .changelog
+.eslintcache
 *.suo
 *.ntvs*
 *.njsproj

@@ -12,9 +12,8 @@
     "build:modules": "yarn workspace modules build",
     "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
     "clean": "lerna clean --yes",
-    "lint": "eslint . --cache --report-unused-disable-directives",
-    "lint:ci": "eslint . --report-unused-disable-directives",
-    "lint:fix": "eslint . --cache --fix",
+    "lint": "lerna run lint --parallel --stream",
+    "lint:fix": "lerna run lint:fix --parallel",
     "prettier": "node ./scripts/prettier.js",
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
@@ -29,8 +28,6 @@
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.7.4",
     "@babel/preset-typescript": "^7.9.0",
     "@commitlint/cli": "^8.3.4",
@@ -39,6 +36,7 @@
     "@types/node": "^12.12.14",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
     "child_process": "^1.0.2",
     "commitizen": "^4.0.3",
@@ -49,6 +47,8 @@
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-local": "^1.0.0",
     "eslint-plugin-prettier": "^3.1.2",
     "glob-gitignore": "^1.0.14",
     "husky": ">=1",
@@ -64,15 +64,21 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "lint-staged && yarn lerna run test",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "workspaces": {
     "packages": [
       "packages/*",
+      "docs",
       "admin-ui",
       "modules"
+    ],
+    "nohoist": [
+      "admin-ui",
+      "modules/vue",
+      "modules/vue/**"
     ]
   }
 }

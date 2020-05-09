@@ -1,0 +1,11 @@
+{
+  "editor.tabSize": 2,
+  // "files.eol": "\n",
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "javascript.format.insertSpaceAfterConstructor": false,
+  "javascript.implicitProjectConfig.experimentalDecorators": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.eslintIntegration": true,
+  "prettier.tslintIntegration": true,
+  "prettier.endOfLine": "lf"
+}

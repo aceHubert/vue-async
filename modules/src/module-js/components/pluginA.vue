@@ -4,6 +4,6 @@
 
 <script>
 export default {
-  name: "plugin-a"
+  name: 'plugin-a',
 };
 </script>

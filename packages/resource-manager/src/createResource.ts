@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { error } from '@vue-async/utils';
 import { del, add, AsyncFactory } from './Suspense';
 import { currentInstance, currentSuspenseInstance, setCurrentInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
@@ -97,9 +98,8 @@ export default function createResource<I = any, R = any, E = any>(
           }
         })
         .catch((err: E) => {
-          if (process.env.NODE_ENV !== 'production') {
-            console.error(err);
-          }
+          error(process.env.NODE_ENV === 'production', (err as any).message);
+
           $res.$$error = options && options.onError ? options.onError(err) : err;
 
           if (hasSuspenseInstance) {
@@ -131,7 +131,7 @@ export default function createResource<I = any, R = any, E = any>(
       return $res.$$loaded;
     },
     fork() {
-      return createResource((i: I) => fetchFactory(i), options);
+      return createResource((i?: I) => fetchFactory(i), options);
     },
   };
 

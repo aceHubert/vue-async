@@ -39,7 +39,7 @@ Object.defineProperties(Vue.prototype, {
   },
 });
 
-export function createI18n(ssrContext: any, router: any) {
+export function createI18n(ssrContext: any, { router }: { router: any }) {
   const fallbackConfig = languages.find((l: LangConfig) => l.fallback) || languages[0];
   const fallbackLocale: string = fallbackConfig.alternate || fallbackConfig.locale;
   const globalLanguages: { [locale: string]: any } = {};
@@ -115,7 +115,9 @@ export function createI18n(ssrContext: any, router: any) {
     to.params.lang &&
       loadLanguageAsync(to.params.lang)
         .then(() => next())
-        .catch(() => {});
+        .catch(() => {
+          /** ate by dog */
+        });
   });
 
   return i18n;

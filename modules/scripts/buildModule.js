@@ -1,11 +1,12 @@
-/* eslint-disable no-console */
-//vue-cli-service build --target lib --name module-test --dest dist/module-test module-test/index.js
+/**
+ * vue-cli-service build --target lib --name module-test --dest dist/module-test module-test/index.js
+ */
 
 const fs = require('fs');
 const path = require('path');
 const execa = require('execa');
 
-async function exec (name, execFile) {
+async function exec(name, execFile) {
   const { stdout } = await execa(require.resolve('@vue/cli-service/bin/vue-cli-service'), [
     'build',
     '--target',
@@ -19,16 +20,20 @@ async function exec (name, execFile) {
   return stdout;
 }
 
-async function findIndexFile (rootDir) {
+async function findIndexFile(rootDir) {
   const dir = await fs.promises.opendir(rootDir);
   for await (const dirent of dir) {
-    if (dirent.isFile() && !dirent.name.endsWith('.d.ts') && path.basename(dirent.name, path.extname(dirent.name)) === 'index') {
+    if (
+      dirent.isFile() &&
+      !dirent.name.endsWith('.d.ts') &&
+      path.basename(dirent.name, path.extname(dirent.name)) === 'index'
+    ) {
       return path.resolve(rootDir, dirent.name);
     }
   }
 }
 
-async function run (files) {
+async function run(files) {
   if (files && files.length) {
     for (file of files) {
       const fullpath = path.resolve(__dirname, '../', file);
@@ -51,9 +56,9 @@ async function run (files) {
 
     const dir = await fs.promises.opendir(rootDir);
     for await (const dirent of dir) {
-      if (dirent.isFile() ) {
+      if (dirent.isFile()) {
         // 文件
-        if(dirent.name.endsWith('.d.ts')){
+        if (dirent.name.endsWith('.d.ts')) {
           continue;
         }
 
@@ -75,7 +80,7 @@ async function run (files) {
 }
 
 if (require.main === module) {
-  run(process.argv.splice(2)).catch(err => {
+  run(process.argv.splice(2)).catch((err) => {
     // eslint-disable-next-line no-console
     console.error(err);
     process.exit(1);

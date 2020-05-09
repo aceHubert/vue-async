@@ -1,4 +1,5 @@
 import Vue, { Component, VNode } from 'vue';
+import { error } from '@vue-async/utils';
 import { PropsDefinition, DefaultProps } from 'vue/types/options';
 import { del, add, has, AsyncFactory, SuspenseComponent } from './Suspense';
 import { currentSuspenseInstance } from './currentInstance';
@@ -8,12 +9,11 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
   asyncFactory: AsyncFactory,
   props?: PropsDef,
 ): Component {
-  return {
+  return Vue.extend({
     name: 'SuspenseLazy',
-    props: props || [],
+    props: props,
     created() {
-      asyncFactory.suspenseInstance =
-        (currentSuspenseInstance as Vue) || findSuspenseInstance(this);
+      asyncFactory.suspenseInstance = (currentSuspenseInstance as Vue) || findSuspenseInstance(this);
 
       if (has(asyncFactory)) return;
 
@@ -39,9 +39,7 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
           this.$forceUpdate();
         })
         .catch(err => {
-          if (process.env.NODE_ENV !== 'production') {
-            console.error(err);
-          }
+          error(process.env.NODE_ENV === 'production', err);
           del(asyncFactory, err);
         });
     },
@@ -51,8 +49,8 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
     render(this: Vue, h) {
       // Fix context
       const slots = Object.keys(this.$slots)
-        .reduce((arr, key) => (arr as VNode[]).concat(this.$slots[key] || []), [])
-        .map(vnode => {
+        .reduce((arr, key) => (arr as VNode[]).concat(this.$slots[key] || []), [] as VNode[])
+        .map((vnode: VNode) => {
           vnode.context = this._self;
           return vnode;
         });
@@ -72,5 +70,5 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
           )
         : this._e();
     },
-  };
+  });
 }

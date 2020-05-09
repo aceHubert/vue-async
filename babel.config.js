@@ -1,3 +1,8 @@
+/**
+ * 根据使用导入:
+ * https://github.com/zloirock/core-js/blob/master/docs/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md
+ */
+
 module.exports = api => {
   api.cache(true);
 
@@ -10,8 +15,6 @@ module.exports = api => {
           spec: true,
           forceAllTransforms: true,
           useBuiltIns: 'usage', // 根据使用导入
-          // https://babeljs.io/docs/en/babel-preset-env#usebuiltins
-          // https://github.com/zloirock/core-js/blob/master/docs/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md
           corejs: {
             version: 3, // 使用core-js@3
             proposals: true,
@@ -20,7 +23,6 @@ module.exports = api => {
       ],
       '@babel/preset-typescript',
     ],
-    plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
     babelrcRoots: ['.', 'packages/*'],
   };
 };

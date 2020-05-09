@@ -41,6 +41,18 @@ const presets = () => ({
       content: '#b9e3c6',
     },
   },
+  LightBrown: {
+    light: {
+      primary: '#cabfab',
+      secondary: '#41444b',
+      content: '#dfd8c8',
+    },
+    dark: {
+      primary: '#cabfab',
+      secondary: '#41444b',
+      content: '#52575d',
+    },
+  },
 });
 
 @Component({

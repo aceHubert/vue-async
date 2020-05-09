@@ -1,28 +1,14 @@
 module.exports = {
-  root: true,
-  env: {
-    node: true,
-  },
   extends: [
-    'plugin:vue/essential',
-    'eslint:recommended',
-    '@vue/typescript/recommended',
-    '@vue/prettier',
-    '@vue/prettier/@typescript-eslint',
+    '@vue/typescript/recommended', // -> @typescript-eslint/eslint-recommended & @typescript-eslint/recommended
+    '@vue/prettier/standard', // -> eslint-config-prettier/standard
+    '@vue/prettier/@typescript-eslint', // -> eslint-config-prettier/@typescript-eslint
   ],
-  parserOptions: {
-    ecmaVersion: 2020,
-  },
   rules: {
-    'no-console': process.env.NODE_ENV === 'production' ? 2 : 1,
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 1,
+    // replaced by @vue/typescript/recommended -> @typescript-eslint/recommended
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
-  overrides: [
-    {
-      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
-      env: {
-        jest: true,
-      },
-    },
-  ],
+  overrides: [],
 };

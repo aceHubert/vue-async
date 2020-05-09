@@ -8,6 +8,9 @@ import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
 import clear from 'rollup-plugin-clear';
 
+const packageVersion = require('./package.json').version;
+const extensions = ['.js', '.ts'];
+
 const builds = {
   'cjs-dev': {
     outFile: 'index.common.js',
@@ -35,10 +38,6 @@ const builds = {
     mode: 'development',
   },
 };
-
-function getAllBuilds() {
-  return Object.keys(builds).map((key, index) => genConfig(builds[key], index === 0));
-}
 
 function genConfig({ outFile, format, mode }, clean = false) {
   const isProd = mode === 'production';
@@ -70,12 +69,22 @@ function genConfig({ outFile, format, mode }, clean = false) {
         useTsconfigDeclarationDir: true,
         typescript: require('../../node_modules/typescript'),
       }),
-      resolve(),
+      resolve({
+        extensions,
+        modulesOnly: true,
+      }),
       json(),
-      replace({ 'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development') }),
+      replace({
+        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+        __VERSION__: packageVersion,
+      }),
       isProd && terser(),
     ].filter(Boolean),
   };
+}
+
+function getAllBuilds() {
+  return Object.keys(builds).map((key, index) => genConfig(builds[key], index === 0));
 }
 
 let buildConfig;

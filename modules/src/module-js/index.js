@@ -1,5 +1,5 @@
 // 模块的路由配置数组
-import routes from './router'
+import routes from './router';
 // store是以vuex module的形式进行导入使用
 // import storeModule from './store'
 
@@ -14,7 +14,7 @@ import PluginTwitter from './components/twitter';
 // 导出模块函数
 // 参数Vue: vue构造对象
 // 本函数中的this指向主程序 vue root实例的引用
-export default function (Vue) {
+export default function(Vue) {
   // 合并路由
   this.$moduleLoadManager.addRoutes(routes);
 
@@ -42,20 +42,26 @@ export default function (Vue) {
 
   // 添加语言
   // 此方法为主程序中的扩展
-  const loadedLangs = new Set()
-  const languages = this.$moduleLoadManager.languages
+  const loadedLangs = new Set();
+  const languages = this.$moduleLoadManager.languages;
   // set fallback
-  const fallbackLocale = this.$i18n.fallbackLocale
+  const fallbackLocale = this.$i18n.fallbackLocale;
   const { locale } = languages.find(l => l.alternate === fallbackLocale || l.locale === fallbackLocale);
-  this.$moduleLoadManager.addLocaleMessage(fallbackLocale, { js: require(`./lang/${locale}`).default })
-    .then(lang => loadedLangs.add(lang))
+  this.$moduleLoadManager
+    .addLocaleMessage(fallbackLocale, { js: require(`./lang/${locale}`).default })
+    .then(lang => loadedLangs.add(lang));
   // change locale
-  this.$watch(() => this.$i18n.locale, (lang) => {
-    const { locale } = languages.find(l => l.alternate === lang || l.locale === lang);
-    !loadedLangs.has(lang)
-      && this.$moduleLoadManager.addLocaleMessage(lang, { js: require(`./lang/${locale}`).default })
-        .then(lang => loadedLangs.add(lang))
-  }, { immediate: true })
+  this.$watch(
+    () => this.$i18n.locale,
+    lang => {
+      const { locale } = languages.find(l => l.alternate === lang || l.locale === lang);
+      !loadedLangs.has(lang) &&
+        this.$moduleLoadManager
+          .addLocaleMessage(lang, { js: require(`./lang/${locale}`).default })
+          .then(lang => loadedLangs.add(lang));
+    },
+    { immediate: true },
+  );
 
   // 注册组件
   // 主程序调用前需要检查是否已经被加载成功
@@ -73,7 +79,10 @@ export default function (Vue) {
     'dashboard',
   );
   this.$dynamicComponent.add({ component: PluginTwitter, cols: 4, type: 'none', index: 0 }, 'dashboard');
-  this.$dynamicComponent.add({ component: PluginExtend, title: 'JS-Vue.extend', cols: 4, type: 'card', index: 1 }, 'dashboard');
+  this.$dynamicComponent.add(
+    { component: PluginExtend, title: 'JS-Vue.extend', cols: 4, type: 'card', index: 1 },
+    'dashboard',
+  );
 
   // 合并状态
   // 使用模块名当做vuex store模块的命名空间

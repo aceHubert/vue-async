@@ -37,6 +37,6 @@ if (window && (window as any).Vue) {
 export { Suspense };
 
 export default {
-  version: '0.1.0', // 使用version.ts全造成types多一级src目录
+  version: '__VERSION__',
   install,
 };

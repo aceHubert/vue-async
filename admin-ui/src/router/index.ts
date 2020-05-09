@@ -25,7 +25,7 @@ const routes = root([
       {
         name: 'page-not-found',
         path: '',
-        component: () => import('@/views/404'),
+        component: require(/* webpackChunkName: "base-route" */ '@/views/404'),
         meta: {
           title: 'Not Found',
         },

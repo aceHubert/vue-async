@@ -5,7 +5,7 @@
     </v-avatar>
 
     <v-avatar>
-      <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John">
+      <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
     </v-avatar>
 
     <v-avatar color="red">
@@ -15,9 +15,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from 'vue';
 
 export default Vue.extend({
-  name: "plugin-extend"
+  name: 'plugin-extend',
 });
 </script>

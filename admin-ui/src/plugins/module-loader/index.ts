@@ -17,6 +17,7 @@ const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) => {
     );
     if (matchRoute) {
       // 如果找到已在在的
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { children, name, ...restOptions } = current;
       Object.assign(matchRoute, restOptions); // 合并路由参数
 
@@ -33,7 +34,16 @@ const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) => {
   });
 };
 
-export function createModuleLoader(modules?: Modules, { i18n }: { i18n?: VueI18n } = {}) {
+export function createModuleLoader(
+  ssrContext: any,
+  {
+    modules = {},
+    i18n,
+  }: {
+    modules?: Modules;
+    i18n: VueI18n;
+  },
+) {
   const defaultModules =
     process.env.NODE_ENV === 'production'
       ? {
@@ -45,38 +55,30 @@ export function createModuleLoader(modules?: Modules, { i18n }: { i18n?: VueI18n
           'module-ts': 'http://localhost:3000/module-ts/module-ts.umd.js',
         };
 
-  const moduleLoader = new ModuleLoader(
-    Object.assign(
-      {
-        modules: {
-          ...defaultModules,
-          ...modules,
-        },
-        addMenus: (menus: Menu | Array<Menu>) => {
-          AppStore.AddMenus(menus);
-        },
-        addRoutes: (routes: RouteConfig[]) => {
-          const options = (router as any).options;
-          megreRoutes(options.routes, root(routes));
-          const newRouter = new VueRouter(options);
-          (router as any).matcher = (newRouter as any).matcher;
-        },
-      },
-      i18n
-        ? {
-            languages,
-            addLocaleMessage(lang: string, message: LocaleMessageObject) {
-              const { locale } = languages.find((l: LangConfig) => l.alternate === lang || l.locale === lang) || {};
-              if (!locale) {
-                return Promise.reject(new Error(`Language ${lang} not found`));
-              }
-              i18n.mergeLocaleMessage(lang, message);
-              return Promise.resolve(lang);
-            },
-          }
-        : null,
-    ),
-  );
+  const moduleLoader = new ModuleLoader({
+    modules: {
+      ...defaultModules,
+      ...modules,
+    },
+    addMenus: (menus: Menu | Array<Menu>) => {
+      AppStore.AddMenus(menus);
+    },
+    addRoutes: (routes: RouteConfig[]) => {
+      const options = (router as any).options;
+      megreRoutes(options.routes, root(routes));
+      const newRouter = new VueRouter(options);
+      (router as any).matcher = (newRouter as any).matcher;
+    },
+    languages,
+    addLocaleMessage(lang: string, message: LocaleMessageObject) {
+      const { locale } = languages.find((l: LangConfig) => l.alternate === lang || l.locale === lang) || {};
+      if (!locale) {
+        return Promise.reject(new Error(`Language ${lang} not found`));
+      }
+      i18n.mergeLocaleMessage(lang, message);
+      return Promise.resolve(lang);
+    },
+  });
 
   return moduleLoader;
 }

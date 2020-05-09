@@ -23,7 +23,9 @@
     "start": "cross-env TARGET=es rollup -c -w",
     "build": "rollup -c",
     "release": "bash scripts/release.sh",
-    "test": "cd ../../ && cross-env NODE_ENV=test jest --config packages/resource-manager/jest.config.json"
+    "test": "cd ../../ && cross-env NODE_ENV=test jest --passWithNoTests --config packages/resource-manager/jest.config.json",
+    "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
+    "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
   },
   "license": "MIT",
   "repository": {
@@ -47,5 +49,8 @@
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.27.0",
     "vue": "^2.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

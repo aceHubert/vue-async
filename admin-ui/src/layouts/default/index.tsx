@@ -1,7 +1,7 @@
 import { Component as VeuCompoent, AsyncComponent } from 'vue';
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import languages from '@/data/i18n/languages.json';
-import classes from './styles/index.module';
+import classes from './styles/index.module.scss';
 import ThemeComponent from '../components/theme';
 
 @Component({
@@ -21,7 +21,7 @@ export default class LayoutDefault extends Vue {
   languageMenu = false;
   messages = '9+';
   currentDark = false;
-  dialogShown: boolean = false;
+  dialogShown = false;
   dialogComponent: VeuCompoent | AsyncComponent | null = null;
 
   // computed
@@ -51,7 +51,7 @@ export default class LayoutDefault extends Vue {
   }
 
   // methods
-  getNestedMenus(h: any, menus: Array<Menu> = [], subGroup: boolean = false) {
+  getNestedMenus(h: any, menus: Array<Menu> = [], subGroup = false) {
     return menus.map(menu =>
       menu.children && menu.children.length ? (
         <v-list-group prepend-icon={!subGroup ? menu.icon : null} sub-group={subGroup}>
@@ -87,7 +87,9 @@ export default class LayoutDefault extends Vue {
     this.userMenu = false;
     // desktop
     if (this.$vuetify.breakpoint.mdAndUp) {
+      // do something
     } else {
+      // do something
     }
     this.dialogComponent = ThemeComponent;
     this.dialogShown = true;

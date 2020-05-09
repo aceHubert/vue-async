@@ -16,12 +16,7 @@ export const BaseRoutes = [
   {
     path: 'dashboard',
     name: 'dashboard',
-    component: () => import(/* webpackChunkName: "base" */ '@/views/dashboard'),
+    component: require(/* webpackChunkName: "base-route" */ '@/views/dashboard'),
     props: true,
-  },
-  {
-    path: 'test',
-    name: 'test',
-    component: () => import(/* webpackChunkName: "base" */ '@/views/test'),
   },
 ];

@@ -4,18 +4,17 @@
     "baseUrl": "src",
     "outDir": "dist",
     "importHelpers": true,
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "composite": true,
+    "types": ["webpack-env", "vuetify"],
     "jsx": "preserve",
     "paths": {
       "@/*": ["./*"]
     }
   },
   // scoped package types missing
-  "files": [
-    "node_modules/@vue-async/module-loader/types/index.d.ts",
-    "node_modules/@vue-async/module-loader/src/globals.d.ts"
-  ],
+  "files": ["../packages/module-loader/types/index.d.ts", "../packages/module-loader/src/globals.d.ts"],
   "include": [
     "src/**/*",
     // https://github.com/TypeStrong/ts-loader/issues/905

@@ -9,7 +9,6 @@ const prettier = require('prettier');
 const fs = require('fs');
 const path = require('path');
 const listChangedFiles = require('./listChangedFiles');
-
 const mode = process.argv[2] || 'write-changed';
 const shouldWrite = mode === 'write' || mode === 'write-changed';
 const onlyChanged = mode === 'check-changed' || mode === 'write-changed';
@@ -25,7 +24,7 @@ function runPrettier(changedFiles) {
     .filter(notEmpty => notEmpty);
 
   const files = glob
-    .sync('**/*.{js,tsx,d.ts}', { ignore: ['**/node_modules/**', ...ignoredFiles] })
+    .sync('**/*.{js,jsx,ts,tsx,d.ts}', { ignore: ['**/node_modules/**', ...ignoredFiles] })
     .filter(f => !changedFiles || changedFiles.has(f));
 
   if (!files.length) {

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import * as path from 'path';
 // import filesize from 'rollup-plugin-filesize'
 import resolve from '@rollup/plugin-node-resolve';
@@ -41,11 +40,7 @@ const builds = {
   },
 };
 
-function getAllBuilds () {
-  return Object.keys(builds).map((key, index) => genConfig(builds[key], index === 0));
-}
-
-function genConfig ({ outFile, format, mode }, clean = false) {
+function genConfig({ outFile, format, mode }, clean = false) {
   const isProd = mode === 'production';
   return {
     input: ['./src/*.ts', './src/*/index.ts'],
@@ -61,10 +56,11 @@ function genConfig ({ outFile, format, mode }, clean = false) {
     },
     external: ['vue'],
     plugins: [
-      clean && clear({
-        targets: ['./dist'],
-        watch: true,
-      }),
+      clean &&
+        clear({
+          targets: ['./dist'],
+          watch: true,
+        }),
       mulitEntry(),
       // babel({
       //   rootMode: 'upward', // 向上级查找 babel.config.js
@@ -88,11 +84,15 @@ function genConfig ({ outFile, format, mode }, clean = false) {
       json(),
       replace({
         'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
-        '__VERSION__': packageVersion,
+        __VERSION__: packageVersion,
       }),
       isProd && terser(),
     ].filter(Boolean),
   };
+}
+
+function getAllBuilds() {
+  return Object.keys(builds).map((key, index) => genConfig(builds[key], index === 0));
 }
 
 let buildConfig;

@@ -8,5 +8,6 @@
     // "paths": {},
     "composite": true
   },
-  "include": ["src/**/*", "types"]
+  "include": ["src/**/*", "types"],
+  "references": [{ "path": "../utils" }]
 }

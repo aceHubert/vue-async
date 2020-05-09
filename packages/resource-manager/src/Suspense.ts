@@ -1,10 +1,7 @@
 import Vue, { CreateElement, Component, VNode, VNodeChildren } from 'vue';
+import { error } from '@vue-async/utils';
 import { Options } from './index';
-import {
-  pushSuspenseInstance,
-  popSuspenseInstance,
-  currentSuspenseInstance,
-} from './currentInstance';
+import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
 
 export const RESOLVED = 'resolved';
 export const REJECTED = 'rejected';
@@ -23,10 +20,7 @@ export interface AsyncFactory<I = any, R = any> {
 export const del = (asyncFactory: AsyncFactory, error?: any) => {
   const suspIns = asyncFactory.suspenseInstance;
   if (!suspIns) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('No Suspense instance');
-    }
-    return;
+    return error(process.env.NODE_ENV === 'production', 'No Suspense instance');
   }
   const asyncFactorys = suspIns.asyncFactorys;
 
@@ -44,10 +38,7 @@ export const del = (asyncFactory: AsyncFactory, error?: any) => {
 export const add = (asyncFactory: AsyncFactory) => {
   const suspIns = currentSuspenseInstance || asyncFactory.suspenseInstance;
   if (!suspIns) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('No Suspense instance');
-    }
-    return;
+    return error(process.env.NODE_ENV === 'production', 'No Suspense instance');
   }
   const asyncFactorys = suspIns.asyncFactorys || (suspIns.asyncFactorys = new Set());
 
@@ -61,15 +52,12 @@ export const add = (asyncFactory: AsyncFactory) => {
 export const has = (asyncFactory: AsyncFactory) => {
   const suspIns = currentSuspenseInstance || asyncFactory.suspenseInstance;
   if (!suspIns) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('No Suspense instance');
-    }
-    return;
+    return error(process.env.NODE_ENV === 'production', 'No Suspense instance');
   }
   return suspIns.asyncFactorys && suspIns.asyncFactorys.has(asyncFactory);
 };
 
-export default {
+export default Vue.extend({
   name: COMPONENT_NAME,
   props: {
     delay: {
@@ -152,7 +140,7 @@ export default {
 
     return rendered;
   },
-};
+});
 
 function createWrapper(h: CreateElement, children: VNodeChildren): VNode {
   return h(

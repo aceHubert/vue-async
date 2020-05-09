@@ -10,17 +10,15 @@ export const DefaultThemes = () => ({
     primary: '#d65a31',
     secondary: '#222831',
     anchor: '#393e46',
-    content: '#eeeeee',
   },
   dark: {
     primary: '#d65a31',
     secondary: '#222831',
     anchor: '#eeeeee',
-    content: '#393e46',
   },
 });
 
-export function createVuetify(ssrContext: any, i18n: any) {
+export function createVuetify(ssrContext: any, { i18n }: { i18n: any }) {
   const isDark = localStorage && localStorage.getItem(DarkThemeStorageKey) === 'true';
   const themes =
     localStorage && localStorage.getItem(ThemesStorageKey) && JSON.parse(localStorage.getItem(ThemesStorageKey)!);
