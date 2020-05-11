@@ -16,7 +16,7 @@
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
-    "prepublish": "yarn build",
+    "prepublish": "changelog && yarn build",
     "release": "lerna publish"
   },
   "config": {
