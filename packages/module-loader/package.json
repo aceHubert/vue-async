@@ -16,8 +16,9 @@
     "microfront"
   ],
   "files": [
-    "dist/*.js",
-    "types/*.d.ts"
+    "./dist/",
+    "./src/",
+    "./types/"
   ],
   "scripts": {
     "serve": "cross-env TARGET=es rollup -c -w",
