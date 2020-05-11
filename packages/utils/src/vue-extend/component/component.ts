@@ -1,8 +1,5 @@
-import { VueConstructor } from 'vue';
+import Vue from 'vue';
 import { assert } from '../../tools';
-import { currentVue } from '../runtimeContext';
-
-export type ComponentInstance = InstanceType<VueConstructor>;
 
 export function sanitizeComponent(Component: any) {
   // If Component already sanitized
@@ -10,7 +7,7 @@ export function sanitizeComponent(Component: any) {
     return Component;
   }
   if (!Component.options) {
-    Component = currentVue!.extend(Component);
+    Component = Vue.extend(Component);
     Component._Ctor = Component;
   } else {
     Component._Ctor = Component;

@@ -1,6 +1,6 @@
 import Vue, { CreateElement, Component, VNode, VNodeChildren } from 'vue';
 import { error } from '@vue-async/utils';
-import { Options } from './index';
+import { UseOptions } from './install';
 import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
 
 export const RESOLVED = 'resolved';
@@ -119,7 +119,7 @@ export default Vue.extend({
     popSuspenseInstance();
   },
   render(h: CreateElement) {
-    const isVisible = ((this.$options as any).suspense as Options).mode === 'visible';
+    const isVisible = ((this.$options as any).suspense as UseOptions).mode === 'visible';
     const emptyVNode = this._e();
     const fallback = this.displayLoading ? this.$slots.fallback || [emptyVNode] : [emptyVNode];
     // The `children` is the real content to be rendered

@@ -27,7 +27,7 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
       });
     } else if (typeof modules === 'object' && Object.getPrototypeOf(modules) === Object.prototype) {
       /** 通过模块清单加载模块 */
-      const promiseAll = [];
+      const promiseAll = [] as Array<Promise<void>>;
       for (const moduleName in modules) {
         if (!window[moduleName as any]) {
           promiseAll.push(

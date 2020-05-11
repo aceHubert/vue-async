@@ -3,12 +3,13 @@ import * as path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
-import babel from 'rollup-plugin-babel';
+// import babel from 'rollup-plugin-babel';
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
 import clear from 'rollup-plugin-clear';
+import lisence from 'rollup-plugin-license';
 
-const packageVersion = require('./package.json').version;
+const packageConfig = require('./package.json');
 const extensions = ['.js', '.ts'];
 
 const builds = {
@@ -48,23 +49,36 @@ function genConfig({ outFile, format, mode }, clean = false) {
       format,
       globals: {
         vue: 'Vue',
+        tslib: 'tslib',
       },
       exports: 'named',
       name: format === 'umd' ? 'async-manager' : undefined,
     },
-    external: ['vue'],
+    external: ['vue', 'tslib'],
     plugins: [
       clean &&
         clear({
           targets: ['./dist'],
           watch: true,
         }),
-      babel(),
+      lisence({
+        banner: {
+          commentStyle: 'regular', // The default
+          content: `${packageConfig.name}@${packageConfig.version}`,
+        },
+      }),
+      // babel({
+      //   https://babeljs.io/docs/en/options#rootMode
+      //   rootMode: 'upward', // 向上级查找 babel.config.js
+      //   exclude: [ 'node_modules/@babel/**', 'node_modules/core-js/**' ],
+      //   runtimeHelpers: true,
+      //   extensions
+      // }),
       typescript({
         clean: true,
         include: ['./src/**/*.ts'],
-        exclude: ['./src/version.ts'],
-        tsconfig: path.resolve(__dirname, './tsconfig.json'),
+        exclude: [],
+        tsconfig: path.resolve(__dirname, './tsconfig.dist.json'),
         rollupCommonJSResolveHack: true,
         useTsconfigDeclarationDir: true,
         typescript: require('../../node_modules/typescript'),
@@ -76,7 +90,7 @@ function genConfig({ outFile, format, mode }, clean = false) {
       json(),
       replace({
         'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
-        __VERSION__: packageVersion,
+        __VERSION__: packageConfig.version,
       }),
       isProd && terser(),
     ].filter(Boolean),

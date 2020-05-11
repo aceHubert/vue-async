@@ -1,7 +1,7 @@
 import { Component as VueComponent, AsyncComponent } from 'vue';
 import { getComponentName, error } from '@vue-async/utils';
 
-const isProduction = process.env.NODE_ENF === 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 export type DynamicComponent =
   | VueComponent

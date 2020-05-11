@@ -11,6 +11,8 @@ ModuleLoader.install = (Vue, options = {}) => {
 export { Modules, DynamicComponent };
 export default ModuleLoader;
 
-if (typeof window !== 'undefined' && window.Vue) {
+// Auto install if it is not done yet and `window` has `Vue`.
+// To allow users to avoid auto-installation in some cases,
+if (window && (window as any).Vue) {
   window.Vue.use(ModuleLoader);
 }

@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/*", "docs", "admin-ui", "modules"],
+  "packages": ["packages/*", "docs", "admin-ui"],
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {

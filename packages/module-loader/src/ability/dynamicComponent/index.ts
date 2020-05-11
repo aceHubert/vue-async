@@ -6,7 +6,7 @@ import { Store } from 'vuex';
 import { error } from '@vue-async/utils';
 import { DynamicComponent } from './storeModule';
 
-const isProduction = process.env.NODE_ENF === 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function(Vue: typeof _Vue, store: Store<any>) {

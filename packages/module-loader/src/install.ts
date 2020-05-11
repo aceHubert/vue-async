@@ -1,7 +1,6 @@
 import _Vue from 'vue';
 import { Store } from 'vuex';
 import _VueRouter, { Route, RawLocation } from 'vue-router';
-import { setCurrentVue } from '@vue-async/utils';
 import dynamicComponent from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import eventBus from './ability/eventBus';
@@ -93,9 +92,6 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
   if (Vue.$__module_loader_installed__) return;
   // eslint-disable-next-line @typescript-eslint/camelcase
   Vue.$__module_loader_installed__ = true;
-
-  // 设置当前运行时 Vue 对象
-  setCurrentVue(Vue);
 
   // 设置子模块中的运行时 Vue 对象与主框架一致
   // 或使用 '--inline-vue' 使用独立 Vue 对象

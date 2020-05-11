@@ -8,9 +8,7 @@
   },
   "scripts": {
     "serve": "lerna run serve --sort --parallel",
-    "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,utils}",
-    "build:modules": "yarn workspace modules build",
-    "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
+    "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
     "lint:fix": "lerna run lint:fix --parallel",
@@ -18,6 +16,7 @@
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
+    "prepublish": "yarn build",
     "release": "lerna publish"
   },
   "config": {
@@ -41,8 +40,6 @@
     "child_process": "^1.0.2",
     "commitizen": "^4.0.3",
     "concurrently": "^5.1.0",
-    "core-js": "^3.6.5",
-    "cpx": "^1.5.0",
     "cross-env": "^6.0.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.1.0",
@@ -72,13 +69,10 @@
     "packages": [
       "packages/*",
       "docs",
-      "admin-ui",
-      "modules"
+      "admin-ui"
     ],
     "nohoist": [
-      "admin-ui",
-      "modules/vue",
-      "modules/vue/**"
+      "admin-ui/**"
     ]
   }
 }

@@ -1,31 +1,13 @@
-import { VueConstructor } from 'vue';
-import Suspense, { COMPONENT_NAME } from './Suspense';
+import Suspense from './Suspense';
+import lazy from './lazy';
+import createReaourse from './createResource';
+import install from './install';
 
-export type Options = {
-  mode: 'visible' | 'hidden';
-};
+export { Suspense, lazy, createReaourse };
 
-const install = function(Vue: VueConstructor, options: Options) {
-  Vue.component('Suspense', Suspense);
-
-  const opts = Object.assign<Options, Options>(
-    {
-      mode: 'visible',
-    },
-    options,
-  );
-
-  Vue.setSuspenseOptions = (options: Options) => {
-    Object.assign(opts, options);
-  };
-
-  Vue.mixin({
-    created(this: Vue) {
-      if (this.$options.name === COMPONENT_NAME) {
-        this.$options.suspense = opts;
-      }
-    },
-  });
+export default {
+  version: '__VERSION__',
+  install,
 };
 
 // Auto install if it is not done yet and `window` has `Vue`.
@@ -33,10 +15,3 @@ const install = function(Vue: VueConstructor, options: Options) {
 if (window && (window as any).Vue) {
   (window as any).Vue.use(install);
 }
-
-export { Suspense };
-
-export default {
-  version: '__VERSION__',
-  install,
-};
