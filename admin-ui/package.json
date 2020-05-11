@@ -1,6 +1,10 @@
 {
   "name": "admin-ui",
+<<<<<<< HEAD
   "version": "0.1.6",
+=======
+  "version": "0.1.7",
+>>>>>>> chore: npmignore test
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -11,7 +15,11 @@
     "lint:fix": "vue-cli-service lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@vue-async/module-loader": "^0.1.3-alpha.3",
+=======
+    "@vue-async/module-loader": "^0.1.3-alpha.4",
+>>>>>>> chore: npmignore test
     "@vue-async/utils": "^0.1.3-alpha.2",
     "core-js": "^3.6.4",
     "lodash.kebabcase": "^4.1.1",
