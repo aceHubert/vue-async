@@ -8,6 +8,8 @@
   },
   "scripts": {
     "serve": "lerna run serve --sort --parallel",
+    "serve:modules": "cd ./examples/modules && yarn serve",
+    "serve:admin-ui": "concurrently --raw \"yarn serve:modules\" \"cd ./examples/admin-ui && yarn serve\"",
     "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,utils}",
     "build:modules": "yarn workspace modules build",
     "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
@@ -42,7 +44,6 @@
     "commitizen": "^4.0.3",
     "concurrently": "^5.1.0",
     "core-js": "^3.6.5",
-    "cpx": "^1.5.0",
     "cross-env": "^6.0.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.1.0",

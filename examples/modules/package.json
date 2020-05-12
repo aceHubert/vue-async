@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "serve": "node service/index.js",
+    "serve": "yarn build && node service/index.js",
     "build": "node scripts/buildModule.js",
     "build:js-test": "node scripts/buildModule.js src/module-js",
     "build:ts-test": "node scripts/buildModule.js src/module-ts",
