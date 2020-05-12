@@ -8,7 +8,11 @@
   },
   "scripts": {
     "serve": "lerna run serve --sort --parallel",
+    "serve:modules": "cd ./examples/modules && yarn serve",
+    "serve:admin-ui": "concurrently --raw \"yarn serve:modules\" \"cd ./examples/admin-ui && yarn serve\"",
     "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
+    "build:modules": "yarn workspace modules build",
+    "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
     "lint:fix": "lerna run lint:fix --parallel",
@@ -68,11 +72,7 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "docs",
-      "admin-ui"
-    ],
-    "nohoist": [
-      "admin-ui/**"
+      "docs"
     ]
   }
 }
