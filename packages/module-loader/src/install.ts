@@ -95,8 +95,8 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
 
   // 设置子模块中的运行时 Vue 对象与主框架一致
   // 或使用 '--inline-vue' 使用独立 Vue 对象
-  if (!window.Vue) {
-    window.Vue = Vue;
+  if (!(window as any).Vue) {
+    (window as any).Vue = Vue;
   }
 
   Vue.mixin({

@@ -20,7 +20,7 @@
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
-    "prepublish": "changelog && yarn build",
+    "prepublishOnly": "yarn build",
     "release": "lerna publish"
   },
   "config": {
@@ -32,7 +32,6 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.7.4",
-    "@babel/preset-typescript": "^7.9.0",
     "@commitlint/cli": "^8.3.4",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/jest": "^24.0.23",
@@ -44,6 +43,7 @@
     "child_process": "^1.0.2",
     "commitizen": "^4.0.3",
     "concurrently": "^5.1.0",
+    "core-js": "^3.6.5",
     "cross-env": "^6.0.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.1.0",

@@ -17,11 +17,10 @@ module.exports = api => {
           useBuiltIns: 'usage', // 根据使用导入
           corejs: {
             version: 3, // 使用core-js@3
-            proposals: true,
+            proposals: false,
           },
         },
       ],
-      '@babel/preset-typescript',
     ],
     babelrcRoots: ['.', 'packages/*'],
   };
