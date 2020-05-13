@@ -1,0 +1,12 @@
+/.git
+/docs/.next
+/coverage
+/tmp
+/.changelog
+build
+dist
+scripts
+public
+node_modules
+
+
