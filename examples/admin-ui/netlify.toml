@@ -21,3 +21,10 @@
 # Environments.
 [build.environment]
   NODE_VERSION = "13"
+
+# Redirects
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = true
