@@ -3,6 +3,8 @@
 # Settings in the [build] context are global and are applied to all contexts
 # unless otherwise overridden by more specific contexts.
 [build]
+  ignore = "git diff --quiet HEAD^ HEAD examples/admin-ui/"
+
   # Directory to change to before starting a build.
   # This is where we will look for package.json/.nvmrc/etc.
   base = "examples/admin-ui/"
@@ -23,8 +25,9 @@
   NODE_VERSION = "13"
 
 # Redirects
+# The following redirect is intended for use with most SPAs that handle
+# routing internally.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
