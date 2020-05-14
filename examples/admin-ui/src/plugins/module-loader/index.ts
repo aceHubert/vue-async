@@ -45,7 +45,7 @@ export function createModuleLoader(
   },
 ) {
   const defaultModules =
-    process.env.NODE_ENV === 'porduction'
+    process.env.NODE_ENV === 'production'
       ? null
       : {
           'module-js': `http://localhost:3000/module-js/module-js.umd.js`,
