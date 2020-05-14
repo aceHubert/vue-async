@@ -76,7 +76,8 @@ export default class SettingTheme extends Vue {
   presetOptions = ['Default', ...Object.keys(presets())];
   primary = this.$vuetify.theme.currentTheme.primary;
   secondary = this.$vuetify.theme.currentTheme.secondary;
-  content = this.$vuetify.theme.currentTheme.content;
+  content = this.$vuetify.theme.currentTheme.content || '#000000';
+
   menus = {
     primary: false,
     secondary: false,
@@ -97,7 +98,7 @@ export default class SettingTheme extends Vue {
   }
 
   handleSetThemeColor(key: string, value: VuetifyThemeItem) {
-    this.$vuetify.theme.currentTheme[key] = value;
+    this.$set(this.$vuetify.theme.currentTheme, key, value || undefined);
     this.$set(this.menus, key, false);
     this.preset = null;
     localStorage && localStorage.removeItem(ThemePresetStorageKey);
@@ -188,7 +189,7 @@ export default class SettingTheme extends Vue {
               >
                 <v-card>
                   <v-card-text style="padding:0;">
-                    <v-color-picker vModel={this.secondary} mode="hexa" flat hide-mode-switch></v-color-picker>
+                    <v-color-picker vModel={this.secondary} mode="hex" flat hide-mode-switch></v-color-picker>
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
