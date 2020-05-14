@@ -46,10 +46,13 @@ export function createModuleLoader(
 ) {
   const defaultModules =
     process.env.NODE_ENV === 'production'
-      ? null
+      ? {
+          'module-js': 'https://async-modules.netlify.app/module-js/module-js.umd.js',
+          'module-ts': 'https://async-modules.netlify.app/module-ts/module-ts.umd.js',
+        }
       : {
-          'module-js': `http://localhost:3000/module-js/module-js.umd.js`,
-          'module-ts': `http://localhost:3000/module-ts/module-ts.umd.js`,
+          'module-js': 'http://localhost:3000/module-js/module-js.umd.js',
+          'module-ts': 'http://localhost:3000/module-ts/module-ts.umd.js',
         };
 
   const moduleLoader = new ModuleLoader({
