@@ -1,21 +1,11 @@
-import Vue, { CreateElement, Component, VNode, VNodeChildren } from 'vue';
+import Vue, { CreateElement, VNode, VNodeChildren } from 'vue';
 import { error } from '@vue-async/utils';
-import { UseOptions } from './install';
 import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
+import { UseOptions, AsyncFactory } from '../types';
 
 export const RESOLVED = 'resolved';
 export const REJECTED = 'rejected';
 export const COMPONENT_NAME = '__VueSuspense__';
-
-export type SuspenseComponent = Component & { __esModule?: any; default?: Component };
-
-export interface AsyncFactory<I = any, R = any> {
-  (input?: I): Promise<R>;
-  suspenseInstance?: Vue;
-  resolved?: Component | boolean;
-  $$waiter?: Promise<R>;
-  res?: any;
-}
 
 export const del = (asyncFactory: AsyncFactory, error?: any) => {
   const suspIns = asyncFactory.suspenseInstance;

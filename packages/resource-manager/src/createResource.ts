@@ -1,8 +1,9 @@
 import Vue from 'vue';
 import { error } from '@vue-async/utils';
-import { del, add, AsyncFactory } from './Suspense';
+import { del, add } from './Suspense';
 import { currentInstance, currentSuspenseInstance, setCurrentInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
+import { AsyncFactory, ResourceOptions, ResourceResult } from '../types';
 
 Vue.mixin({
   created(this: Vue) {
@@ -30,25 +31,10 @@ interface Result<R, E> {
   $$loaded: boolean;
 }
 
-export interface ResourceManager<I, R, E> {
-  read(input: I): Promise<R>;
-  $result: R;
-  $error: E;
-  $loading: boolean;
-  $loaded: boolean;
-  fork(): ResourceManager<I, R, E>;
-}
-
-export interface ResourceOptions<I, R, E> {
-  prevent?: boolean;
-  onSuccess(result: R, args: I): R; // works on the datas need to concat
-  onError(err: E): E;
-}
-
-export default function createResource<I = any, R = any, E = any>(
+export default function CreateResource<I = any, R = any, E = any>(
   fetchFactory: AsyncFactory<I, R>,
   options?: ResourceOptions<I, R, E>,
-): ResourceManager<I, R, E> {
+): ResourceResult<I, R, E> {
   const $res: Result<R, E> = observable({
     $$result: null,
     $$error: null,
@@ -63,7 +49,7 @@ export default function createResource<I = any, R = any, E = any>(
 
   const hasSuspenseInstance = !!fetchFactory.suspenseInstance;
 
-  const resourceManager: ResourceManager<I, R, E> = {
+  const resourceResult: ResourceResult<I, R, E> = {
     read(input: I) {
       // prevent
       if (options && options.prevent && $res.$$loading) {
@@ -87,7 +73,7 @@ export default function createResource<I = any, R = any, E = any>(
       const promise = ($res.$$promiser = uniqueWrapFactory(input));
 
       promise
-        .then(res => {
+        .then((res) => {
           // Trigger update
           $res.$$result = options && options.onSuccess ? options.onSuccess(res, input) : res;
           if (!$res.$$loaded) {
@@ -131,9 +117,9 @@ export default function createResource<I = any, R = any, E = any>(
       return $res.$$loaded;
     },
     fork() {
-      return createResource((i?: I) => fetchFactory(i), options);
+      return CreateResource((i?: I) => fetchFactory(i), options);
     },
   };
 
-  return resourceManager;
+  return resourceResult;
 }

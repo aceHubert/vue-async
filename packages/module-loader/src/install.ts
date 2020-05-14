@@ -1,15 +1,10 @@
 import _Vue from 'vue';
-import { Store } from 'vuex';
-import _VueRouter, { Route, RawLocation } from 'vue-router';
+import { Route, RawLocation } from 'vue-router';
 import dynamicComponent from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import eventBus from './ability/eventBus';
 import moduleLoader from './ability/moduleLoader';
-
-export type UseOptions = {
-  store?: Store<any>;
-  router?: _VueRouter;
-};
+import { UseOptions } from '../types';
 
 export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
   if ((install as any).installed) return;

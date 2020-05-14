@@ -10,6 +10,7 @@ import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
 import clear from 'rollup-plugin-clear';
 import lisence from 'rollup-plugin-license';
+// import dts from 'rollup-plugin-dts';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
 const packageConfig = require('./package.json');
@@ -126,12 +127,19 @@ function genConfig({ outFile, format, mode }, clean = false) {
   };
 }
 
+// function genTyping() {
+//   return {
+//     input: './src/index.ts',
+//     output: [{ file: 'types/index.d.ts', format: 'es' }],
+//     plugins: [dts()],
+//   };
+// }
+
 function getAllBuilds() {
   return Object.keys(builds).map((key, index) => genConfig(builds[key], index === 0));
 }
 
 let buildConfig;
-// const dtsConfirg = genDtsConfig();
 
 if (process.env.TARGET) {
   buildConfig = genConfig(builds[process.env.TARGET], true);

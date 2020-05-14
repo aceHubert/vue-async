@@ -3,6 +3,7 @@
  */
 import _Vue, { VueConstructor } from 'vue';
 import { print, warn, error } from '@vue-async/utils';
+import { Modules } from '../../types';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -10,19 +11,11 @@ interface MutableRefObject<T> {
   current: T;
 }
 
-type ModuleData =
-  | {
-      [moduleName: string]: string;
-    }
-  | ((vue: VueConstructor) => Promise<boolean> | null);
-
-export type Modules = ModuleData | ModuleData[];
-
 export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
   return function loader(this: VueConstructor, modules: Modules, { __isArray__ = false } = {}): Promise<void> {
     status.current = false;
     if (Array.isArray(modules) && modules.length) {
-      return Promise.all(modules.map(module => loader.call(this, module, { __isArray__: true }))).then(() => {
+      return Promise.all(modules.map((module) => loader.call(this, module, { __isArray__: true }))).then(() => {
         status.current = true;
       });
     } else if (typeof modules === 'object' && Object.getPrototypeOf(modules) === Object.prototype) {
@@ -31,7 +24,7 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
       for (const moduleName in modules) {
         if (!window[moduleName as any]) {
           promiseAll.push(
-            new Promise(resolve => {
+            new Promise((resolve) => {
               const script = document.createElement('script');
               script.src = (modules as any)[moduleName];
               script.onload = () => {

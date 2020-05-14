@@ -1,14 +1,15 @@
-import Vue, { Component, VNode } from 'vue';
+import Vue, { Component as VueComponent, VNode } from 'vue';
 import { error } from '@vue-async/utils';
 import { PropsDefinition, DefaultProps } from 'vue/types/options';
-import { del, add, has, AsyncFactory, SuspenseComponent } from './Suspense';
+import { del, add, has } from './Suspense';
 import { currentSuspenseInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
+import { AsyncFactory, SuspenseComponent } from '../types';
 
-export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
+export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
   asyncFactory: AsyncFactory,
   props?: PropsDef,
-): Component {
+): VueComponent {
   return Vue.extend({
     name: 'SuspenseLazy',
     props: props,
@@ -29,7 +30,7 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
       asyncFactory.$$waiter = promise;
 
       promise
-        .then(C => {
+        .then((C) => {
           // Compatible ES Module
           if (C.__esModule && C.default) {
             C = C.default;
@@ -38,7 +39,7 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
           // Trigger update
           this.$forceUpdate();
         })
-        .catch(err => {
+        .catch((err) => {
           error(process.env.NODE_ENV === 'production', err);
           del(asyncFactory, err);
         });
@@ -57,7 +58,7 @@ export default function lazy<PropsDef = PropsDefinition<DefaultProps>>(
 
       return asyncFactory.resolved
         ? h(
-            asyncFactory.resolved as Component,
+            asyncFactory.resolved as VueComponent,
             {
               on: this.$listeners,
               // If there is no props definition, fall back to `this.$attrs`

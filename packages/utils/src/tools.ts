@@ -36,9 +36,7 @@ export function hasOwn(obj: Record<string, any> | any[], key: string): boolean {
 }
 
 export function createUid() {
-  return Math.random()
-    .toString(36)
-    .substring(3, 8);
+  return Math.random().toString(36).substring(3, 8);
 }
 
 export function assert(condition: any, msg: string) {

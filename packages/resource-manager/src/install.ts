@@ -1,9 +1,6 @@
 import { VueConstructor } from 'vue';
 import Suspense, { COMPONENT_NAME } from './Suspense';
-
-export type UseOptions = {
-  mode?: 'visible' | 'hidden';
-};
+import { UseOptions } from '../types';
 
 export default function install(Vue: VueConstructor, options: UseOptions = {}) {
   if ((install as any).installed) return;

@@ -1,16 +1,7 @@
-import { Component as VueComponent, AsyncComponent } from 'vue';
 import { getComponentName, error } from '@vue-async/utils';
+import { DynamicComponent } from '../../../types';
 
 const isProduction = process.env.NODE_ENV === 'production';
-
-export type DynamicComponent =
-  | VueComponent
-  | AsyncComponent
-  | {
-      component: VueComponent | AsyncComponent;
-      cols?: number;
-      [key: string]: any;
-    };
 
 export type State = {
   GLOBAL: { [componentName: string]: DynamicComponent };

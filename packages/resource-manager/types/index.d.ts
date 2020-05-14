@@ -1,11 +1,14 @@
-import { PluginFunction } from 'vue';
-import { UseOptions } from '../src/install';
-import { Suspense, lazy, createReaourse } from './src';
-
-interface ResourceManager {
-  install: PluginFunction<UseOptions>;
-  version: string;
-}
+import { ResourceManager } from './module';
 
 export default ResourceManager;
-export { Suspense, lazy, createReaourse };
+
+export {
+  UseOptions,
+  AsyncFactory,
+  SuspenseComponent,
+  Suspense,
+  Lazy,
+  ResourceOptions,
+  ResourceResult,
+  CreateResource,
+} from './module';

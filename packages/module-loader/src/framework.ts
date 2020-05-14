@@ -1,13 +1,8 @@
 import _Vue, { Component as VueComponent, AsyncComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
 import { error, warn, hasOwn, isPlainObject } from '@vue-async/utils';
-import { Modules } from './ability/moduleLoader';
+import { Modules, ModuleLoaderOptions } from '../types';
 import install from './install';
-
-export type ModuleLoaderOptions = {
-  modules?: Modules;
-  [key: string]: any;
-};
 
 export default class ModuleLoader {
   static install = install;

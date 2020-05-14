@@ -7,7 +7,7 @@ import { warn, error } from '@vue-async/utils';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function(Vue: typeof _Vue) {
+export default function (Vue: typeof _Vue) {
   let events: {
     [eventName: string]: any;
   } = {};

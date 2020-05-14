@@ -1,8 +1,33 @@
-import { Component as VueComponent, PluginFunction } from 'vue';
-import { RouteConfig } from 'vue-router';
-import { ModuleLoaderOptions } from '../src/framework';
-import { UseOptions } from '../src/install';
-import { Modules, DynamicComponent } from '../src';
+import { VueConstructor, Component as VueComponent, AsyncComponent, PluginFunction } from 'vue';
+import { Store } from 'vuex';
+import VueRouter, { RouteConfig } from 'vue-router';
+
+type ModuleData =
+  | {
+      [moduleName: string]: string;
+    }
+  | ((vue: VueConstructor) => Promise<boolean> | null);
+
+export type Modules = ModuleData | ModuleData[];
+
+export type DynamicComponent =
+  | VueComponent
+  | AsyncComponent
+  | {
+      component: VueComponent | AsyncComponent;
+      cols?: number;
+      [key: string]: any;
+    };
+
+export type ModuleLoaderOptions = {
+  modules?: Modules;
+  [key: string]: any;
+};
+
+export type UseOptions = {
+  store?: Store<any>;
+  router?: VueRouter;
+};
 
 export declare const ModuleLoader: ModuleLoader;
 
@@ -24,5 +49,3 @@ export interface Framework {
   // 扩展参数
   [key: string]: any;
 }
-
-export { Modules, DynamicComponent };
