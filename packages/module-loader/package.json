@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "0.1.3-alpha.6",
+  "version": "0.1.4-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "index.common.ts",
@@ -38,7 +38,7 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^0.1.3-alpha.3"
+    "@vue-async/utils": "^0.1.4-alpha.0"
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^5.0.0",
@@ -61,5 +61,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "d7e439290a7a832f7fe4e8e8c63289ab2566f241"
+  "gitHead": "4dd185538ed9add29e17118484d43548dea34a28"
 }

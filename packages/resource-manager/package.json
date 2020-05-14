@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/resource-manager",
-  "version": "0.1.1-alpha.3",
+  "version": "0.1.2-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Resource Manager.",
   "main": "dist/index.common.js",
@@ -38,7 +38,7 @@
     "url": "https://github.com/aceHubert/vue-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "0.1.3-alpha.3"
+    "@vue-async/utils": "^0.1.4-alpha.0"
   },
   "devDependencies": {
     "@rollup/plugin-babel": "^5.0.0",
@@ -58,5 +58,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "4dd185538ed9add29e17118484d43548dea34a28"
 }
