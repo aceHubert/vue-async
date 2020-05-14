@@ -3,8 +3,8 @@
 # Settings in the [build] context are global and are applied to all contexts
 # unless otherwise overridden by more specific contexts.
 [build]
-  ignore = "git diff --quiet HEAD^ HEAD examples/modules/"
-  
+  ignore = "git diff --quiet HEAD^ HEAD -- examples/modules/"
+
   # Directory to change to before starting a build.
   # This is where we will look for package.json/.nvmrc/etc.
   base = "examples/modules/"
