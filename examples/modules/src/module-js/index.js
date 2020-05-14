@@ -14,7 +14,7 @@ import PluginTwitter from './components/twitter';
 // 导出模块函数
 // 参数Vue: vue构造对象
 // 本函数中的this指向主程序 vue root实例的引用
-export default function(Vue) {
+export default function (Vue) {
   // 合并路由
   this.$moduleLoadManager.addRoutes(routes);
 
@@ -46,19 +46,19 @@ export default function(Vue) {
   const languages = this.$moduleLoadManager.languages;
   // set fallback
   const fallbackLocale = this.$i18n.fallbackLocale;
-  const { locale } = languages.find(l => l.alternate === fallbackLocale || l.locale === fallbackLocale);
+  const { locale } = languages.find((l) => l.alternate === fallbackLocale || l.locale === fallbackLocale);
   this.$moduleLoadManager
     .addLocaleMessage(fallbackLocale, { js: require(`./lang/${locale}`).default })
-    .then(lang => loadedLangs.add(lang));
+    .then((lang) => loadedLangs.add(lang));
   // change locale
   this.$watch(
     () => this.$i18n.locale,
-    lang => {
-      const { locale } = languages.find(l => l.alternate === lang || l.locale === lang);
+    (lang) => {
+      const { locale } = languages.find((l) => l.alternate === lang || l.locale === lang);
       !loadedLangs.has(lang) &&
         this.$moduleLoadManager
           .addLocaleMessage(lang, { js: require(`./lang/${locale}`).default })
-          .then(lang => loadedLangs.add(lang));
+          .then((lang) => loadedLangs.add(lang));
     },
     { immediate: true },
   );

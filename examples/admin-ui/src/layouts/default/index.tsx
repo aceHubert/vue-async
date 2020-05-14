@@ -52,7 +52,7 @@ export default class LayoutDefault extends Vue {
 
   // methods
   getNestedMenus(h: any, menus: Array<Menu> = [], subGroup = false) {
-    return menus.map(menu =>
+    return menus.map((menu: Menu) =>
       menu.children && menu.children.length ? (
         <v-list-group prepend-icon={!subGroup ? menu.icon : null} sub-group={subGroup}>
           <v-list-item-title slot="activator">{this.$tv(String(menu.title))}</v-list-item-title>

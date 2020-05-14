@@ -12,7 +12,7 @@ module.exports = {
   // eslint-loader 是否在保存的时候检查
   lintOnSave: false,
   // 默认情况下 babel-loader 会忽略所有 node_modules 中的文件。如果你想要通过 Babel 显式转译一个依赖，可以在这个选项中列出来。
-  transpileDependencies: ['vuetify', 'vuex-module-decorators'],
+  transpileDependencies: ['vuetify', 'vuex-module-decorators', '@vue-async/module-loader', '@vue-async/utils'],
   // 这是一个不进行任何 schema 验证的对象，因此它可以用来传递任何第三方插件选项。
   pluginOptions: {
     // 公共样式资源变量注入

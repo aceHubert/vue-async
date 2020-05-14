@@ -69,8 +69,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "composite": true,
-    "typeRoots": ["./types", "./node_modules/@types"],
-    "types": ["webpack-env", "vuetify", "@vue-async/module-loader", "@vue-async/utils"],
+    "types": ["webpack-env", "node"],
     "jsx": "preserve"
   },
   "include": [

@@ -72,10 +72,8 @@ export default class Index extends Vue {
       val.name !== 'not-found' &&
       this.tabs.findIndex(
         (tab: Tab) =>
-          this.$router
-            .resolve(tab.to)
-            .route.fullPath.replace(languageRegexp, '')
-            .replace(/\/$/, '') === fullPathWithoutLocale,
+          this.$router.resolve(tab.to).route.fullPath.replace(languageRegexp, '').replace(/\/$/, '') ===
+          fullPathWithoutLocale,
       ) < 0
     ) {
       this.tabs.push({

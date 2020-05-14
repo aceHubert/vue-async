@@ -14,7 +14,7 @@ Vue.use(VueI18n);
  */
 Object.defineProperties(VueI18n.prototype, {
   tv: {
-    value: function(key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
+    value: function (key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
       return (
         (this.t && this.te
           ? this.te(key, locale)
@@ -31,7 +31,7 @@ Object.defineProperties(VueI18n.prototype, {
 
 Object.defineProperties(Vue.prototype, {
   $tv: {
-    value: function(key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
+    value: function (key: Path, fallbackStr?: string, locale?: Locale): TranslateResult {
       const i18n = this.$i18n;
       return i18n.tv(key, fallbackStr, locale);
     },
@@ -93,7 +93,7 @@ export function createI18n(ssrContext: any, { router }: { router: any }) {
           return Promise.reject(new Error(`Language ${lang} not found`));
         }
 
-        return import(/* webpackChunkName: "lang-[request]" */ `@/lang/${locale}`).then(msgs => {
+        return import(/* webpackChunkName: "lang-[request]" */ `@/lang/${locale}`).then((msgs: any) => {
           const { default: translates, dateTimeFormat, numberFormat } = msgs;
           loadedLanguages.push(lang);
           globalLanguages[lang] = translates;

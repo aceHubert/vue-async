@@ -1,6 +1,6 @@
 import { Vue, Component } from 'vue-property-decorator';
 
-const exhale = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const exhale = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 @Component({
   name: 'plugin-ts-a',

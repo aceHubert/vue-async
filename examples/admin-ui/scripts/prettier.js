@@ -43,6 +43,9 @@ function runPrettier(changedFiles) {
       if (shouldWrite) {
         console.log(`Formatting ${file}`);
         const output = prettier.format(input, { ...options, filepath: file });
+        if(file === 'src/plugins/i18n/index.ts'){
+          console.log(options, output)
+        }
         if (output !== input) {
           fs.writeFileSync(file, output, 'utf8');
         }

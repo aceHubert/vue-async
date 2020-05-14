@@ -34,7 +34,9 @@ export const genericLanguageRegexp = /[a-z]{2,3}|[a-z]{2,3}-[a-zA-Z]{4}|[a-z]{2,
 export const preferredLanguage =
   typeof document === 'undefined'
     ? 'en'
-    : localStorage.getItem('currentLanguage') || navigator.languages.find(l => l.match(languageRegexp)) || 'en';
+    : localStorage.getItem('currentLanguage') ||
+      navigator.languages.find((l: string) => l.match(languageRegexp)) ||
+      'en';
 
 export function root(children: RouteConfig[]) {
   return [

@@ -8,7 +8,9 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint --no-fix",
-    "lint:fix": "vue-cli-service lint"
+    "lint:fix": "vue-cli-service lint",
+    "prettier": "node ./scripts/prettier.js",
+    "prettier:all": "node ./scripts/prettier.js write"
   },
   "dependencies": {
     "@vue-async/module-loader": "^0.1.3-alpha.6",
