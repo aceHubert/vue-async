@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/utils",
-  "version": "0.1.4-alpha.0",
+  "version": "0.1.5-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "dist/index.common.ts",
@@ -57,6 +57,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "4dd185538ed9add29e17118484d43548dea34a28"
+  }
 }
