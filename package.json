@@ -11,8 +11,6 @@
     "serve:modules": "cd ./examples/modules && yarn serve",
     "serve:admin-ui": "concurrently --raw \"yarn serve:modules\" \"cd ./examples/admin-ui && yarn serve\"",
     "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
-    "build:modules": "yarn workspace modules build",
-    "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
     "lint:fix": "lerna run lint:fix --parallel",
@@ -20,7 +18,7 @@
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn install && yarn build",
     "release": "lerna publish"
   },
   "config": {
@@ -58,7 +56,6 @@
     "lerna-changelog": "^1.0.1",
     "lint-staged": "^10.2.0",
     "prettier": "^2.0.5",
-    "regenerator-runtime": "^0.13.5",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.2",
     "util": "^0.12.1"
