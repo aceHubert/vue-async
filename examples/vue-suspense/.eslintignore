@@ -1,0 +1,9 @@
+/coverage
+/tmp
+build
+dist
+scripts
+public
+node_modules
+
+

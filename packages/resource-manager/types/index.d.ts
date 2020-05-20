@@ -7,8 +7,10 @@ export {
   AsyncFactory,
   SuspenseComponent,
   Suspense,
+  lazy,
   Lazy,
   ResourceOptions,
   ResourceResult,
+  createResource,
   CreateResource,
 } from './module';

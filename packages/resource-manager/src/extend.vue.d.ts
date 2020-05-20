@@ -1,6 +1,5 @@
 import Vue, { VNode } from 'vue';
-import { Options } from './index';
-import { AsyncFactory, SuspenseComponent } from './Suspense';
+import { UseOptions, AsyncFactory, SuspenseComponent } from '../types';
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -17,12 +16,12 @@ declare module 'vue/types/vue' {
     [key: string]: any;
   }
   interface VueConstructor {
-    setSuspenseOptions(options: Options): void;
+    setSuspenseOptions(options: UseOptions): void;
   }
 }
 
 declare module 'vue/types/options' {
   interface ComponentOptions<V extends Vue> {
-    suspense?: Options;
+    suspense?: UseOptions;
   }
 }

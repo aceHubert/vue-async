@@ -57,7 +57,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      resloved: false,
+      resolved: false,
       rejected: false,
       displayLoading: false,
     };
@@ -86,7 +86,7 @@ export default Vue.extend({
     this.promiser = new Promise((reslove, reject) => {
       this.$on(RESOLVED, () => {
         this.destoryLoading();
-        this.resloved = true;
+        this.resolved = true;
         reslove();
       });
 
@@ -105,7 +105,7 @@ export default Vue.extend({
     }
   },
   updated() {
-    if (!this.resloved) return;
+    if (!this.resolved) return;
     popSuspenseInstance();
   },
   render(h: CreateElement) {

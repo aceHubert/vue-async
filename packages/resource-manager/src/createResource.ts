@@ -31,7 +31,7 @@ interface Result<R, E> {
   $$loaded: boolean;
 }
 
-export default function CreateResource<I = any, R = any, E = any>(
+export default function CreateResource<I = any, R = any, E = Error>(
   fetchFactory: AsyncFactory<I, R>,
   options?: ResourceOptions<I, R, E>,
 ): ResourceResult<I, R, E> {
@@ -50,7 +50,7 @@ export default function CreateResource<I = any, R = any, E = any>(
   const hasSuspenseInstance = !!fetchFactory.suspenseInstance;
 
   const resourceResult: ResourceResult<I, R, E> = {
-    read(input: I) {
+    read(input?: I) {
       // prevent
       if (options && options.prevent && $res.$$loading) {
         return $res.$$promiser;
@@ -59,9 +59,7 @@ export default function CreateResource<I = any, R = any, E = any>(
       $res.$$loading = true;
       // Because we don't need caching, this is just a unique identifier,
       // and each call to .read() is a completely new request.
-      const uniqueWrapFactory = (i: I) => {
-        return fetchFactory(i);
-      };
+      const uniqueWrapFactory = (i?: I) => fetchFactory(i);
 
       if (hasSuspenseInstance) {
         // Establish a relationship between the fetchFactory and the current component instance
@@ -75,7 +73,7 @@ export default function CreateResource<I = any, R = any, E = any>(
       promise
         .then((res) => {
           // Trigger update
-          $res.$$result = options && options.onSuccess ? options.onSuccess(res, input) : res;
+          $res.$$result = options && options.onSuccess ? options.onSuccess(res) : res;
           if (!$res.$$loaded) {
             $res.$$loaded = true;
           }

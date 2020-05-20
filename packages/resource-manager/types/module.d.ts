@@ -26,13 +26,15 @@ export interface AsyncFactory<I = any, R = any> {
 export const Suspense: SuspenseComponent;
 
 // Lazy
+export const lazy: Lazy;
+
 export interface Lazy<PropsDef = PropsDefinition<DefaultProps>> {
   (asyncFactory: AsyncFactory, props?: PropsDef): VueComponent;
 }
 
 // CreateResource
-export interface ResourceResult<I, R, E> {
-  read(input: I): Promise<R>;
+export interface ResourceResult<I = any, R = any, E = Error> {
+  read(input?: I): Promise<R>;
   $result: R;
   $error: E;
   $loading: boolean;
@@ -42,9 +44,11 @@ export interface ResourceResult<I, R, E> {
 
 export interface ResourceOptions<I, R, E> {
   prevent?: boolean;
-  onSuccess(result: R, args: I): R; // works on the datas need to concat
+  onSuccess(result: R): R; // works on the datas need to concat
   onError(err: E): E;
 }
+
+export declare const createResource: CreateResource;
 
 export interface CreateResource<I = any, R = any, E = any> {
   (fetchFactory: AsyncFactory<I, R>, options?: ResourceOptions<I, R, E>): ResourceResult<I, R, E>;
