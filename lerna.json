@@ -7,7 +7,7 @@
       "conventionalCommits": true,
       "gitTagVersion": true,
       "allowBranch": ["master"],
-      "ignoreChanges": ["ignored-file", "*.md"],
+      "ignoreChanges": ["ignored-file", "*.md", "**/examples/**", "**/test/**"],
       "message": "chore(release): publish"
     }
   },
