@@ -66,7 +66,7 @@ function genConfig({ outFile, format, mode }, clean = false) {
         vue: 'Vue',
       },
       exports: 'named',
-      name: format === 'umd' || format === 'iife' ? 'vueAsyncUtils' : undefined,
+      name: format === 'umd' || format === 'iife' ? 'VueAsyncUtils' : undefined,
     },
     // https://rollupjs.org/guide/en/#error-this-is-undefined
     // context: format === 'umd' ? 'window' : undefined,

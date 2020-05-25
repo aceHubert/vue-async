@@ -62,11 +62,12 @@ function genConfig({ outFile, format, mode }, clean = false) {
       format,
       globals: {
         vue: 'Vue',
+        '@vue-async/utils': 'VueAsyncUtils',
       },
       exports: 'named',
-      name: format === 'umd' || format === 'iife' ? 'vueAsyncResourceManager' : undefined,
+      name: format === 'umd' || format === 'iife' ? 'VueAsyncResourceManager' : undefined,
     },
-    external: ['vue'],
+    external: ['vue', '@vue-async/utils'],
     plugins: [
       clean &&
         clear({
