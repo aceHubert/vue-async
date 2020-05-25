@@ -961,17 +961,17 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@vue-async/resource-manager@0.1.3-alpha.0":
-  version "0.1.3-alpha.0"
-  resolved "https://registry.yarnpkg.com/@vue-async/resource-manager/-/resource-manager-0.1.3-alpha.0.tgz#e383288b90af634a01e8277884b105feb2cb1d5f"
-  integrity sha512-Nbs9JGioZJM58jo5ssvydEDiFDLQ49sbk7BjsHdixn6adbOz593EudDC6Ae0zCxL6WyaYSkeTEHZP6/IPZzmcw==
+"@vue-async/resource-manager@0.1.4-alpha.0":
+  version "0.1.4-alpha.0"
+  resolved "https://registry.yarnpkg.com/@vue-async/resource-manager/-/resource-manager-0.1.4-alpha.0.tgz#e5e17d715476490c6e1aa9af63cc1ea93994debb"
+  integrity sha512-CuBE6JddixFP5e0teKR/N2/cDQTLR6xz/67O7y7Dex/6gGh2RSSRhJcewmyt5ooGbEAwwPyYHVEVz+H8Y03S2A==
   dependencies:
-    "@vue-async/utils" "^0.1.5-alpha.0"
+    "@vue-async/utils" "^0.1.4-alpha.0"
 
-"@vue-async/utils@^0.1.5-alpha.0":
-  version "0.1.5-alpha.0"
-  resolved "https://registry.yarnpkg.com/@vue-async/utils/-/utils-0.1.5-alpha.0.tgz#46a038feaf24eb6be209a2796e20c3ebad5ea6bc"
-  integrity sha512-UdbXeqMyLOeTVO1inyhFJXosG8qOgsgWvrR8+7zGcEWFOsVC4YMCQa43dOXqc3hhzPFvPhpo+Sq1XELdgKgL5A==
+"@vue-async/utils@^0.1.4-alpha.0":
+  version "0.1.4-alpha.0"
+  resolved "https://registry.yarnpkg.com/@vue-async/utils/-/utils-0.1.4-alpha.0.tgz#0309cf4cfb3cdaa8be3273ea1799da4b088ba1ff"
+  integrity sha512-HeXeEDXeocmnbxQ8pU1qcf3O4ScKo7e74Pz8UHMfMWRIX9QWcrp9mZ30WBm7VwUrykXG8T9Lh7ptdGAJ0fkQKg==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.0.0":
   version "1.0.0"

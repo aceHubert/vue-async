@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@vue-async/resource-manager": "0.1.3-alpha.0",
+    "@vue-async/resource-manager": "0.1.4-alpha.0",
     "core-js": "^3.6.4",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
