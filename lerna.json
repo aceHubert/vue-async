@@ -4,8 +4,9 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "conventionalCommits": true,
-      "gitTagVersion": true,
+      "conventionalCommits": false,
+      "gitTagVersion": false,
+      "gitReset": false,
       "allowBranch": ["master"],
       "ignoreChanges": ["ignored-file", "*.md", "**/examples/**", "**/test/**"],
       "message": "chore(release): publish"
