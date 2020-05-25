@@ -101,15 +101,6 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
       if (options.moduleLoader) {
         options.moduleLoader.init(this, options.ssrContext);
         this.$moduleLoadManager = Vue.observable(options.moduleLoader.framework);
-        // 初始化实例中的 modules
-        // 放在最后执行，module 入口可以使用 this.$moduleLoadManager中的功能
-        options.moduleLoader.initModules(this).finally(() => {
-          // 在没有模块被加载时，这个值必须要手动改成 true
-          // 使 router.beforeEach 正确执行
-          if (!vm.status.current) {
-            vm.status.current = true;
-          }
-        });
       } else {
         this.$moduleLoadManager = (options.parent && options.parent.$moduleLoadManager) || this;
       }

@@ -20,7 +20,6 @@ export type DynamicComponent =
     };
 
 export type ModuleLoaderOptions = {
-  modules?: Modules;
   [key: string]: any;
 };
 

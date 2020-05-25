@@ -1,7 +1,7 @@
 import _Vue, { Component as VueComponent, AsyncComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
 import { error, warn, hasOwn, isPlainObject } from '@vue-async/utils';
-import { Modules, ModuleLoaderOptions } from '../types';
+import { ModuleLoaderOptions } from '../types';
 import install from './install';
 
 export default class ModuleLoader {
@@ -11,47 +11,32 @@ export default class ModuleLoader {
 
   static version = '__VERSION__';
 
-  __initModules__?: Modules;
-  __ExtraParams__?: { [key: string]: any };
+  __OPTIONS__: { [key: string]: any };
 
   framework: { [key: string]: any } = {
-    loaded: false,
     layouts: {},
   };
 
-  constructor({ modules, ...rest }: ModuleLoaderOptions = {}) {
-    this.__initModules__ = modules;
-    this.__ExtraParams__ = rest;
+  constructor(options: ModuleLoaderOptions = {}) {
+    this.__OPTIONS__ = options;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   init(root: _Vue, ssrContext: any) {
-    this.__ExtraParams__ &&
-      Object.entries(this.__ExtraParams__).map(([key, value]) => {
-        if (!hasOwn(this.framework, key)) {
-          this.framework[key] = value;
-        } else {
-          warn(process.env.NODE_ENV === 'production', `参数 ${key} 已在在`);
-        }
-      });
+    Object.entries(this.__OPTIONS__).map(([key, value]) => {
+      if (!hasOwn(this.framework, key)) {
+        this.framework[key] = value;
+      } else {
+        warn(process.env.NODE_ENV === 'production', `参数 ${key} 已在在`);
+      }
+    });
 
     // 默认方法
-    !hasOwn(this.framework, 'addRoutes') && (this.framework.addRoutes = this.initAddRoutes(root));
-    !hasOwn(this.framework, 'addLayouts') && (this.framework.addLayouts = this.initAddLayouts(root));
+    !hasOwn(this.framework, 'addRoutes') && (this.framework.addRoutes = this._createAddRoutes(root));
+    !hasOwn(this.framework, 'addLayouts') && (this.framework.addLayouts = this._createAddLayouts(root));
   }
 
-  initModules(root: _Vue) {
-    if (this.__initModules__) {
-      return root.$moduleLoader(this.__initModules__).then(() => {
-        this.framework.loaded = true;
-      });
-    } else {
-      this.framework.loaded = true;
-      return Promise.resolve();
-    }
-  }
-
-  initAddRoutes(root: _Vue) {
+  _createAddRoutes(root: _Vue) {
     return (routes: Array<RouteConfig>) => {
       if (root.$router) {
         root.$router.addRoutes(routes);
@@ -61,7 +46,7 @@ export default class ModuleLoader {
     };
   }
 
-  initAddLayouts(root: _Vue) {
+  _createAddLayouts(root: _Vue) {
     return (key: string | { [key: string]: VueComponent | AsyncComponent }, layout: VueComponent | AsyncComponent) => {
       if (typeof key === 'string') {
         root.$set(this.framework.layouts, key, layout);
