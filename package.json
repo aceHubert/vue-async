@@ -1,5 +1,5 @@
 {
-  "name": "vue-async",
+  "name": "admin-ui",
   "version": "0.1.0",
   "private": true,
   "repository": {
@@ -7,31 +7,21 @@
     "url": "https://github.com/aceHubert/vue-async.git"
   },
   "scripts": {
-    "serve": "lerna run serve --sort --parallel",
-    "serve:modules": "cd ./examples/modules && yarn serve",
-    "serve:admin-ui": "concurrently --raw \"yarn serve:modules\" \"cd ./examples/admin-ui && yarn serve\"",
-    "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
-    "build:modules": "yarn workspace modules build",
-    "build:admin-ui": "yarn build:modules && yarn workspace admin-ui build && cpx './modules/dist/**/*.js' ./admin-ui/dist/modules",
-    "clean": "lerna clean --yes",
-    "lint": "lerna run lint --parallel --stream",
-    "lint:fix": "lerna run lint:fix --parallel",
+    "postinstall": "concurrently --raw \"cd ./modules && yarn install\" \"cd ./admin-ui && yarn install\"",
+    "serve": "concurrently --raw \"yarn serve:modules\" \"yarn serve:admin-ui\"",
+    "serve:admin-ui": "ccd ./admin-ui && yarn serve",
+    "serve:modules": "cd ./modules && yarn serve",
+    "build": "concurrently --raw \"yarn build:modules\" \"yarn build:admin-ui\"",
+    "build:admin-ui": "cd ./admin-ui && yarn build",
+    "build:modules": "cd ./modules && yarn build",
     "prettier": "node ./scripts/prettier.js",
     "prettier:all": "node ./scripts/prettier.js write",
     "changelog": "node ./scripts/genChangelog.js",
-    "commit": "git-cz",
-    "prepublishOnly": "yarn build",
-    "release": "lerna publish"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-lerna-changelog"
-    }
+    "commit": "git-cz"
   },
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.7.4",
     "@commitlint/cli": "^8.3.4",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/jest": "^24.0.23",
@@ -43,9 +33,10 @@
     "child_process": "^1.0.2",
     "commitizen": "^4.0.3",
     "concurrently": "^5.1.0",
+    "conventional-changelog": "^3.1.21",
     "core-js": "^3.6.5",
     "cross-env": "^6.0.3",
-    "cz-lerna-changelog": "^2.0.2",
+    "cz-conventional-changelog": "^2.0.2",
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-jest": "^23.8.2",
@@ -54,25 +45,21 @@
     "glob-gitignore": "^1.0.14",
     "husky": ">=1",
     "jest": "^24.9.0",
-    "lerna": "^3.20.2",
-    "lerna-changelog": "^1.0.1",
     "lint-staged": "^10.2.0",
     "prettier": "^2.0.5",
-    "regenerator-runtime": "^0.13.5",
     "ts-jest": "^24.2.0",
     "typescript": "^3.7.2",
     "util": "^0.12.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged && yarn lerna run test",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "docs"
-    ]
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   }
 }
