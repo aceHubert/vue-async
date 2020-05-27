@@ -8,8 +8,6 @@
   },
   "scripts": {
     "serve": "lerna run serve --sort --parallel",
-    "serve:modules": "cd ./examples/modules && yarn serve",
-    "serve:admin-ui": "concurrently --raw \"yarn serve:modules\" \"cd ./examples/admin-ui && yarn serve\"",
     "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
