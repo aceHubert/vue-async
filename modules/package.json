@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "serve": "yarn build && node service/index.js",
-    "build": "node scripts/buildModule.js",
-    "build:js-test": "node scripts/buildModule.js src/module-js",
-    "build:ts-test": "node scripts/buildModule.js src/module-ts",
+    "build": "node scripts/buildModule.js --json",
+    "build:js": "node scripts/buildModule.js src/module-js",
+    "build:ts": "node scripts/buildModule.js src/module-ts",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },
@@ -26,6 +26,7 @@
     "@vue/eslint-config-typescript": "^5.0.2",
     "eslint-plugin-vue": "^5.0.0",
     "express": "^4.17.1",
+    "express-cors": "^0.0.3",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "prettier": "^2.0.5",

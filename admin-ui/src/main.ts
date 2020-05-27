@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import axios from 'axios';
 import App from '@/App';
 import router from '@/router';
 import store from '@/store';
@@ -26,21 +27,21 @@ const app = new Vue({
   render: (h: any) => h(App),
 });
 
-const defaultModules =
-  process.env.NODE_ENV === 'production'
-    ? {
-        'module-js': 'https://async-modules.netlify.app/module-js/module-js.umd.js',
-        'module-ts': 'https://async-modules.netlify.app/module-ts/module-ts.umd.js',
-      }
-    : {
-        'module-js': 'http://localhost:3000/module-js/module-js.umd.js',
-        'module-ts': 'http://localhost:3000/module-ts/module-ts.umd.js',
-      };
+const modulesBaseUrl =
+  process.env.NODE_ENV === 'production' ? 'https://async.modules.acehubert.com' : 'http://localhost:3000';
 
-app
-  .$moduleLoader({
-    ...defaultModules,
+axios
+  .create({
+    baseURL: modulesBaseUrl,
   })
-  .then((_) => {
+  .get('modules.json')
+  .then(({ data = {} }) => {
+    const modules = Object.keys(data).reduce((prev, key) => {
+      prev[key] = modulesBaseUrl + '/' + data[key];
+      return prev;
+    }, {});
+    return app.$moduleLoader(modules);
+  })
+  .finally(() => {
     app.$mount('#app');
   });

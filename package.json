@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "concurrently --raw \"cd ./modules && yarn install\" \"cd ./admin-ui && yarn install\"",
     "serve": "concurrently --raw \"yarn serve:modules\" \"yarn serve:admin-ui\"",
-    "serve:admin-ui": "ccd ./admin-ui && yarn serve",
+    "serve:admin-ui": "cd ./admin-ui && yarn serve",
     "serve:modules": "cd ./modules && yarn serve",
     "build": "concurrently --raw \"yarn build:modules\" \"yarn build:admin-ui\"",
     "build:admin-ui": "cd ./admin-ui && yarn build",

@@ -20,14 +20,18 @@ async function exec(name, execFile) {
   return stdout;
 }
 
-async function findIndexFile(rootDir) {
+// *.{js,ts,!d.ts}
+function isJsOrTsFile(dirent) {
+  return !dirent.name.endsWith('.d.ts') && ['.js', '.ts'].includes(path.extname(dirent.name));
+}
+
+async function findFile(rootDir, filename = 'index') {
   const dir = await fs.promises.opendir(rootDir);
   for await (const dirent of dir) {
-    if (
-      dirent.isFile() &&
-      !dirent.name.endsWith('.d.ts') &&
-      path.basename(dirent.name, path.extname(dirent.name)) === 'index'
-    ) {
+    const extname = path.extname(dirent.name);
+    const basename = path.basename(dirent.name, extname);
+
+    if (dirent.isFile() && isJsOrTsFile(dirent) && path.basename(dirent.name, extname) === filename) {
       return path.resolve(rootDir, dirent.name);
     }
   }
@@ -42,7 +46,7 @@ async function run(files) {
         const result = await exec(path.basename(fullpath, path.extname(fullpath)), fullpath);
         console.log(result);
       } else {
-        const indexFile = await findIndexFile(fullpath);
+        const indexFile = await findFile(fullpath);
         if (indexFile) {
           const result = await exec(path.basename(fullpath), indexFile);
           console.log(result);
@@ -52,13 +56,14 @@ async function run(files) {
       }
     }
   } else {
+    // 所有 src/*.{!d.ts} or src/*/index.{!d.ts}
     const rootDir = path.resolve(__dirname, '../src');
 
     const dir = await fs.promises.opendir(rootDir);
     for await (const dirent of dir) {
       if (dirent.isFile()) {
         // 文件
-        if (dirent.name.endsWith('.d.ts')) {
+        if (!isJsOrTsFile(dirent)) {
           continue;
         }
 
@@ -67,7 +72,7 @@ async function run(files) {
         console.log(result);
       } else {
         // 目录=》 index.js/index.ts
-        const indexFile = await findIndexFile(path.resolve(rootDir, dirent.name));
+        const indexFile = await findFile(path.resolve(rootDir, dirent.name));
         if (indexFile) {
           const result = await exec(dirent.name, indexFile);
           console.log(result);
@@ -79,10 +84,43 @@ async function run(files) {
   }
 }
 
-if (require.main === module) {
-  run(process.argv.splice(2)).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error(err);
-    process.exit(1);
+async function genJsonFile(filename) {
+  const distDir = path.resolve(__dirname, '../dist');
+  const filepath = path.resolve(distDir, `${filename}.json`);
+  const dir = await fs.promises.opendir(distDir);
+  const content = {};
+  for await (const dirent of dir) {
+    if (dirent.isDirectory()) {
+      const umdFile = await findFile(path.resolve(distDir, dirent.name), `${dirent.name}.umd.min`);
+      content[dirent.name] = dirent.name + '/' + path.basename(umdFile);
+    }
+  }
+  fs.writeFile(filepath, JSON.stringify(content), 'utf8', () => {
+    console.log(`create json file ${filepath} successfully!`);
   });
+}
+
+if (require.main === module) {
+  const argv = process.argv.splice(2);
+  const files = argv.filter((arg) => !arg.startsWith('--'));
+  const options = argv
+    .filter((arg) => !files.includes(arg))
+    .reduce((prev, curr) => {
+      const keyValue = curr
+        .substr(2)
+        .split('=')
+        .filter((arg) => !!arg);
+      keyValue.length && (prev[keyValue[0]] = keyValue.length === 1 ? true : keyValue[1]);
+      return prev;
+    }, {});
+  const genJson = run(files)
+    .then(() => {
+      // 生成 json 文件
+      options.json && options.json !== 'false' && genJsonFile(options.json === true ? 'modules' : options.json);
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      process.exit(1);
+    });
 }
