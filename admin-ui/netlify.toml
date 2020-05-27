@@ -3,7 +3,7 @@
 # Settings in the [build] context are global and are applied to all contexts
 # unless otherwise overridden by more specific contexts.
 [build]
-  ignore = "git diff HEAD^ HEAD -- admin-ui/"
+  ignore = "git diff HEAD^ HEAD -- ./"
 
   # Directory to change to before starting a build.
   # This is where we will look for package.json/.nvmrc/etc.
@@ -23,6 +23,7 @@
 # Environments.
 [build.environment]
   NODE_VERSION = "13"
+  YARN_VERSION = "1.22.4"
 
 # Redirects
 # The following redirect is intended for use with most SPAs that handle
