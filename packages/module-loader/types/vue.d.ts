@@ -2,12 +2,13 @@
  * Augment the typings of Vue.js
  */
 
-import Vue from 'vue';
+import Vue, { Component as VueComponent } from 'vue';
 import { Framework, ModuleLoader, Modules, DynamicComponent } from './module';
 
 declare module 'vue/types/vue' {
   interface Vue {
     $moduleLoader: (moduleData: Modules) => Promise<void>;
+    $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
     $moduleLoadManager: Framework;
     $dynamicComponent: {
       add: (component: DynamicComponent, position?: string) => void;

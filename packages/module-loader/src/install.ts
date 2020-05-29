@@ -2,8 +2,9 @@ import _Vue from 'vue';
 import { Route, RawLocation } from 'vue-router';
 import dynamicComponent from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
-import eventBus from './ability/eventBus';
-import moduleLoader from './ability/moduleLoader';
+import createEventBus from './ability/eventBus';
+import createModuleLoader from './ability/moduleLoader';
+import createComponentLoader from './ability/componentLoader';
 import { UseOptions } from '../types';
 
 export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
@@ -23,11 +24,15 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
 
   Object.defineProperties(Vue.prototype, {
     $eventBus: {
-      value: eventBus(Vue),
+      value: createEventBus(Vue),
       writable: false,
     },
     $moduleLoader: {
-      value: moduleLoader(Vue, vm.status),
+      value: createModuleLoader(Vue, vm.status),
+      writable: false,
+    },
+    $componentLoader: {
+      value: createComponentLoader(),
       writable: false,
     },
   });
@@ -47,7 +52,11 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
   // router
   // 解决动态路由404问题
   if (router) {
-    const resolveRoute = (to: Route, next: (to?: RawLocation | false | ((vm: _Vue) => void) | void) => void) => {
+    const resolveRoute = (
+      to: Route,
+      from: Route,
+      next: (to?: RawLocation | false | ((vm: _Vue) => void) | void) => void,
+    ) => {
       const fullPath = to.redirectedFrom || to.fullPath;
 
       const { resolved, location } = router.resolve(fullPath);
@@ -61,17 +70,17 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
     };
 
     router.beforeEach((to, from, next) => {
-      if (!to.name || to.name === '404' || to.name === 'page-not-found') {
+      if (!to.name || to.name === '404' || to.name === 'page-not-found' || to.path === '*') {
         // 模块已经被加载完成, 但由于在其之前添加 beforeEach 阻止时间过长，vm.$watch还没开始监听
         if (vm.status.current) {
-          resolveRoute(to, next);
+          resolveRoute(to, from, next);
         }
         vm.$watch(
           () => vm.status.current,
           (newVal, oldVal) => {
             // false => true
             if (newVal && !oldVal) {
-              resolveRoute(to, next);
+              resolveRoute(to, from, next);
             }
           },
         );
