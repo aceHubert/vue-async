@@ -8,6 +8,8 @@ import { DynamicComponent } from '../../../types';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+export const namespaces = 'dynamicComponent';
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function (Vue: typeof _Vue, store: Store<any>) {
   return {
@@ -16,14 +18,14 @@ export default function (Vue: typeof _Vue, store: Store<any>) {
      * @param component vue component
      * @param position position
      */
-    add(component: DynamicComponent, position: string) {
+    add(component: DynamicComponent, position?: string) {
       if (!(typeof component === 'object' || typeof component === 'function')) {
         return error(
           isProduction,
           'dynamicComponent function "add" only accept object or function component as param.',
         );
       }
-      store.commit('dynamicComponent/add', {
+      store.commit(`${namespaces}/add`, {
         component,
         position,
       });
@@ -33,11 +35,11 @@ export default function (Vue: typeof _Vue, store: Store<any>) {
      * @param name component name
      * @param position position
      */
-    remove(name: string, position: string) {
+    remove(name: string, position?: string) {
       if (typeof name !== 'string') {
         return error(isProduction, 'dynamicComponent function "remoce" only accept string name of component as param.');
       }
-      store.commit('dynamicComponent/remove', {
+      store.commit(`${namespaces}/remove`, {
         name,
         position,
       });

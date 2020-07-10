@@ -14,7 +14,7 @@ import { DEFAULT_EXTENSIONS } from '@babel/core';
 const packageConfig = require('./package.json');
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
-const builds = {
+export const builds = {
   'cjs-dev': {
     outFile: 'index.common.js',
     format: 'cjs',
@@ -53,7 +53,7 @@ const builds = {
 };
 
 // polyfill in iife mode
-function genConfig({ outFile, format, mode }, clean = false) {
+export function genConfig({ outFile, format, mode }, clean = false) {
   const isProd = mode === 'production';
   return {
     input: './src/index.ts',

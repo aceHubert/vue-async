@@ -3,13 +3,13 @@
  */
 
 import Vue, { Component as VueComponent } from 'vue';
-import { Framework, ModuleLoader, Modules, DynamicComponent } from './module';
+import { ModuleLoader, Modules, DynamicComponent } from './module';
 
 declare module 'vue/types/vue' {
   interface Vue {
     $moduleLoader: (moduleData: Modules) => Promise<void>;
     $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
-    $moduleLoadManager: Framework;
+    $moduleLoadManager: ModuleLoader['framework'];
     $dynamicComponent: {
       add: (component: DynamicComponent, position?: string) => void;
       remove: (name: string, position?: string) => void;
@@ -19,7 +19,7 @@ declare module 'vue/types/vue' {
       on: (eventName: string, handler: (playload: any) => void) => void;
       off: (eventName: string, handler: (playload: any) => void) => void;
       clear: () => void;
-      getEvents: () => { [eventName: string]: any };
+      getEvents: () => Record<string, any>;
     };
   }
 }

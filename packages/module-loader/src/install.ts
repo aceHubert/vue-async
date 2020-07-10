@@ -1,13 +1,14 @@
-import _Vue from 'vue';
+import _Vue, { VueConstructor } from 'vue';
 import { Route, RawLocation } from 'vue-router';
-import dynamicComponent from './ability/dynamicComponent';
+import dynamicComponent, { namespaces as dynamicComponentPath } from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';
-import { UseOptions } from '../types';
+import { Store } from 'vuex';
+import VueRouter from 'vue-router';
 
-export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
+export default function install(Vue: VueConstructor) {
   if ((install as any).installed) return;
   (install as any).installed = true;
 
@@ -37,21 +38,26 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
     },
   });
 
-  const { store, router } = options;
+  // Used to avoid multiple mixins being setup
+  // when in dev mode and hot module reload
+  // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
+  if (Vue.$__module_loader_installed__) return;
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  Vue.$__module_loader_installed__ = true;
 
   // store
-  if (store) {
-    store.registerModule('dynamicComponent', dynamicComponentState);
+  const storeExtend = (store: Store<unknown>) => {
+    store.registerModule(dynamicComponentPath, dynamicComponentState);
     // define $dynamicComponent
     Object.defineProperty(Vue.prototype, '$dynamicComponent', {
       value: dynamicComponent(Vue, store),
       writable: false,
     });
-  }
+  };
 
   // router
-  // 解决动态路由404问题
-  if (router) {
+  const routerExtend = (router: VueRouter) => {
+    // 解决动态路由404问题
     const resolveRoute = (
       to: Route,
       from: Route,
@@ -88,24 +94,19 @@ export default function install(Vue: typeof _Vue, options: UseOptions = {}) {
         next();
       }
     });
-  }
-
-  // Used to avoid multiple mixins being setup
-  // when in dev mode and hot module reload
-  // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
-  if (Vue.$__module_loader_installed__) return;
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  Vue.$__module_loader_installed__ = true;
-
-  // 设置子模块中的运行时 Vue 对象与主框架一致
-  // 或使用 '--inline-vue' 使用独立 Vue 对象
-  if (!(window as any).Vue) {
-    (window as any).Vue = Vue;
-  }
+  };
 
   Vue.mixin({
     beforeCreate() {
       const options = this.$options as any;
+
+      // 从 Vue root option 中获取 router | store 实例
+      if (options.router) {
+        routerExtend(options.router);
+      }
+      if (options.store) {
+        storeExtend(options.store);
+      }
 
       if (options.moduleLoader) {
         options.moduleLoader.init(this, options.ssrContext);
