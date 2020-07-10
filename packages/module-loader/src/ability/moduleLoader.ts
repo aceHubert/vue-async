@@ -19,6 +19,13 @@ export default (Vue: typeof _Vue, status: MutableRefObject<boolean>) => {
         status.current = true;
       });
     } else if (typeof modules === 'object' && Object.getPrototypeOf(modules) === Object.prototype) {
+      // resolve in the server render
+      if (Vue.prototype.$isServer) {
+        if (!__isArray__) {
+          status.current = true;
+        }
+        return Promise.resolve();
+      }
       /** 通过模块清单加载模块 */
       const promiseAll = [] as Array<Promise<void>>;
       for (const moduleName in modules) {

@@ -1,12 +1,11 @@
-import Playground from './Playground';
-import DynamicComponent from './DynamicComponent';
+// app
 
 export default Vue.extend({
   name: 'App',
-  created() {
-    this.$dynamicComponent.add(DynamicComponent, 'dynamic');
-  },
   render(h) {
-    return h('div', { domProps: { id: 'app' } }, [h(Playground)]);
+    return h('div', { domProps: { id: 'app' } }, [
+      h('router-link', { staticStyle: { margin: '0 10px; 5px' }, props: { to: { name: 'remote-page-a' } } }, 'Page A'),
+      h('router-view'),
+    ]);
   },
 });

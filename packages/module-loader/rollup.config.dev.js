@@ -15,6 +15,7 @@ config.plugins.unshift(
 config.plugins = config.plugins.concat([
   serve({
     contentBase: ['dev', 'dist'],
+    historyApiFallback: true,
     port: 7000,
   }),
 ]);

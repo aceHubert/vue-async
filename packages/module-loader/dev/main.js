@@ -1,23 +1,23 @@
 import Vue from 'vue';
-import router from './router';
+import router, { addRoutes } from './router';
 import store from './store';
 import ModuleLoader from '@vue-async/module-loader';
 import App from './app';
 
-const moduleLoader = new ModuleLoader({});
+const moduleLoader = new ModuleLoader({
+  addRoutes, // 重写 addRoutes
+});
 
 const vm = new Vue({
-  data: () => ({ isLoaded: document.readyState === 'complete' }),
   router,
   store,
   moduleLoader,
-  render(h) {
-    return this.isLoaded ? h(App) : undefined;
-  },
-}).$mount('#app');
+  render: (h) => h(App),
+});
 
-// Prevent layout jump while waiting for styles
-vm.isLoaded ||
-  window.addEventListener('load', () => {
-    vm.isLoaded = true;
-  });
+vm.$moduleLoader({
+  dymanicRouter: '/static/dymanicRouter.umd.js',
+  dymanicComponent: '/static/dymanicComponent.umd.js',
+}).then(() => {
+  vm.$mount('#app');
+});

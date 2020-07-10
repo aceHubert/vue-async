@@ -37,7 +37,7 @@ export default class ModuleLoader {
   }
 
   _createAddRoutes(root: _Vue) {
-    return (routes: Array<RouteConfig>) => {
+    return (routes: RouteConfig[]) => {
       if (root.$router) {
         root.$router.addRoutes(routes);
       } else {
