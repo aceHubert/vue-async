@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/utils",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "dist/index.common.ts",
@@ -37,7 +37,6 @@
   "bugs": {
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
-  "dependencies": {},
   "peerDependencies": {
     "vue": "^2.6.0"
   },
