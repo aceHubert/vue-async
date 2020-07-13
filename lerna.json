@@ -7,7 +7,7 @@
       "conventionalCommits": false,
       "gitTagVersion": false,
       "gitReset": false,
-      "allowBranch": ["master", "bug-fix"],
+      "allowBranch": ["master"],
       "ignoreChanges": ["**/CHANGELOG.md", "**/node_modules/**", "**/package.json", "**/*.md", "**/test/**"],
       "message": "chore(release): publish"
     }
