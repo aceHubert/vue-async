@@ -1,7 +1,13 @@
 /**
  * Extends interfaces in Vue.js
  */
-import Vue from 'vue';
+import Vue, { VueConstructor } from 'vue';
+
+declare global {
+  interface Window {
+    Vue: VueConstructor;
+  }
+}
 
 declare module 'vue/types/vue' {
   interface VueConstructor<V extends Vue = Vue, Options = Record<string, any>> {

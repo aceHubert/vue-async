@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "index.common.ts",
@@ -21,8 +21,9 @@
     "types/*.d.ts"
   ],
   "scripts": {
-    "serve": "cross-env TARGET=es rollup -c -w",
+    "serve": "rollup -c ./rollup.config.dev.js -w",
     "build": "rollup -c",
+    "build:es": "cross-env TARGET=es rollup -c",
     "release": "bash scripts/release.sh",
     "test": "cd ../../ && cross-env NODE_ENV=test jest --passWithNoTests --config packages/module-loader/jest.config.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
@@ -38,20 +39,9 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.0.1"
+    "@vue-async/utils": "^1.0.2"
   },
   "devDependencies": {
-    "@rollup/plugin-babel": "^5.0.0",
-    "@rollup/plugin-commonjs": "^11.1.0",
-    "@rollup/plugin-json": "^4.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.3",
-    "@rollup/plugin-replace": "^2.3.1",
-    "rollup": "^1.27.2",
-    "rollup-plugin-clear": "^2.0.7",
-    "rollup-plugin-license": "^2.0.0",
-    "rollup-plugin-terser": "^5.1.2",
-    "rollup-plugin-typescript2": "^0.27.0",
-    "vue": "^2.6.0",
     "vue-router": "^3.1.6",
     "vuex": "^3.1.3"
   },

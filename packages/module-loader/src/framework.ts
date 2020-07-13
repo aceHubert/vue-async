@@ -11,9 +11,9 @@ export default class ModuleLoader {
 
   static version = '__VERSION__';
 
-  __OPTIONS__: { [key: string]: any };
+  __OPTIONS__: ModuleLoaderOptions;
 
-  framework: { [key: string]: any } = {
+  framework: Record<string, any> = {
     layouts: {},
   };
 
@@ -37,7 +37,7 @@ export default class ModuleLoader {
   }
 
   _createAddRoutes(root: _Vue) {
-    return (routes: Array<RouteConfig>) => {
+    return (routes: RouteConfig[]) => {
       if (root.$router) {
         root.$router.addRoutes(routes);
       } else {
@@ -47,7 +47,7 @@ export default class ModuleLoader {
   }
 
   _createAddLayouts(root: _Vue) {
-    return (key: string | { [key: string]: VueComponent | AsyncComponent }, layout: VueComponent | AsyncComponent) => {
+    return (key: string | Record<string, VueComponent | AsyncComponent>, layout: VueComponent | AsyncComponent) => {
       if (typeof key === 'string') {
         root.$set(this.framework.layouts, key, layout);
       } else if (isPlainObject(key)) {

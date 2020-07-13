@@ -2432,6 +2432,13 @@
   dependencies:
     "@types/node" ">= 8"
 
+"@rollup/plugin-alias@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-alias/-/plugin-alias-3.1.1.tgz#bb96cf37fefeb0a953a6566c284855c7d1cd290c"
+  integrity sha512-hNcQY4bpBUIvxekd26DBPgF7BT4mKVNDF5tBG4Zi+3IgwLxGYRY0itHs9D0oLVwXM5pvJDWJlBQro+au8WaUWw==
+  dependencies:
+    slash "^3.0.0"
+
 "@rollup/plugin-babel@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-babel/-/plugin-babel-5.0.0.tgz#2f01c9555927449c82cb13dd9e56213a358e1ce9"
@@ -2739,11 +2746,6 @@
     lodash "^4.17.15"
     semver "^6.3.0"
     tsutils "^3.17.1"
-
-"@vue-async/utils@^0.1.4-alpha.0":
-  version "0.1.4-alpha.0"
-  resolved "https://registry.yarnpkg.com/@vue-async/utils/-/utils-0.1.4-alpha.0.tgz#0309cf4cfb3cdaa8be3273ea1799da4b088ba1ff"
-  integrity sha512-HeXeEDXeocmnbxQ8pU1qcf3O4ScKo7e74Pz8UHMfMWRIX9QWcrp9mZ30WBm7VwUrykXG8T9Lh7ptdGAJ0fkQKg==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.0.0":
   version "1.0.0"
@@ -9471,6 +9473,11 @@ mime@1.6.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
+mime@>=2.0.3:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.6.tgz#e5b407c90db442f2beb5b162373d07b69affa4d1"
+  integrity sha512-RZKhC3EmpBchfTGBVb8fb+RL2cWyw/32lshnsETttkBAyAUXSGHxbEJWWRXc751DrIxG1q04b8QwMbAwkRPpUA==
+
 mime@^2.0.3, mime@^2.4.4:
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.5.tgz#d8de2ecb92982dedbb6541c9b6841d7f218ea009"
@@ -10206,6 +10213,11 @@ opencollective-postinstall@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
   integrity sha512-pVOEP16TrAO2/fjej1IdOyupJY8KDUM1CvsaScRbw6oddvpQoOfGk4ywha0HKKVAD6RkW4x6Q+tNBwhf3Bgpuw==
+
+opener@1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.1.tgz#6d2f0e77f1a0af0032aca716c2c1fbb8e7e8abed"
+  integrity sha512-goYSy5c2UXE4Ra1xixabeVh1guIX/ZV/YokJksb6q2lubWu6UbvPQ20p542/sFIll1nl8JnCyK9oBaOcCWXwvA==
 
 opn@^5.5.0:
   version "5.5.0"
@@ -11907,6 +11919,14 @@ rollup-plugin-license@^2.0.0:
     moment "2.24.0"
     spdx-expression-validate "2.0.0"
     spdx-satisfies "5.0.0"
+
+rollup-plugin-serve@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-serve/-/rollup-plugin-serve-1.0.1.tgz#2da2a784a916c5564609c7696cd9dacdbf17f6cc"
+  integrity sha512-bni0pb4s1YLvn1xBmj+dH1OsLdp8gWA4zqh3yuEtT6/YHhg3nDneGU2GwMcRDQwY2tXzuI0uSeAlF1rY+ODitg==
+  dependencies:
+    mime ">=2.0.3"
+    opener "1"
 
 rollup-plugin-terser@^5.1.2:
   version "5.3.0"
@@ -13724,7 +13744,7 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue@^2.6.0, vue@^2.6.10:
+vue@^2.6.10:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
