@@ -1,0 +1,32 @@
+{
+  "name": "@vue-async/module-loader-typing",
+  "version": "0.0.1",
+  "description": "TypeScript definitions for @vue-async/module-loader but using in the child modules",
+  "main": "",
+  "typings": "index.d.ts",
+  "keywords": [
+    "vue",
+    "vue-async",
+    "module-loader",
+    "async-module",
+    "async-loader",
+    "typescript",
+    "types"
+  ],
+  "scripts": {},
+  "author": "Hubert <yi.xiang@live.cn>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aceHubert/vue-async.git",
+    "directory": "packages/module-loader-type"
+  },
+  "bugs": {
+    "url": "https://github.com/aceHubert/vus-async/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vue-router": "^3.1.6",
+    "vue": "^2.6.0"
+  }
+}
