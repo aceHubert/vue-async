@@ -15,18 +15,27 @@ const sharedPropertyDefinition = {
   set: noop,
 };
 
-export function proxy(target: any, key: string, { get, set }: { get?: Function; set?: Function }) {
+export function proxy(target: any, key: string, { get, set }: { get?: Function; set?: Function } = {}) {
   sharedPropertyDefinition.get = get || noop;
   sharedPropertyDefinition.set = set || noop;
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-export function def(obj: Record<string, any>, key: string, val: any, enumerable?: boolean) {
+export function def(
+  obj: Record<string, any>,
+  key: string,
+  val: any,
+  {
+    enumerable = false,
+    writable = true,
+    configurable = true,
+  }: { enumerable?: boolean; writable?: boolean; configurable?: boolean } = {},
+) {
   Object.defineProperty(obj, key, {
     value: val,
-    enumerable: !!enumerable,
-    writable: true,
-    configurable: true,
+    enumerable,
+    writable,
+    configurable,
   });
 }
 
@@ -41,21 +50,21 @@ export function createUid() {
 
 export function assert(condition: any, msg: string) {
   if (!condition) {
-    throw new Error(`[@vue-async] ${msg}`);
+    throw new Error(`error: ${msg}`);
   }
 }
 
 export function warn(condition: boolean, msg: string, vm?: _Vue) {
   if (!condition) {
     // eslint-disable-next-line no-console
-    console.warn(`[@vue-async] ${msg}`, vm);
+    console.warn(`warning: ${msg}`, vm);
   }
 }
 
 export function error(condition: boolean, msg: string, vm?: _Vue) {
   if (!condition) {
     // eslint-disable-next-line no-console
-    console.error(`[@vue-async] ${msg}`, vm);
+    console.error(`error: ${msg}`, vm);
   }
 }
 

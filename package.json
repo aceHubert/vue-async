@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build:es": "lerna run build:es --sort --parallel",
-    "build": "lerna run build --sort --stream --scope=@vue-async/{module-loader,resource-manager,utils}",
+    "build": "lerna run build --sort --stream --scope=@vue-async/*",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
     "lint:fix": "lerna run lint:fix --parallel",
