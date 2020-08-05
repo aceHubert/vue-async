@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader.",
   "main": "dist/index.common.ts",
