@@ -1,4 +1,4 @@
-import _Vue, { VueConstructor } from 'vue';
+import { VueConstructor } from 'vue';
 import { Route, RawLocation } from 'vue-router';
 import dynamicComponent, { namespaces as dynamicComponentPath } from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
@@ -39,12 +39,12 @@ export default function install(Vue: VueConstructor) {
   });
 
   // router
-  const routerExtend = (router: VueRouter) => {
+  const routerInject = (router: VueRouter) => {
     // 解决动态路由404问题
     const resolveRoute = (
       to: Route,
       from: Route,
-      next: (to?: RawLocation | false | ((vm: _Vue) => void) | void) => void,
+      next: (to?: RawLocation | false | ((vm: InstanceType<VueConstructor>) => void) | void) => void,
     ) => {
       const fullPath = to.redirectedFrom || to.fullPath;
       const { resolved, location } = router.resolve(fullPath);
@@ -79,7 +79,7 @@ export default function install(Vue: VueConstructor) {
   };
 
   // store
-  const storeExtend = (store: Store<unknown>) => {
+  const storeInject = (store: Store<unknown>) => {
     store.registerModule(dynamicComponentPath, dynamicComponentState);
     // define $dynamicComponent
     Object.defineProperty(Vue.prototype, '$dynamicComponent', {
@@ -93,11 +93,10 @@ export default function install(Vue: VueConstructor) {
     // 从 Vue root option 中获取 router | store 实例
     // router beforeEach 需要在 beforeCreate 之前添加，才能在页面强制刷新时第一次生效
     if (options.router) {
-      routerExtend(options.router);
+      routerInject(options.router);
     }
-
     if (options.store) {
-      storeExtend(options.store);
+      storeInject(options.store);
     }
     _init.call(this, options);
   };
@@ -108,6 +107,10 @@ export default function install(Vue: VueConstructor) {
   if (Vue.$__module_loader_installed__) return;
   // eslint-disable-next-line @typescript-eslint/camelcase
   Vue.$__module_loader_installed__ = true;
+
+  if (window && !window.Vue) {
+    window.Vue = Vue as any;
+  }
 
   Vue.mixin({
     beforeCreate() {
