@@ -2,7 +2,7 @@
   "name": "@vue-async/utils",
   "version": "1.0.4",
   "author": "Hubert<yi.xiang@live.com>",
-  "description": "Module Loader.",
+  "description": "Utils.",
   "main": "dist/index.common.ts",
   "umd:main": "dist/index.umd.js",
   "module": "dist/index.esm.js",

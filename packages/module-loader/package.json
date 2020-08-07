@@ -1,8 +1,8 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Hubert<yi.xiang@live.com>",
-  "description": "Module Loader.",
+  "description": "Module Loader Core.",
   "main": "module-loader.common.ts",
   "umd:main": "dist/module-loader.umd.js",
   "module": "dist/module-loader.esm.js",
