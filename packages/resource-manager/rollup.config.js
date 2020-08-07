@@ -16,37 +16,37 @@ const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
 const builds = {
   'cjs-dev': {
-    outFile: 'index.common.js',
+    outFile: 'resource-manager.common.js',
     format: 'cjs',
     mode: 'development',
   },
   'cjs-prod': {
-    outFile: 'index.common.min.js',
+    outFile: 'resource-manager.common.min.js',
     format: 'cjs',
     mode: 'production',
   },
   'umd-dev': {
-    outFile: 'index.umd.js',
+    outFile: 'resource-manager.umd.js',
     format: 'umd',
     mode: 'development',
   },
   'umd-prod': {
-    outFile: 'index.umd.min.js',
+    outFile: 'resource-manager.umd.min.js',
     format: 'umd',
     mode: 'production',
   },
   'iife-dev': {
-    outFile: 'index.js',
+    outFile: 'resource-manager.js',
     format: 'iife',
     mode: 'development',
   },
   'iife-prod': {
-    outFile: 'index.min.js',
+    outFile: 'resource-manager.min.js',
     format: 'iife',
     mode: 'production',
   },
   es: {
-    outFile: 'index.esm.js',
+    outFile: 'resource-manager.esm.js',
     format: 'es',
     mode: 'development',
   },
@@ -88,7 +88,7 @@ function genConfig({ outFile, format, mode }, clean = false) {
         tsconfig: path.resolve(__dirname, './tsconfig.dist.json'),
         rollupCommonJSResolveHack: true,
         useTsconfigDeclarationDir: true,
-        typescript: require('../../node_modules/typescript'),
+        typescript: require('typescript'),
       }),
       // commonjs => es6
       commonjs(),
