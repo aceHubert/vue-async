@@ -37,7 +37,7 @@ export default function (Vue: typeof _Vue, store: Store<any>) {
      */
     remove(name: string, position?: string) {
       if (typeof name !== 'string') {
-        return error(isProduction, 'dynamicComponent function "remoce" only accept string name of component as param.');
+        return error(isProduction, 'dynamicComponent function "remove" only accept string name of component as param.');
       }
       store.commit(`${namespaces}/remove`, {
         name,
