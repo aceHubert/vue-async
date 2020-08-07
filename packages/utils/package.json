@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Utils.",
   "main": "dist/utils.common.ts",
