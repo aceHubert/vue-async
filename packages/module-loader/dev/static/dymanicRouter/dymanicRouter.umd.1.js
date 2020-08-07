@@ -1,7 +1,69 @@
 ((typeof self !== 'undefined' ? self : this)['webpackJsonpdymanicRouter'] =
   (typeof self !== 'undefined' ? self : this)['webpackJsonpdymanicRouter'] || []).push([
-  [2],
+  [1],
   {
+    /***/ '25c9': /***/ function (module, __webpack_exports__, __webpack_require__) {
+      'use strict';
+      __webpack_require__.r(__webpack_exports__);
+
+      // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2ae3de80-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicRouter/pages/pageA.vue?vue&type=template&id=6f39087b&
+      var render = function () {
+        var _vm = this;
+        var _h = _vm.$createElement;
+        var _c = _vm._self._c || _h;
+        return _c(
+          'div',
+          { staticClass: 'page-a' },
+          [
+            _c('h1', { staticClass: 'title' }, [_vm._v('Page A')]),
+            _c('router-link', { attrs: { to: { name: 'remote-page-b' } } }, [_vm._v('to pageB')]),
+          ],
+          1,
+        );
+      };
+      var staticRenderFns = [];
+
+      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageA.vue?vue&type=template&id=6f39087b&
+
+      // EXTERNAL MODULE: ./src/dymanicRouter/pages/styles/pageA.less
+      var pageA = __webpack_require__('b3a6');
+
+      // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicRouter/pages/pageA.vue?vue&type=script&lang=js&
+      //
+      //
+      //
+      //
+      //
+      //
+      //
+
+      /* harmony default export */ var pageAvue_type_script_lang_js_ = {
+        name: 'page-a',
+      };
+      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageA.vue?vue&type=script&lang=js&
+      /* harmony default export */ var pages_pageAvue_type_script_lang_js_ = pageAvue_type_script_lang_js_;
+      // EXTERNAL MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
+      var componentNormalizer = __webpack_require__('2877');
+
+      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageA.vue
+
+      /* normalize component */
+
+      var component = Object(componentNormalizer['a' /* default */])(
+        pages_pageAvue_type_script_lang_js_,
+        render,
+        staticRenderFns,
+        false,
+        null,
+        null,
+        null,
+      );
+
+      /* harmony default export */ var pages_pageA = (__webpack_exports__['default'] = component.exports);
+
+      /***/
+    },
+
     /***/ '2877': /***/ function (module, __webpack_exports__, __webpack_require__) {
       'use strict';
       /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, 'a', function () {
@@ -103,58 +165,8 @@
       /***/
     },
 
-    /***/ '88c6': /***/ function (module, __webpack_exports__, __webpack_require__) {
-      'use strict';
-      __webpack_require__.r(__webpack_exports__);
-
-      // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"4888ae4d-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicRouter/pages/pageB.vue?vue&type=template&id=ab1fc6a2&
-      var render = function () {
-        var _vm = this;
-        var _h = _vm.$createElement;
-        var _c = _vm._self._c || _h;
-        return _c(
-          'div',
-          { staticClass: 'module-test' },
-          [_c('h1', [_vm._v('Page B')]), _c('router-link', { attrs: { to: '/' } }, [_vm._v('to index')])],
-          1,
-        );
-      };
-      var staticRenderFns = [];
-
-      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageB.vue?vue&type=template&id=ab1fc6a2&
-
-      // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicRouter/pages/pageB.vue?vue&type=script&lang=js&
-      //
-      //
-      //
-      //
-      //
-      //
-      //
-      /* harmony default export */ var pageBvue_type_script_lang_js_ = {
-        name: 'page-b',
-      };
-      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageB.vue?vue&type=script&lang=js&
-      /* harmony default export */ var pages_pageBvue_type_script_lang_js_ = pageBvue_type_script_lang_js_;
-      // EXTERNAL MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
-      var componentNormalizer = __webpack_require__('2877');
-
-      // CONCATENATED MODULE: ./src/dymanicRouter/pages/pageB.vue
-
-      /* normalize component */
-
-      var component = Object(componentNormalizer['a' /* default */])(
-        pages_pageBvue_type_script_lang_js_,
-        render,
-        staticRenderFns,
-        false,
-        null,
-        null,
-        null,
-      );
-
-      /* harmony default export */ var pageB = (__webpack_exports__['default'] = component.exports);
-
+    /***/ b3a6: /***/ function (module, exports, __webpack_require__) {
+      // extracted by mini-css-extract-plugin
       /***/
     },
   },

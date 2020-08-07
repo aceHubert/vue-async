@@ -1,8 +1,8 @@
 (function webpackUniversalModuleDefinition(root, factory) {
   if (typeof exports === 'object' && typeof module === 'object') module.exports = factory();
   else if (typeof define === 'function' && define.amd) define([], factory);
-  else if (typeof exports === 'object') exports['dymanicComponent'] = factory();
-  else root['dymanicComponent'] = factory();
+  else if (typeof exports === 'object') exports['componentB'] = factory();
+  else root['componentB'] = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   return /******/ (function (modules) {
     // webpackBootstrap
@@ -99,6 +99,21 @@
   })(
     /************************************************************************/
     /******/ {
+      /***/ '317b': /***/ function (module, __webpack_exports__, __webpack_require__) {
+        'use strict';
+        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_componentB_vue_vue_type_style_index_0_id_5340ad8a_lang_less_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+          'b413',
+        );
+        /* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_componentB_vue_vue_type_style_index_0_id_5340ad8a_lang_less_scoped_true___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/ __webpack_require__.n(
+          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_componentB_vue_vue_type_style_index_0_id_5340ad8a_lang_less_scoped_true___WEBPACK_IMPORTED_MODULE_0__,
+        );
+        /* unused harmony reexport * */
+        /* unused harmony default export */ var _unused_webpack_default_export =
+          _node_modules_mini_css_extract_plugin_dist_loader_js_ref_10_oneOf_1_0_node_modules_css_loader_dist_cjs_js_ref_10_oneOf_1_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_10_oneOf_1_2_node_modules_less_loader_dist_cjs_js_ref_10_oneOf_1_3_node_modules_cache_loader_dist_cjs_js_ref_0_0_node_modules_vue_loader_lib_index_js_vue_loader_options_componentB_vue_vue_type_style_index_0_id_5340ad8a_lang_less_scoped_true___WEBPACK_IMPORTED_MODULE_0___default.a;
+
+        /***/
+      },
+
       /***/ '8875': /***/ function (module, exports, __webpack_require__) {
         var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__; // addapted from the document.currentScript polyfill by Adam Miller
         // MIT license
@@ -181,6 +196,11 @@
         /***/
       },
 
+      /***/ b413: /***/ function (module, exports, __webpack_require__) {
+        // extracted by mini-css-extract-plugin
+        /***/
+      },
+
       /***/ fb15: /***/ function (module, __webpack_exports__, __webpack_require__) {
         'use strict';
         __webpack_require__.r(__webpack_exports__);
@@ -209,27 +229,30 @@
         // Indicate to webpack that this file can be concatenated
         /* harmony default export */ var setPublicPath = null;
 
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"4888ae4d-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/pluginA.vue?vue&type=template&id=28bc7948&
+        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"2ae3de80-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/componentB.vue?vue&type=template&id=5340ad8a&scoped=true&
         var render = function () {
           var _vm = this;
           var _h = _vm.$createElement;
           var _c = _vm._self._c || _h;
-          return _c('h1', [_vm._v('Plugin A from remote')]);
+          return _c('h1', { staticClass: 'green' }, [_vm._v('Remote Commponent B')]);
         };
         var staticRenderFns = [];
 
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginA.vue?vue&type=template&id=28bc7948&
+        // CONCATENATED MODULE: ./src/componentB.vue?vue&type=template&id=5340ad8a&scoped=true&
 
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/pluginA.vue?vue&type=script&lang=js&
+        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/componentB.vue?vue&type=script&lang=js&
         //
         //
         //
         //
-        /* harmony default export */ var pluginAvue_type_script_lang_js_ = {
-          name: 'plugin-a',
+        /* harmony default export */ var componentBvue_type_script_lang_js_ = {
+          name: 'commponent-b',
         };
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginA.vue?vue&type=script&lang=js&
-        /* harmony default export */ var components_pluginAvue_type_script_lang_js_ = pluginAvue_type_script_lang_js_;
+        // CONCATENATED MODULE: ./src/componentB.vue?vue&type=script&lang=js&
+        /* harmony default export */ var src_componentBvue_type_script_lang_js_ = componentBvue_type_script_lang_js_;
+        // EXTERNAL MODULE: ./src/componentB.vue?vue&type=style&index=0&id=5340ad8a&lang=less&scoped=true&
+        var componentBvue_type_style_index_0_id_5340ad8a_lang_less_scoped_true_ = __webpack_require__('317b');
+
         // CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
         /* globals __VUE_SSR_CONTEXT__ */
 
@@ -324,81 +347,24 @@
           };
         }
 
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginA.vue
+        // CONCATENATED MODULE: ./src/componentB.vue
 
         /* normalize component */
 
         var component = normalizeComponent(
-          components_pluginAvue_type_script_lang_js_,
+          src_componentBvue_type_script_lang_js_,
           render,
           staticRenderFns,
           false,
           null,
-          null,
-          null,
-        );
-
-        /* harmony default export */ var pluginA = component.exports;
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"4888ae4d-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/pluginB.vue?vue&type=template&id=ddfca9c2&
-        var pluginBvue_type_template_id_ddfca9c2_render = function () {
-          var _vm = this;
-          var _h = _vm.$createElement;
-          var _c = _vm._self._c || _h;
-          return _c('h1', [_vm._v('Plugin B from remote')]);
-        };
-        var pluginBvue_type_template_id_ddfca9c2_staticRenderFns = [];
-
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginB.vue?vue&type=template&id=ddfca9c2&
-
-        // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/pluginB.vue?vue&type=script&lang=js&
-        //
-        //
-        //
-        //
-        /* harmony default export */ var pluginBvue_type_script_lang_js_ = {
-          name: 'plugin-b',
-        };
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginB.vue?vue&type=script&lang=js&
-        /* harmony default export */ var components_pluginBvue_type_script_lang_js_ = pluginBvue_type_script_lang_js_;
-        // CONCATENATED MODULE: ./src/dymanicComponent/components/pluginB.vue
-
-        /* normalize component */
-
-        var pluginB_component = normalizeComponent(
-          components_pluginBvue_type_script_lang_js_,
-          pluginBvue_type_template_id_ddfca9c2_render,
-          pluginBvue_type_template_id_ddfca9c2_staticRenderFns,
-          false,
-          null,
-          null,
+          '5340ad8a',
           null,
         );
 
-        /* harmony default export */ var pluginB = pluginB_component.exports;
-        // CONCATENATED MODULE: ./src/dymanicComponent/index.js
-
-        // 导出模块函数
-        // 参数Vue: vue构造对象
-        // 本函数中的this指向主程序 vue root实例的引用
-
-        /* harmony default export */ var dymanicComponent = function (Vue) {
-          // 动态添加组件
-          // 组件为对象时 component 为必须的，其它参数与主程序协议一致
-          this.$dynamicComponent.add(pluginA, 'dashboard');
-          this.$dynamicComponent.add(
-            {
-              component: pluginB,
-              cols: 2,
-              icon: 'mdi-home',
-              title: '自定义标题',
-              type: 'card',
-            },
-            'dashboard',
-          ); // 其他逻辑
-        };
+        /* harmony default export */ var componentB = component.exports;
         // CONCATENATED MODULE: ./node_modules/@vue/cli-service/lib/commands/build/entry-lib.js
 
-        /* harmony default export */ var entry_lib = (__webpack_exports__['default'] = dymanicComponent);
+        /* harmony default export */ var entry_lib = (__webpack_exports__['default'] = componentB);
 
         /***/
       },
