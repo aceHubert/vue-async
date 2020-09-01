@@ -22,7 +22,7 @@ export default function (Vue: typeof _Vue, store: Store<any>) {
       if (!(typeof component === 'object' || typeof component === 'function')) {
         return error(
           isProduction,
-          'dynamicComponent function "add" only accept object or function component as param.',
+          '[moduleLoader] dynamicComponent function "add" only accept object or function component as param.',
         );
       }
       store.commit(`${namespaces}/add`, {
@@ -37,7 +37,10 @@ export default function (Vue: typeof _Vue, store: Store<any>) {
      */
     remove(name: string, position?: string) {
       if (typeof name !== 'string') {
-        return error(isProduction, 'dynamicComponent function "remove" only accept string name of component as param.');
+        return error(
+          isProduction,
+          '[moduleLoader] dynamicComponent function "remove" only accept string name of component as param.',
+        );
       }
       store.commit(`${namespaces}/remove`, {
         name,

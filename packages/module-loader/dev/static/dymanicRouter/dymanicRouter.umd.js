@@ -58,6 +58,7 @@
     /******/
     /******/
     /******/ /******/ function jsonpScriptSrc(chunkId) {
+      console.log(__webpack_require__.p);
       /******/ return __webpack_require__.p + 'dymanicRouter.umd.' + ({}[chunkId] || chunkId) + '.js';
       /******/
     } // The require function
@@ -2351,6 +2352,7 @@
           }
 
           var src = currentScript && currentScript.src.match(/(.+\/)[^/]+\.js(\?.*)?$/);
+
           if (src) {
             __webpack_require__.p = src[1]; // eslint-disable-line
           }

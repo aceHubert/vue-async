@@ -17,7 +17,7 @@ export default function install(Vue: VueConstructor) {
     data() {
       return {
         status: {
-          current: false,
+          current: false, // 管理 modules 是否已经加载完，处理路由需要
         },
       };
     },
@@ -33,40 +33,27 @@ export default function install(Vue: VueConstructor) {
       writable: false,
     },
     $componentLoader: {
-      value: createComponentLoader(),
+      value: createComponentLoader(Vue),
       writable: false,
     },
   });
 
-  // router
+  /**
+   * router注入（当路由被注册注入时，必须调用$moduleLoaser至少一次，否则 status 状态无法变更造成路由被阻止）
+   * @param router
+   */
   const routerInject = (router: VueRouter) => {
-    // 解决动态路由404问题
-    const resolveRoute = (
-      to: Route,
-      from: Route,
-      next: (to?: RawLocation | false | ((vm: InstanceType<VueConstructor>) => void) | void) => void,
-    ) => {
-      const fullPath = to.redirectedFrom || to.fullPath;
-      const { resolved, location } = router.resolve(fullPath);
-      // 在加载完组件后resolve的地址与原来要跳转的地址不一致时跳转
-      // 以免造成404死循环
-      if (resolved.name !== to.name) {
-        next(location);
-      } else {
-        next();
-      }
-    };
-
-    router.beforeEach((to, from, next) => {
-      if (!to.name || to.name === '404' || to.name === 'page-not-found' || to.path === '*') {
+    return router.beforeEach((to, from, next) => {
+      if (!to.name || to.name === '404' || to.name === 'page-not-found' || to.name === 'not-found' || to.path === '*') {
         // 模块已经被加载完成, 但由于在其之前添加 beforeEach 阻止时间过长，vm.$watch还没开始监听
         if (vm.status.current) {
-          resolveRoute(to, from, next);
+          return resolveRoute(to, from, next);
         }
+        // 当 status 为 false 时watch状态
         vm.$watch(
           () => vm.status.current,
           (newVal, oldVal) => {
-            // false => true
+            // 从false => true状态
             if (newVal && !oldVal) {
               resolveRoute(to, from, next);
             }
@@ -76,9 +63,29 @@ export default function install(Vue: VueConstructor) {
         next();
       }
     });
+
+    // 解决动态路由404问题
+    function resolveRoute(
+      to: Route,
+      from: Route,
+      next: (to?: RawLocation | false | ((vm: InstanceType<VueConstructor>) => void) | void) => void,
+    ) {
+      const fullPath = to.redirectedFrom || to.fullPath;
+      const { resolved, location } = router.resolve(fullPath);
+      // 在加载完组件后resolve的地址与原来要跳转的地址不一致时跳转
+      // 以免造成404死循环
+      if (resolved.name !== to.name) {
+        next(location);
+      } else {
+        next();
+      }
+    }
   };
 
-  // store
+  /**
+   * store 注入
+   * 添加 $dynamicComponent 方法
+   */
   const storeInject = (store: Store<unknown>) => {
     store.registerModule(dynamicComponentPath, dynamicComponentState);
     // define $dynamicComponent
@@ -89,8 +96,10 @@ export default function install(Vue: VueConstructor) {
   };
 
   const _init = Vue.prototype._init;
+  /**
+   * 从 Vue root option 中获取 router | store 实例
+   */
   Vue.prototype._init = function (options: any = {}) {
-    // 从 Vue root option 中获取 router | store 实例
     // router beforeEach 需要在 beforeCreate 之前添加，才能在页面强制刷新时第一次生效
     if (options.router) {
       routerInject(options.router);

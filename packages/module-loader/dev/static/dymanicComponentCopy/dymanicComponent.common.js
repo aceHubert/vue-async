@@ -1,14 +1,5 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["dymanicComponent"] = factory();
-	else
-		root["dymanicComponent"] = factory();
-})((typeof self !== 'undefined' ? self : this), function() {
-return /******/ (function(modules) { // webpackBootstrap
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -124,7 +115,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
     if (document.currentScript) {
       return document.currentScript
     }
-
+  
     // IE 8-10 support script readyState
     // IE 11+ & Firefox support stack trace
     try {
@@ -142,24 +133,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         inlineScriptSourceRegExp,
         inlineScriptSource,
         scripts = document.getElementsByTagName('script'); // Live NodeList collection
-
+  
       if (scriptLocation === currentLocation) {
         pageSource = document.documentElement.outerHTML;
         inlineScriptSourceRegExp = new RegExp('(?:[^\\n]+?\\n){0,' + (line - 2) + '}[^<]*<script>([\\d\\D]*?)<\\/script>[\\d\\D]*', 'i');
         inlineScriptSource = pageSource.replace(inlineScriptSourceRegExp, '$1').trim();
       }
-
+  
       for (var i = 0; i < scripts.length; i++) {
         // If ready state is interactive, return the script tag
         if (scripts[i].readyState === 'interactive') {
           return scripts[i];
         }
-
+  
         // If src matches, return the script tag
         if (scripts[i].src === scriptLocation) {
           return scripts[i];
         }
-
+  
         // If inline source matches, return the script tag
         if (
           scriptLocation === currentLocation &&
@@ -169,7 +160,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
           return scripts[i];
         }
       }
-
+  
       // If no match, return null
       return null;
     }
@@ -211,12 +202,12 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"7f8c6244-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/componentA.vue?vue&type=template&id=5a395bc7&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"7f8c6244-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/componentA.vue?vue&type=template&id=87e5cb0e&
 var render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('h1',{staticClass:"component-a"},[_vm._v("dymanic component A")])}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/dymanicComponent/components/componentA.vue?vue&type=template&id=5a395bc7&
+// CONCATENATED MODULE: ./src/dymanicComponent/components/componentA.vue?vue&type=template&id=87e5cb0e&
 
 // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js??ref--12-0!./node_modules/thread-loader/dist/cjs.js!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/componentA.vue?vue&type=script&lang=js&
 //
@@ -224,10 +215,10 @@ var staticRenderFns = []
 //
 //
 /* harmony default export */ var componentAvue_type_script_lang_js_ = ({
-  name: 'component-a'
+  name: 'dymanic-component-a'
 });
 // CONCATENATED MODULE: ./src/dymanicComponent/components/componentA.vue?vue&type=script&lang=js&
- /* harmony default export */ var components_componentAvue_type_script_lang_js_ = (componentAvue_type_script_lang_js_);
+ /* harmony default export */ var components_componentAvue_type_script_lang_js_ = (componentAvue_type_script_lang_js_); 
 // CONCATENATED MODULE: ./node_modules/vue-loader/lib/runtime/componentNormalizer.js
 /* globals __VUE_SSR_CONTEXT__ */
 
@@ -344,12 +335,12 @@ var component = normalizeComponent(
   null,
   null,
   null
-
+  
 )
 
 /* harmony default export */ var componentA = (component.exports);
 // CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"7f8c6244-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/dymanicComponent/components/componentB.vue?vue&type=template&id=06bb1ffc&
-var componentBvue_type_template_id_06bb1ffc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('h1',{staticClass:"component-b"},[_vm._v("dymanic component B")])}
+var componentBvue_type_template_id_06bb1ffc_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('h1',{staticClass:"component-b"},[_vm._v("dymanic component A")])}
 var componentBvue_type_template_id_06bb1ffc_staticRenderFns = []
 
 
@@ -364,7 +355,7 @@ var componentBvue_type_template_id_06bb1ffc_staticRenderFns = []
   name: 'dymanic-component-b'
 });
 // CONCATENATED MODULE: ./src/dymanicComponent/components/componentB.vue?vue&type=script&lang=js&
- /* harmony default export */ var components_componentBvue_type_script_lang_js_ = (componentBvue_type_script_lang_js_);
+ /* harmony default export */ var components_componentBvue_type_script_lang_js_ = (componentBvue_type_script_lang_js_); 
 // CONCATENATED MODULE: ./src/dymanicComponent/components/componentB.vue
 
 
@@ -381,7 +372,7 @@ var componentB_component = normalizeComponent(
   null,
   null,
   null
-
+  
 )
 
 /* harmony default export */ var componentB = (componentB_component.exports);
@@ -399,9 +390,13 @@ var dymanicComponent = __webpack_require__("81e3");
 /* harmony default export */ var src_dymanicComponent = (function (Vue) {
   // 动态添加组件
   // 组件为对象时 component 为必须的，其它参数与主程序协议一致
-  this.$dynamicComponent.add(componentA, 'dashboard');
+  this.$dynamicComponent.add({
+    component: componentA,
+    name: 'dymanic-component-a-copy'
+  }, 'dashboard');
   this.$dynamicComponent.add({
     component: componentB,
+    name: 'dymanic-component-b-copy',
     cols: 2,
     icon: 'mdi-home',
     title: '自定义标题(extract css)',
@@ -418,4 +413,3 @@ var dymanicComponent = __webpack_require__("81e3");
 /***/ })
 
 /******/ })["default"];
-});

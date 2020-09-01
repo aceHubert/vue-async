@@ -1,7 +1,7 @@
 {
   "verbose": true,
-  "setupFiles": ["<rootDir>/test/setEnv.ts"],
-  "setupFilesAfterEnv": ["<rootDir>/test/helpers/wait-for-update.ts"],
+  "setupFiles": ["<rootDir>/test/setupTest.js"],
+  "setupFilesAfterEnv": ["<rootDir>/test/helpers/wait-for-update.js"],
   "moduleFileExtensions": ["ts", "js"],
   "testMatch": ["<rootDir>/test/**/*.(test|spec).{js,ts}"],
   "transform": {},

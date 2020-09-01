@@ -1,8 +1,9 @@
 {
   "extends": "./tsconfig",
   "compilerOptions": {
+    "target": "es5",
     "module": "commonjs",
     "types": ["node", "jest", "vue"]
   },
-  "include": ["test/**/*.spec.ts", "test/helpers/*.ts", "types"]
+  "include": ["test/**/*.spec.ts", "test/helpers/*.ts", "src/**/*.d.ts", "types"]
 }

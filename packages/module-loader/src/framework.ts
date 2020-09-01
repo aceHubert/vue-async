@@ -1,25 +1,25 @@
 import _Vue, { Component as VueComponent, AsyncComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
 import { error, warn, hasOwn, isPlainObject } from '@vue-async/utils';
-import { Framework, ModuleLoaderOptions } from '../types';
+import { Framework, ModuleLoaderExtension } from '../types';
 import install from './install';
 
-export default class ModuleLoader<ExtraOptions = Record<string, any>> {
+export default class ModuleLoader<T = Record<string, any>> {
   static install = install;
   static installed = false;
   static version = '__VERSION__';
 
-  private _options: ModuleLoaderOptions<ExtraOptions>;
+  private _options: ModuleLoaderExtension<T>;
   private _framework: Record<string, any> = {
     layouts: {},
   };
 
-  constructor(options: ModuleLoaderOptions<ExtraOptions>) {
+  constructor(options: ModuleLoaderExtension<T>) {
     this._options = options;
   }
 
   get framework() {
-    return this._framework as Framework & ExtraOptions;
+    return this._framework as Framework & T;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

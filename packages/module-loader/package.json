@@ -27,7 +27,7 @@
     "build": "rollup -c",
     "build:es": "cross-env TARGET=es rollup -c",
     "release": "bash scripts/release.sh",
-    "test": "cd ../../ && cross-env NODE_ENV=test jest --passWithNoTests --config packages/module-loader/jest.config.json",
+    "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
   },

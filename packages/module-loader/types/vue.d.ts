@@ -3,11 +3,11 @@
  */
 
 import Vue, { Component as VueComponent } from 'vue';
-import { ModuleLoader, Modules, DynamicComponent } from './module';
+import { ModuleLoader, Modules, ModuleLoaderOption, DynamicComponent } from './module';
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $moduleLoader: (moduleData: Modules) => Promise<void>;
+    $moduleLoader: (moduleConfig: Modules, opts: ModuleLoaderOption) => Promise<void>;
     $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
     $moduleLoadManager: ModuleLoader['framework'];
     $dynamicComponent: {
