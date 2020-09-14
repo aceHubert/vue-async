@@ -23,7 +23,7 @@
     "types/*.d.ts"
   ],
   "scripts": {
-    "serve": "rollup -c ./rollup.config.dev.js -w",
+    "serve": "concurrently --raw \"node ./dev/server/index.js\"  \"rollup -c ./rollup.config.dev.js -w\"",
     "build": "rollup -c",
     "build:es": "cross-env TARGET=es rollup -c",
     "release": "bash scripts/release.sh",

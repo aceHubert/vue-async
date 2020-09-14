@@ -20,8 +20,6 @@ type Lifecycles = {
   // unmount: () => void;
 };
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 /** 格式化模块配置 */
 function formatModules(modules: Modules, errorCallback: ModuleLoaderOption['error'] = () => {}): FormatModuleData[] {
   if (Array.isArray(modules)) {
@@ -86,7 +84,7 @@ function getLifecyclesFromExports(scriptExports: any, moduleName: string, global
   }
 
   globalWarn(
-    isProduction,
+    true,
     `[moduleLoader] lifecycle not found from ${moduleName} entry exports, fallback to get from window['${moduleName}']`,
   );
 
@@ -104,9 +102,10 @@ function getLifecyclesFromExports(scriptExports: any, moduleName: string, global
 export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
   return function loader(this: VueConstructor, modules: Modules, opts: ModuleLoaderOption = {}): Promise<void> {
     const {
+      sync,
       success,
       error = (msg: string) => {
-        globalError(isProduction, msg);
+        globalError(true, msg);
       },
     } = opts;
 
@@ -117,13 +116,22 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
     // todo: load in sandbox
     const global = window;
 
-    return new Promise((resolve) =>
-      Promise.all(_modules.map((module) => exec(module)))
-        .then(() => {
+    // 按顺序同步执行
+    if (sync === true) {
+      return new Promise((resolve) =>
+        schedule(0, () => {
           status.current = true;
-        })
-        .then(success || resolve),
-    );
+          success ? success() : resolve();
+        }),
+      );
+    } else {
+      return new Promise((resolve) =>
+        Promise.all(_modules.map((module) => exec(module))).then(() => {
+          status.current = true;
+          success ? success() : resolve();
+        }),
+      );
+    }
 
     function exec(module: FormatModuleData) {
       // local module
@@ -157,6 +165,16 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
               error(err.message, module);
             } catch {}
           });
+      }
+    }
+
+    function schedule(index: number, resolve: () => void) {
+      if (index < _modules.length) {
+        exec(_modules[index]).then(() => {
+          schedule(index + 1, resolve);
+        });
+      } else {
+        resolve();
       }
     }
   };

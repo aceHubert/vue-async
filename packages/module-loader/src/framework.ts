@@ -1,4 +1,4 @@
-import _Vue, { Component as VueComponent, AsyncComponent } from 'vue';
+import { VueConstructor, Component as VueComponent, AsyncComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
 import { error, warn, hasOwn, isPlainObject } from '@vue-async/utils';
 import { Framework, ModuleLoaderExtension } from '../types';
@@ -23,7 +23,7 @@ export default class ModuleLoader<T = Record<string, any>> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  init(root: _Vue, ssrContext: any) {
+  init(root: InstanceType<VueConstructor>, ssrContext: any) {
     this._options &&
       Object.entries(this._options).map(([key, value]) => {
         if (!hasOwn(this._framework, key)) {
@@ -38,7 +38,7 @@ export default class ModuleLoader<T = Record<string, any>> {
     !hasOwn(this._framework, 'addLayouts') && (this._framework.addLayouts = this._createAddLayouts(root));
   }
 
-  private _createAddRoutes(root: _Vue) {
+  private _createAddRoutes(root: InstanceType<VueConstructor>) {
     return (routes: RouteConfig[]) => {
       if (root.$router) {
         root.$router.addRoutes(routes);
@@ -48,7 +48,7 @@ export default class ModuleLoader<T = Record<string, any>> {
     };
   }
 
-  private _createAddLayouts(root: _Vue) {
+  private _createAddLayouts(root: InstanceType<VueConstructor>) {
     return (key: string | Record<string, VueComponent | AsyncComponent>, layout: VueComponent | AsyncComponent) => {
       if (typeof key === 'string') {
         root.$set(this._framework.layouts, key, layout);

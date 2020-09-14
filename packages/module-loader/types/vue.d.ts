@@ -7,7 +7,7 @@ import { ModuleLoader, Modules, ModuleLoaderOption, DynamicComponent } from './m
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $moduleLoader: (moduleConfig: Modules, opts: ModuleLoaderOption) => Promise<void>;
+    $moduleLoader: (moduleConfig: Modules, opts?: ModuleLoaderOption) => Promise<void>;
     $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
     $moduleLoadManager: ModuleLoader['framework'];
     $dynamicComponent: {

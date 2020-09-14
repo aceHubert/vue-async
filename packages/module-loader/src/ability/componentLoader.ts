@@ -5,8 +5,6 @@ import Vue, { VueConstructor, Component as VueComponent } from 'vue';
 import { warn as globalWarn, isPlainObject, isFunction, hasOwn } from '@vue-async/utils';
 import { execScript } from '../utils';
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 /** 验证组件导出是否正确 */
 function validateExportComponent(exports: any) {
   const _export = (exports && exports.default) || exports;
@@ -15,8 +13,9 @@ function validateExportComponent(exports: any) {
       Object.keys(_export).length > 0 &&
       (hasOwn(_export, 'template') ||
       hasOwn(_export, 'render') || // component definition
-      hasOwn(_export, 'component') || // AsyncComponentFactory
-        isFunction(_export)) // AsyncComponentPromise
+        isFunction(_export)) // Vue.extend
+      // hasOwn(_export, 'component') || // AsyncComponentFactory
+      //   isFunction(_export)) // AsyncComponentPromise
     );
   } else {
     return _export instanceof Vue;
@@ -30,7 +29,7 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
   }
 
   globalWarn(
-    isProduction,
+    true,
     `[moduleLoader] component not found from ${componentName} entry exports, fallback to get from window['${componentName}']`,
   );
 

@@ -1,7 +1,7 @@
 /**
  * dynamicComponent
  */
-import _Vue from 'vue';
+import { VueConstructor } from 'vue';
 import { Store } from 'vuex';
 import { error } from '@vue-async/utils';
 import { DynamicComponent } from '../../../types';
@@ -11,7 +11,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 export const namespaces = 'dynamicComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function (Vue: typeof _Vue, store: Store<any>) {
+export default function (Vue: VueConstructor, store: Store<any>) {
   return {
     /**
      * add component to store
