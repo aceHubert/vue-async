@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader Core.",
   "main": "module-loader.common.ts",
@@ -52,6 +52,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "19741c3847384b050de609cc9daef98c068c14ab"
+  }
 }
