@@ -1,6 +1,6 @@
 {
   "name": "vue-async",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Vue Async",
   "private": true,
   "repository": {
@@ -85,6 +85,11 @@
     "packages": [
       "packages/*",
       "docs"
+    ],
+    "nohoist": [
+      "@vue-async/module-loader/nuxt",
+      "@vue-async/module-loader/nuxt/**",
+      "@vue-async/module-loader/@nuxt/types"
     ]
   }
 }
