@@ -2,25 +2,13 @@
  * Augment the typings of Vue.js
  */
 
-import Vue, { Component as VueComponent } from 'vue';
-import { ModuleLoader, Modules, ModuleLoaderOption, DynamicComponent } from './module';
+import Vue from 'vue';
+import { ModuleLoader, Modules, ModuleLoaderOption, ModuleContext } from './module';
 
 declare module 'vue/types/vue' {
-  interface Vue {
+  interface Vue extends ModuleContext {
     $moduleLoader: (moduleConfig: Modules, opts?: ModuleLoaderOption) => Promise<void>;
-    $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
     $moduleLoadManager: ModuleLoader['framework'];
-    $dynamicComponent: {
-      add: (component: DynamicComponent, position?: string) => void;
-      remove: (name: string, position?: string) => void;
-    };
-    $eventBus: {
-      emit: (eventName: string, playload: any) => void;
-      on: (eventName: string, handler: (playload: any) => void) => void;
-      off: (eventName: string, handler: (playload: any) => void) => void;
-      clear: () => void;
-      getEvents: () => Record<string, any>;
-    };
   }
 }
 

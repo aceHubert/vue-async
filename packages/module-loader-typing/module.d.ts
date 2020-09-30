@@ -6,6 +6,21 @@ export type DynamicComponent =
   | AsyncComponent
   | ({ component: VueComponent | AsyncComponent; name?: string } & Record<string, any>);
 
+export interface ModuleContext {
+  $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
+  $dynamicComponent?: {
+    add: (component: DynamicComponent, position?: string) => void;
+    remove: (name: string, position?: string) => void;
+  };
+  $eventBus: {
+    emit: (eventName: string, playload: any) => void;
+    on: (eventName: string, handler: (playload: any) => void) => void;
+    off: (eventName: string, handler: (playload: any) => void) => void;
+    clear: () => void;
+    getEvents: () => Record<string, any>;
+  };
+}
+
 export interface Framework {
   readonly layouts: Record<string, VueComponent | AsyncComponent>;
   addRouters: (routes: RouteConfig[]) => void; // 可以被重写

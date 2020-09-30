@@ -11,6 +11,7 @@ import clear from 'rollup-plugin-clear';
 import lisence from 'rollup-plugin-license';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
+const isProd = process.env.BUILD === 'production';
 const packageConfig = require('./package.json');
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
@@ -20,11 +21,11 @@ export const builds = {
     format: 'cjs',
     mode: 'development',
   },
-  'cjs-prod': {
-    outFile: 'module-loader.common.min.js',
-    format: 'cjs',
-    mode: 'production',
-  },
+  // 'cjs-prod': {
+  //   outFile: 'module-loader.common.min.js',
+  //   format: 'cjs',
+  //   mode: 'production',
+  // },
   'umd-dev': {
     outFile: 'module-loader.umd.js',
     format: 'umd',
@@ -54,7 +55,6 @@ export const builds = {
 
 // polyfill in iife mode
 export function genConfig({ outFile, format, mode }, clean = false) {
-  const isProd = mode === 'production';
   return {
     input: './src/index.ts',
     output: {
@@ -67,7 +67,7 @@ export function genConfig({ outFile, format, mode }, clean = false) {
       exports: 'named',
       name: format === 'umd' || format === 'iife' ? 'VueAsyncModuleLoader' : undefined,
     },
-    external: ['vue', '@vue-async/utils'],
+    external: ['vue', !(format === 'iife' || format === 'umd') && '@vue-async/utils'].filter(Boolean),
     plugins: [
       clean &&
         clear({
@@ -93,7 +93,7 @@ export function genConfig({ outFile, format, mode }, clean = false) {
       }),
       // commonjs => es6
       commonjs(),
-      format === 'iife' &&
+      (format === 'iife' || format === 'umd') &&
         babel({
           // https://babeljs.io/docs/en/options#rootMode
           rootMode: 'upward', // 向上级查找 babel.config.js
@@ -103,11 +103,15 @@ export function genConfig({ outFile, format, mode }, clean = false) {
         }),
       json(),
       replace({
-        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+        ...(format === 'iife' || format === 'umd'
+          ? {
+              'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+            }
+          : null),
         __VERSION__: packageConfig.version,
       }),
       // minimize files
-      isProd && terser(),
+      mode === 'production' && terser(),
       // add banner
       lisence({
         banner: {

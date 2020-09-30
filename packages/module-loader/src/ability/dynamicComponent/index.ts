@@ -6,8 +6,6 @@ import { Store } from 'vuex';
 import { error } from '@vue-async/utils';
 import { DynamicComponent } from '../../../types';
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 export const namespaces = 'dynamicComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,7 +19,7 @@ export default function (Vue: VueConstructor, store: Store<any>) {
     add(component: DynamicComponent, position?: string) {
       if (!(typeof component === 'object' || typeof component === 'function')) {
         return error(
-          isProduction,
+          process.env.NODE_ENV === 'production',
           '[moduleLoader] dynamicComponent function "add" only accept object or function component as param.',
         );
       }
@@ -38,7 +36,7 @@ export default function (Vue: VueConstructor, store: Store<any>) {
     remove(name: string, position?: string) {
       if (typeof name !== 'string') {
         return error(
-          isProduction,
+          process.env.NODE_ENV === 'production',
           '[moduleLoader] dynamicComponent function "remove" only accept string name of component as param.',
         );
       }

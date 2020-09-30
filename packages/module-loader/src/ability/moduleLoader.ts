@@ -3,7 +3,8 @@
  */
 import { VueConstructor } from 'vue';
 import { error as globalError, warn as globalWarn, isPlainObject, isFunction } from '@vue-async/utils';
-import { execStyles, execScript } from '../utils';
+import vm from 'vm';
+import * as spa from '../utils/spa';
 
 // Types
 import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from '../../types';
@@ -77,19 +78,23 @@ function validateExportLifecycle(exports: any) {
 }
 
 /** 获取生命周期对象 */
-function getLifecyclesFromExports(scriptExports: any, moduleName: string, global: WindowProxy): Lifecycles {
+function getLifecyclesFromExports(
+  scriptExports: any,
+  moduleName: string,
+  global: WindowProxy | vm.Context,
+): Lifecycles {
   if (validateExportLifecycle(scriptExports)) {
     const _export = (scriptExports && scriptExports.default) || scriptExports;
     return isFunction(_export) ? { bootstrap: _export } : scriptExports;
   }
 
   globalWarn(
-    true,
+    process.env.NODE_ENV === 'production',
     `[moduleLoader] lifecycle not found from ${moduleName} entry exports, fallback to get from window['${moduleName}']`,
   );
 
   // fallback to global variable who named with ${moduleName} while module exports not found
-  const globalVariableExports = (global as any)[moduleName];
+  const globalVariableExports = global.exports ? global.exports[moduleName] : global[moduleName];
 
   if (validateExportLifecycle(globalVariableExports)) {
     const _export = (globalVariableExports && globalVariableExports.default) || globalVariableExports;
@@ -100,7 +105,7 @@ function getLifecyclesFromExports(scriptExports: any, moduleName: string, global
 }
 
 export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
-  return function loader(this: VueConstructor, modules: Modules, opts: ModuleLoaderOption = {}): Promise<void> {
+  return function loader(this: unknown, modules: Modules, opts: ModuleLoaderOption = {}): Promise<void> {
     const {
       sync,
       success,
@@ -113,8 +118,6 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _self = this;
     const _modules = formatModules(modules, error);
-    // todo: load in sandbox
-    const global = window;
 
     // 按顺序同步执行
     if (sync === true) {
@@ -144,27 +147,45 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
       }
       // remote module
       else {
+        const { moduleName, entry, styles = [], args } = module;
         // server render
         if (Vue.prototype.$isServer) {
+          // todo: ssr
           return Promise.resolve();
+          // const global = ssr.createSandbox();
+          // return ssr
+          //   .execScript(entry, global)
+          //   .then((scriptExports) => {
+          //     const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+          //     bootstrap.call(_self, Vue, args);
+          //   })
+          //   .catch((err) => {
+          //     // 异常不阻止当前执行，error 中处理
+          //     try {
+          //       error(err.message, module);
+          //     } catch {}
+          //   });
+        } else {
+          // todo: load in sandbox
+          const global = window;
+
+          // load styles
+          spa.execStyles(styles, moduleName);
+
+          // exec script
+          return spa
+            .execScript(entry, global)
+            .then((scriptExports) => {
+              const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+              bootstrap.call(_self, Vue, args);
+            })
+            .catch((err) => {
+              // 异常不阻止当前执行，error 中处理
+              try {
+                error(err.message, module);
+              } catch {}
+            });
         }
-
-        const { moduleName, entry, styles = [], args } = module;
-        // load styles
-        execStyles(styles, moduleName);
-
-        // exec script
-        return execScript(entry, global)
-          .then((scriptExports) => {
-            const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-            bootstrap.call(_self, Vue, args);
-          })
-          .catch((err) => {
-            // 异常不阻止当前执行，error 中处理
-            try {
-              error(err.message, module);
-            } catch {}
-          });
       }
     }
 

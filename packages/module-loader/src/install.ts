@@ -5,14 +5,15 @@ import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';
+import ModuleLoader from './framework';
 import { Store } from 'vuex';
 import VueRouter from 'vue-router';
 
-export default function install(Vue: VueConstructor) {
+export default function install(this: typeof ModuleLoader, Vue: VueConstructor) {
   if ((install as any).installed) return;
   (install as any).installed = true;
 
-  // 用于监听模块加载的情况，处理路由404问题
+  // 监听模块加载的情况，处理路由404问题
   const vm = new Vue({
     data() {
       return {
@@ -24,17 +25,66 @@ export default function install(Vue: VueConstructor) {
   });
 
   Object.defineProperties(Vue.prototype, {
-    $eventBus: {
-      value: createEventBus(Vue),
-      writable: false,
-    },
     $moduleLoader: {
       value: createModuleLoader(Vue, vm.status),
       writable: false,
+      enumerable: true,
+      configurable: true,
     },
     $componentLoader: {
       value: createComponentLoader(Vue),
       writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+    $eventBus: {
+      value: createEventBus(Vue),
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+  });
+
+  // 扩展 new ModuleLoader().load() 在 Vue 实例化之前加载模块
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const _self = this;
+  Object.defineProperties(_self.prototype, {
+    load: {
+      value: createModuleLoader(Vue, vm.status),
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+    // 需要主动注册 DynamicComponent
+    registerDynamicComponent: {
+      value: function (store: Store<any>) {
+        if (!store.hasModule(dynamicComponentPath)) {
+          store.registerModule(dynamicComponentPath, dynamicComponentState);
+          // define $dynamicComponent
+          Object.defineProperty(_self.prototype, '$dynamicComponent', {
+            value: dynamicComponent(Vue, store),
+            writable: false,
+            enumerable: true,
+            configurable: true,
+          });
+        }
+        return this;
+      },
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+    $componentLoader: {
+      value: createComponentLoader(Vue),
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+    $eventBus: {
+      value: createEventBus(Vue),
+      writable: false,
+      enumerable: true,
+      configurable: true,
     },
   });
 
@@ -45,7 +95,7 @@ export default function install(Vue: VueConstructor) {
   const routerInject = (router: VueRouter) => {
     return router.beforeEach((to, from, next) => {
       if (!to.name || to.name === '404' || to.name === 'page-not-found' || to.name === 'not-found' || to.path === '*') {
-        // 模块已经被加载完成, 但由于在其之前添加 beforeEach 阻止时间过长，vm.$watch还没开始监听
+        // 模块已经被加载完成, 但由于在其之前添加的 beforeEach 阻止时间过长，vm.$watch还没开始监听
         if (vm.status.current) {
           return resolveRoute(to, from, next);
         }
@@ -87,17 +137,21 @@ export default function install(Vue: VueConstructor) {
    * 添加 $dynamicComponent 方法
    */
   const storeInject = (store: Store<unknown>) => {
-    store.registerModule(dynamicComponentPath, dynamicComponentState);
-    // define $dynamicComponent
-    Object.defineProperty(Vue.prototype, '$dynamicComponent', {
-      value: dynamicComponent(Vue, store),
-      writable: false,
-    });
+    if (!store.hasModule(dynamicComponentPath)) {
+      store.registerModule(dynamicComponentPath, dynamicComponentState);
+      // define $dynamicComponent
+      Object.defineProperty(Vue.prototype, '$dynamicComponent', {
+        value: dynamicComponent(Vue, store),
+        writable: false,
+        enumerable: true,
+        configurable: true,
+      });
+    }
   };
 
   const _init = Vue.prototype._init;
   /**
-   * 从 Vue root option 中获取 router | store 实例
+   * 从 Vue root.options 中获取 router | store 实例
    */
   Vue.prototype._init = function (options: any = {}) {
     // router beforeEach 需要在 beforeCreate 之前添加，才能在页面强制刷新时第一次生效
@@ -117,7 +171,7 @@ export default function install(Vue: VueConstructor) {
   // eslint-disable-next-line @typescript-eslint/camelcase
   Vue.$__module_loader_installed__ = true;
 
-  if (window && !window.Vue) {
+  if (typeof window !== 'undefined' && !window.Vue) {
     window.Vue = Vue as any;
   }
 

@@ -1,44 +1,38 @@
-/**
- * router
- */
 import { Component as VueComponent } from 'vue';
 import { RouteConfig } from 'vue-router';
-import Dashboard from './Dashboard';
-
-const Notfound = {
-  template: `<h3>Not Found</h3>`,
-};
-
-const router = new VueRouter({
-  base: '/',
-  mode: 'history',
-  routes: [
-    {
-      path: '/',
-      name: 'index',
-      component: Dashboard,
-    },
-    { path: '*', component: Notfound },
-  ],
-});
 
 // 模块中路由配置没有根前缀，用于主程序自定义
-function root(routes: RouteConfig[]) {
+export function root(routes: RouteConfig[]) {
   return routes.map((route) => {
     route.path = '/' + route.path;
     return route;
   });
 }
 
-export function addRoutes(routes: RouteConfig[]) {
-  // @ts-ignore
-  const options = router.options;
-  // 合并路由
-  options.routes = root(routes).concat(options.routes);
-  const newRouter = new VueRouter(options);
-  // @ts-ignore
-  router.matcher = newRouter.matcher;
-}
+// 合并路由（将新路由配置合并到老路由配置中）
+export const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) => {
+  newRoutes.forEach((current: RouteConfig) => {
+    const matchRoute = oldRoutes.find(
+      (route: RouteConfig) => (current.name && route.name === current.name) || route.path === current.path,
+    );
+    if (matchRoute) {
+      // 如果找到已在在的
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { children, name, ...restOptions } = current;
+      Object.assign(matchRoute, restOptions); // 合并路由参数
+
+      if (children) {
+        !matchRoute.children && (matchRoute.children = []);
+        megreRoutes(matchRoute.children, children);
+      }
+    } else {
+      // 插入到 path:'*'之前
+      const insertIndex = oldRoutes.findIndex((route: RouteConfig) => route.path === '*');
+      // 如果没找到
+      oldRoutes.splice(insertIndex < 0 ? 0 : insertIndex, 0, current);
+    }
+  });
+};
 
 // https://github.com/chrisvfritz/vue-enterprise-boilerplate/blob/master/src/router/routes.js#L93-L131
 export function lazyLoadView(
@@ -75,6 +69,7 @@ export function lazyLoadView(
   });
 
   return Promise.resolve({
+    options: {}, // nuxtjs options.layout error
     functional: true,
     render(h: any, { data, children }: any) {
       // Transparently pass any props or children
@@ -83,5 +78,3 @@ export function lazyLoadView(
     },
   });
 }
-
-export default router;

@@ -1,23 +1,25 @@
-// app
+// dashboard
+
+import Vue from 'vue';
+import Vuex from 'vuex';
 
 export default Vue.extend({
-  name: 'App',
+  name: 'Playground',
+  computed: Vuex.mapState('dynamicComponent', { dynamicComponents: 'dashboard' }),
   render(h) {
-    return h('div', { domProps: { id: 'app' } }, [
+    const children = Object.values(this.dynamicComponents || {}).map((component: any) =>
+      h(component.component || component),
+    );
+    return h('div', { staticClass: 'playground' }, [
       h(
         'router-link',
-        { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'remote-page-a' } } },
+        { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'dymanic-page-a' } } },
         'Remote Page A',
       ),
       h(
         'router-link',
         { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'remote-component-a' } } },
         'Remote Component A as router component',
-      ),
-      h(
-        'router-link',
-        { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'remote-component-b' } } },
-        'Remote Component B as router component',
       ),
       h(
         'router-link',
@@ -29,7 +31,12 @@ export default Vue.extend({
         { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'wrong-component-entry' } } },
         'setted wrong component entry',
       ),
-      h('router-view'),
+      h(
+        'router-link',
+        { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'component-loading' } } },
+        'async component in 3s',
+      ),
+      ...children,
     ]);
   },
 });

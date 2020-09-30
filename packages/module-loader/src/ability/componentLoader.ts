@@ -3,7 +3,8 @@
  */
 import Vue, { VueConstructor, Component as VueComponent } from 'vue';
 import { warn as globalWarn, isPlainObject, isFunction, hasOwn } from '@vue-async/utils';
-import { execScript } from '../utils';
+import vm from 'vm';
+import * as spa from '../utils/spa';
 
 /** 验证组件导出是否正确 */
 function validateExportComponent(exports: any) {
@@ -12,7 +13,7 @@ function validateExportComponent(exports: any) {
     return (
       Object.keys(_export).length > 0 &&
       (hasOwn(_export, 'template') ||
-      hasOwn(_export, 'render') || // component definition
+        hasOwn(_export, 'render') || // component definition
         isFunction(_export)) // Vue.extend
       // hasOwn(_export, 'component') || // AsyncComponentFactory
       //   isFunction(_export)) // AsyncComponentPromise
@@ -23,7 +24,7 @@ function validateExportComponent(exports: any) {
 }
 
 /** 获取组件 */
-function getComponentFromExport(scriptExports: any, componentName: string, global: WindowProxy) {
+function getComponentFromExport(scriptExports: any, componentName: string, global: WindowProxy | vm.Context) {
   if (validateExportComponent(scriptExports)) {
     return (scriptExports && scriptExports.default) || scriptExports;
   }
@@ -46,9 +47,22 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (Vue: VueConstructor) => {
   return function loader(componentName: string, src: string): Promise<VueComponent> {
-    const global = window;
-    return execScript(src, global).then((scriptExports) => {
-      return getComponentFromExport(scriptExports, componentName, global);
-    });
+    if (Vue.prototype.$isServer) {
+      // todo: ssr
+      return Promise.resolve({
+        render(h) {
+          return h('label', { domProps: { 'aria-label': 'ssr' } });
+        },
+      });
+      // const global = ssr.createSandbox();
+      // return ssr.execScript(src, global).then((scriptExports) => {
+      //   return getComponentFromExport(scriptExports, componentName, global);
+      // });
+    } else {
+      const global = window;
+      return spa.execScript(src, global).then((scriptExports) => {
+        return getComponentFromExport(scriptExports, componentName, global);
+      });
+    }
   };
 };

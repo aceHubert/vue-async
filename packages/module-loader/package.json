@@ -3,7 +3,7 @@
   "version": "1.0.8",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader Core.",
-  "main": "module-loader.common.ts",
+  "main": "dist/module-loader.common.js",
   "umd:main": "dist/module-loader.umd.js",
   "module": "dist/module-loader.esm.js",
   "unpkg": "dist/module-loader.js",
@@ -23,9 +23,9 @@
     "types/*.d.ts"
   ],
   "scripts": {
-    "serve": "concurrently --raw \"node ./dev/server/index.js\"  \"rollup -c ./rollup.config.dev.js -w\"",
-    "build": "rollup -c",
-    "build:es": "cross-env TARGET=es rollup -c",
+    "dev": "concurrently --raw \"rollup -c ./rollup.config.dev.js -w\" \"node ./dev/server.js\"",
+    "build": "rollup -c --environment BUILD:production",
+    "build:es": "rollup -c --environment TARGET:es,BUILD:production",
     "release": "bash scripts/release.sh",
     "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
@@ -44,6 +44,9 @@
     "@vue-async/utils": "^1.0.5"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.14.6",
+    "@nuxt/typescript-build": "^2.0.3",
+    "nuxt": "^2.14.6",
     "vue-router": "^3.1.6",
     "vuex": "^3.1.3"
   },

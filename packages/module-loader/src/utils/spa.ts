@@ -2,7 +2,6 @@
  * @author Hubert
  * fork from https://github.com/kuitos/import-html-entry/blob/master/src/utils.js
  */
-
 import { error } from '@vue-async/utils';
 
 const isIE11 = typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Trident') !== -1;
@@ -25,7 +24,7 @@ function shouldSkipProperty(global: WindowProxy, p: string) {
 // safari unpredictably lists some new globals first or second in object order
 let firstGlobalProp: unknown, secondGlobalProp: unknown, lastGlobalProp: unknown;
 
-export function getGlobalProp(global: WindowProxy) {
+function getGlobalProp(global: WindowProxy) {
   let cnt = 0;
   let lastProp;
   let hasIframe = false;
@@ -51,7 +50,7 @@ export function getGlobalProp(global: WindowProxy) {
   return;
 }
 
-export function noteGlobalProps(global: WindowProxy) {
+function noteGlobalProps(global: WindowProxy) {
   // alternatively Object.keys(global).pop()
   // but this may be faster (pending benchmarks)
   firstGlobalProp = secondGlobalProp = undefined;

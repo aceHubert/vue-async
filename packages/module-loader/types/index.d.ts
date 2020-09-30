@@ -8,6 +8,7 @@ export {
   ModuleLoaderExtension,
   Modules,
   ModuleData,
+  ModuleContext,
   ModuleRemoteConfig,
   ModuleLoaderOption,
   DynamicComponent,
