@@ -13,6 +13,7 @@ import lisence from 'rollup-plugin-license';
 // import dts from 'rollup-plugin-dts';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
+const isProd = process.env.BUILD === 'production';
 const packageConfig = require('./package.json');
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
@@ -22,11 +23,11 @@ const builds = {
     format: 'cjs',
     mode: 'development',
   },
-  'cjs-prod': {
-    outFile: 'utils.common.min.js',
-    format: 'cjs',
-    mode: 'production',
-  },
+  // 'cjs-prod': {
+  //   outFile: 'utils.common.min.js',
+  //   format: 'cjs',
+  //   mode: 'production',
+  // },
   'umd-dev': {
     outFile: 'utils.umd.js',
     format: 'umd',
@@ -55,7 +56,6 @@ const builds = {
 };
 
 function genConfig({ outFile, format, mode }, clean = false) {
-  const isProd = mode === 'production';
   return {
     input: ['./src/*.ts', './src/*/index.ts'],
     output: {
@@ -96,7 +96,7 @@ function genConfig({ outFile, format, mode }, clean = false) {
       }),
       // commonjs => es6
       commonjs(),
-      format === 'iife' &&
+      (format === 'iife' || format === 'umd') &&
         babel({
           // https://babeljs.io/docs/en/options#rootMode
           rootMode: 'upward', // 向上级查找 babel.config.js
@@ -106,11 +106,15 @@ function genConfig({ outFile, format, mode }, clean = false) {
         }),
       json(),
       replace({
-        'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+        ...(format === 'iife' || format === 'umd'
+          ? {
+              'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
+            }
+          : null),
         __VERSION__: packageConfig.version,
       }),
       // minimize files
-      isProd && terser(),
+      mode === 'production' && terser(),
       // add banner
       lisence({
         banner: {

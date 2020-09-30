@@ -23,10 +23,10 @@
     "types/*.d.ts"
   ],
   "scripts": {
-    "build": "rollup -c",
-    "build:es": "cross-env TARGET=es rollup -c",
+    "build": "rollup -c --environment BUILD:production",
+    "build:es": "rollup -c --environment TARGET:es,BUILD:production",
     "release": "bash scripts/release.sh",
-    "test": "cd ../../ && cross-env NODE_ENV=test jest --passWithNoTests --config packages/resource-manager/jest.config.json",
+    "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
   },
