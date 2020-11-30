@@ -1,13 +1,15 @@
 /**
  * moduleLoader
  */
-import { VueConstructor } from 'vue';
+
 import { error as globalError, warn as globalWarn, isPlainObject, isFunction } from '@vue-async/utils';
-import vm from 'vm';
+
 import * as spa from '../utils/spa';
 
 // Types
-import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from '../../types';
+import { VueConstructor } from 'vue';
+import { Context as vmContext } from 'vm';
+import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from 'types/module';
 
 interface MutableRefObject<T> {
   current: T;
@@ -78,11 +80,7 @@ function validateExportLifecycle(exports: any) {
 }
 
 /** 获取生命周期对象 */
-function getLifecyclesFromExports(
-  scriptExports: any,
-  moduleName: string,
-  global: WindowProxy | vm.Context,
-): Lifecycles {
+function getLifecyclesFromExports(scriptExports: any, moduleName: string, global: WindowProxy | vmContext): Lifecycles {
   if (validateExportLifecycle(scriptExports)) {
     const _export = (scriptExports && scriptExports.default) || scriptExports;
     return isFunction(_export) ? { bootstrap: _export } : scriptExports;

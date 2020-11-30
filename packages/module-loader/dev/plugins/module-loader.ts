@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import ModuleLoader from '@vue-async/module-loader';
+import ModuleLoader, { Modules } from '@vue-async/module-loader';
 import { root, megreRoutes, lazyLoadView } from '../router/utils';
-
-Vue.use(ModuleLoader);
 
 // Types
 import { Plugin } from '@nuxt/types';
+
+Vue.use(ModuleLoader);
 
 const plugin: Plugin = async (cxt) => {
   const { app, store } = cxt;
@@ -76,56 +76,90 @@ const plugin: Plugin = async (cxt) => {
     addRoutes,
   }).registerDynamicComponent(store);
 
-  await moduleLoader
-    .load(
-      [
-        {
-          // page 异步加载，样式限 page load 加载出来
-          dymanicRouter: {
-            entry: 'http://localhost:7001/modules/dymanicRouter/dymanicRouter.umd.js',
-            // css: ['http://localhost:7001/modules/dymanicRouter/css/1.281753bd.css', 'http://localhost:7001/modules/dymanicRouter/css/2.2b65cb29.css'],
-            args: {
-              addRoutes,
-            },
-          },
-          dymanicComponent: {
-            entry: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.umd.js',
-            styles: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.css',
-          },
-          sortTest: 'http://localhost:7001/modules/sortTest/sortTest.umd.js',
-        },
-        {
-          // 同名
-          moduleName: 'dymanicComponent',
-          entry: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.umd.js',
-          styles: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.css',
-        },
-        {
-          // 错误 module name (执行正常, 但不能跟在相同 entry 后面执行, 会找不到模块)
-          moduleName: 'wrongName',
-          entry: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.umd.js',
-        },
-        {
-          // 错误 entry (执行 error)
-          moduleName: 'wrongEntry',
-          entry: 'http://www.xx.com/error.umd.js',
-        },
-        // function module
-        (_Vue: any) => {
-          console.log('[dev] function module');
-        },
-      ],
-      {
-        sync: true,
-        // success: () => {
-        //   // app.$mount('#app');
-        // },
-        error(msg: string, module: any) {
-          // eslint-disable-next-line no-console
-          console.warn(`[dev] ${msg}`, module);
+  let modules: Modules = [];
+  if (process.client) {
+    // modules = [
+    //   {
+    //     // page 异步加载，样式限 page load 加载出来
+    //     dymanicRouter: {
+    //       entry: 'http://localhost:7001/modules/dymanicRouter/dymanicRouter.umd.js',
+    //       // css: ['http://localhost:7001/modules/dymanicRouter/css/1.281753bd.css', 'http://localhost:7001/modules/dymanicRouter/css/2.2b65cb29.css'],
+    //       args: {
+    //         addRoutes,
+    //       },
+    //     },
+    //     dymanicComponent: {
+    //       entry: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.umd.js',
+    //       styles: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.css',
+    //     },
+    //     sortTest: 'http://localhost:7001/modules/sortTest/sortTest.umd.js',
+    //   },
+    //   {
+    //     // 同名
+    //     moduleName: 'dymanicComponent',
+    //     entry: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.umd.js',
+    //     styles: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.css',
+    //   },
+    //   {
+    //     // 错误 module name (执行正常, 但不能跟在相同 entry 后面执行, 会找不到模块)
+    //     moduleName: 'wrongName',
+    //     entry: 'http://localhost:7001/modules/dymanicComponentCopy/dymanicComponent.umd.js',
+    //   },
+    //   {
+    //     // 错误 entry (执行 error)
+    //     moduleName: 'wrongEntry',
+    //     entry: 'http://www.xx.com/error.umd.js',
+    //   },
+    //   // function module
+    //   (_Vue: any) => {
+    //     console.log('[dev] function module');
+    //   },
+    // ];
+    modules = {
+      // page 异步加载，样式限 page load 加载出来
+      dymanicRouter: {
+        entry: 'http://localhost:7001/modules/dymanicRouter/dymanicRouter.umd.js',
+        // css: ['http://localhost:7001/modules/dymanicRouter/css/1.281753bd.css', 'http://localhost:7001/modules/dymanicRouter/css/2.2b65cb29.css'],
+        args: {
+          addRoutes,
         },
       },
-    )
+      // dymanicComponent: {
+      //   entry: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.umd.js',
+      //   styles: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.css',
+      // },
+      // sortTest: 'http://localhost:7001/modules/sortTest/sortTest.umd.js',
+    };
+  } else {
+    modules = {
+      // page 异步加载，样式限 page load 加载出来
+      dymanicRouter: {
+        entry:
+          '/Users/hubertx/Desktop/Workspace/projects/vue-async/packages/module-loader/dev-modules/dymanicRouter/dymanicRouter.umd.js',
+        // css: ['http://localhost:7001/modules/dymanicRouter/css/1.281753bd.css', 'http://localhost:7001/modules/dymanicRouter/css/2.2b65cb29.css'],
+        args: {
+          addRoutes,
+        },
+      },
+      // dymanicComponent: {
+      //   entry: '../../dev-modules/dymanicComponent/dymanicComponent.umd.js',
+      //   styles: 'http://localhost:7001/modules/dymanicComponent/dymanicComponent.css',
+      // },
+      // sortTest: '../../dev-modules/sortTest/sortTest.umd.js',
+    };
+  }
+
+  await moduleLoader
+    .load(modules, {
+      sync: true,
+      // success: () => {
+      //   // app.$mount('#app');
+      // },
+      error(msg: string, module: any) {
+        // eslint-disable-next-line no-console
+        console.warn(`[dev] ${msg}`, module);
+      },
+    })
     .then(() => {
       // then won't exec when success set up
     });

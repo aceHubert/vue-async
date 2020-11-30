@@ -3,7 +3,9 @@ import { error } from '@vue-async/utils';
 import { del, add } from './Suspense';
 import { currentInstance, currentSuspenseInstance, setCurrentInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
-import { AsyncFactory, ResourceOptions, ResourceResult } from '../types';
+
+// Types
+import { AsyncFactory, ResourceOptions, ResourceResult } from 'types/resource-mananger';
 
 Vue.mixin({
   created(this: Vue) {

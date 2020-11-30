@@ -1,10 +1,12 @@
 /**
  * dynamicComponent
  */
+import { error } from '@vue-async/utils';
+
+// Types
 import { VueConstructor } from 'vue';
 import { Store } from 'vuex';
-import { error } from '@vue-async/utils';
-import { DynamicComponent } from '../../../types';
+import { DynamicComponent } from 'types/module';
 
 export const namespaces = 'dynamicComponent';
 

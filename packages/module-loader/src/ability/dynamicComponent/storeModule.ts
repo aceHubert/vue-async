@@ -1,5 +1,7 @@
 import { getComponentName, error } from '@vue-async/utils';
-import { DynamicComponent } from '../../../types';
+
+// Types
+import { DynamicComponent } from 'types/module';
 
 export type State = {
   GLOBAL: { [componentName: string]: DynamicComponent };

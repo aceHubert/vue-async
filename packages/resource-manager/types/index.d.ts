@@ -1,4 +1,4 @@
-import { ResourceManager } from './module';
+import { ResourceManager } from './resource-mananger';
 
 export default ResourceManager;
 
@@ -13,4 +13,4 @@ export {
   ResourceResult,
   createResource,
   CreateResource,
-} from './module';
+} from './resource-mananger';

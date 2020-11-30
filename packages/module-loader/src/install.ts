@@ -1,13 +1,14 @@
-import { VueConstructor } from 'vue';
-import { Route, RawLocation } from 'vue-router';
 import dynamicComponent, { namespaces as dynamicComponentPath } from './ability/dynamicComponent';
 import dynamicComponentState from './ability/dynamicComponent/storeModule';
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';
 import ModuleLoader from './framework';
+
+// Types
+import { VueConstructor } from 'vue';
 import { Store } from 'vuex';
-import VueRouter from 'vue-router';
+import VueRouter, { Route, RawLocation } from 'vue-router';
 
 export default function install(this: typeof ModuleLoader, Vue: VueConstructor) {
   if ((install as any).installed) return;

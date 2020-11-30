@@ -4,7 +4,9 @@ import { PropsDefinition, DefaultProps } from 'vue/types/options';
 import { del, add, has } from './Suspense';
 import { currentSuspenseInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
-import { AsyncFactory, SuspenseComponent } from '../types';
+
+// Types
+import { AsyncFactory, SuspenseComponent } from 'types/resource-mananger';
 
 export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
   asyncFactory: AsyncFactory,

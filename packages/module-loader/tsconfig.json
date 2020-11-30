@@ -1,13 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "outDir": "dist",
-    "declaration": true,
-    // "declarationDir": "types",
-    // "paths": {},
     "composite": true
   },
-  "include": ["src/**/*", "types", "test/sandbox/importEntry.spec.js"],
+  "include": ["src", "types"],
   "references": [{ "path": "../utils" }]
 }
