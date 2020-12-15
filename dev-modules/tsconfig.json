@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "dist",
+    "importHelpers": true,
+    "noImplicitAny": false,
+    "types": ["webpack-env","@vue-async/module-loader-typing"],
+    "jsx": "preserve"
+  },
+  "include": ["src", "types"]
+}
