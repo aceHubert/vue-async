@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader Core.",
   "main": "dist/module-loader.common.js",
@@ -42,7 +42,7 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.0.6"
+    "@vue-async/utils": "^1.1.0"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.6",
