@@ -97,7 +97,7 @@ export function genConfig({ outFile, format, mode }, clean = false) {
         babel({
           // https://babeljs.io/docs/en/options#rootMode
           rootMode: 'upward', // 向上级查找 babel.config.js
-          exclude: ['../../node_modules/@babel/**', '../../node_modules/core-js/**'],
+          exclude: [/\/@babel\//, /\/core-js\//],
           babelHelpers: 'bundled',
           extensions,
         }),
