@@ -1,13 +1,16 @@
-# @vue-async/module-loader
-
-从远程地址链接加载`模块`.  
-<br>
+# 模块化加载
 
 ```js
 // ## 主程序 ##
 
 // 引入模块
 import ModuleLoader from '@vue-async/module-loader';
+
+/*
+ * 注意：ES Module需要添加到`transpile`中编译
+ * vue-cli 请添加到 vue.config.js 中的 transpileDependencies 上
+ * nuxtjs 请添加到 nuxt.config.js 中的 build.transpile 上
+ */
 
 Vue.use(ModuleLoader);
 
@@ -23,10 +26,10 @@ app.$moduleLoader(ModuleConfig).then(()=>{
   app.$mount('#app')
 })
 
-// 方法二 (例如在 nuxtjs 的 plugin 中使用时)
+// 方法二 (在 nuxtjs 的 plugin 中使用时)
 var plugin = (context) => {
   // 这里需要手动注册 dynamicComponent，
-  // 子模块中才可以能过 this.$dynamicComponent.add()方法
+  // 子模块中才可以能过 this.$dynamicComponent.add()等方法
   var moduleLoader = 
     new ModuleLoader({}).registerDynamicComponent(context.store);
 
@@ -36,21 +39,21 @@ var plugin = (context) => {
   context.app.moduleLoader = moduleLoader
 }
 export default plugin
+
 ```
 ``` js
 // ## 子模块 ##
-// index.js 入口文件
+
+// main.js 入口文件
 export default function(Vue, options){}
 
 // Typescript
 import { VueConstructor } from 'vue';
 import { ModuleContext } from '@vue-async/module-loader-typing';
 
-// 方法一调用方式
-export default function(this:InstanceType<VueConstructor>, Vue:VueConstructor, options: Recode<string, any> ={}){}
-
-// 方法二调用方式
-export default function(this:ModuleContext, Vue:VueConstructor, options: Recode<string, any> ={}){}
+export default function(Vue:VueConstructor, options: Recode<string, any> ={}){
+  // do something
+}
 ```
 
 ## ModuleConfig 模块配置
@@ -63,10 +66,9 @@ export default function(this:ModuleContext, Vue:VueConstructor, options: Recode<
   {
     // 模块名称：远程 umd 文件 url 地址
     moduleName: 'remote url',
-    //
     moduleName: {
       entry: 'remote url', // 远程 umd 文件 url 地址
-      styles: [],
+      styles: [], // 自定义样式文件（例如 ExtractTextPlugin extract:true时打成独立 css文件）
       args:{}
     }
   },
@@ -74,7 +76,8 @@ export default function(this:ModuleContext, Vue:VueConstructor, options: Recode<
   {
     moduleName: '',
     entry: '',
-    styles:[]
+    styles:[],
+    args:{}
   },
   // Function
   function entry(Vue){}
@@ -110,7 +113,7 @@ Type: `Object`
 此参数与 `$moduleLoaderManager` 区别在于此参数只会传递给单个子模块调用  
 <br>
 
-## 子模块上下文方法 
+## 模块上下文注入方法 
 `this.$componentLoader(remote url)`  
 远程加载单个组件，返回 `Promise<VueComponent>`, 可作为 Vue 异步组件直接加载。  
 <br>
@@ -129,7 +132,7 @@ Type: `Object`
 `this.$dynamicComponent`  
 子模块注册动态组件到主程序 `store` namespace `dynamicComponent` 中  
 当使用方法一在 `new Vue({})` 之后调用时，如果引用了 `vuex` 将会自动注入此方法  
-当使用方法二在之前调用时，需要手动 `registerDynamicComponent(store)` 之后才可以被调用  
+当使用方法二在 Vue 实例之前调用时，需要手动 `registerDynamicComponent(store)` 之后才可以被调用  
 
 &nbsp;&nbsp;&nbsp; 方法：  
 &nbsp;&nbsp;&nbsp; `add(component, position)` 添加组件到指定的位置  
@@ -153,13 +156,13 @@ Type: `Object`
 `addRoutes(routes:RouteConfig[])`  
 添加路由, 主程序需要引用`vue-router`, 此方法可以在实例化参数中被覆盖重写  
 
-注：当主组件引用`vue-router`包后，将会自动注入方法解决404问题，需要在主程序中添加一条配置 `name` 为 `404` `page-not-found` `not-found` 或 `path` 为 `*` 的路由后生效
+##### <font color="red">注：当主组件引用`vue-router`包后，将会自动注入方法解决404问题，需要在主程序中添加一条配置 `name` 为 `404` `page-not-found` `not-found` 或 `path` 为 `*` 的路由后生效</font>
 
 <br>
 <br>
 <br>
 
-## <font color="red">问题</font>
+## <font color="red">其它问题</font>
 1、webpack 打包 Can't resolve "module"  
 ``` json
   {
