@@ -3,11 +3,10 @@
  */
 
 import Vue from 'vue';
-import { ModuleLoader, Modules, ModuleLoaderOption, ModuleContext } from './module';
+import { ModuleLoader, ModuleContext } from './module';
 
 declare module 'vue/types/vue' {
   interface Vue extends ModuleContext {
-    $moduleLoader: (moduleConfig: Modules, opts?: ModuleLoaderOption) => Promise<void>;
     $moduleLoadManager: ModuleLoader['framework'];
   }
 }

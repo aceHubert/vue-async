@@ -5,8 +5,10 @@ import { Store } from 'vuex';
 export declare class ModuleLoader<T = Record<string, any>> {
   constructor(options?: ModuleLoaderExtension<T>);
   readonly framework: Framework & T;
-  load(moduleConfig: Modules, opts?: ModuleLoaderOption): Promise<void>;
   registerDynamicComponent(store: Store<any>): ModuleLoader;
+  load: ModuleContext['$moduleLoader'];
+  loadComponent: ModuleContext['$componentLoader'];
+  eventBus: ModuleContext['$eventBus'];
 
   static install: PluginFunction<never>;
   static version: string;
@@ -44,17 +46,19 @@ export type DynamicComponent =
   | ({ component: VueComponent | AsyncComponent; name?: string } & Record<string, any>);
 
 export interface ModuleContext {
-  $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
+  $moduleLoader(moduleConfig: Modules, opts?: ModuleLoaderOption): Promise<void>;
+  $componentLoader(componentName: string, path: string, styles?: string | string[]): Promise<VueComponent>;
   $dynamicComponent?: {
-    add: (component: DynamicComponent, position?: string) => void;
-    remove: (name: string, position?: string) => void;
+    namespaces: string;
+    add(component: DynamicComponent, position?: string): void;
+    remove(name: string, position?: string): void;
   };
   $eventBus: {
-    emit: (eventName: string, playload: any) => void;
-    on: (eventName: string, handler: (playload: any) => void) => void;
-    off: (eventName: string, handler: (playload: any) => void) => void;
-    clear: () => void;
-    getEvents: () => Record<string, any>;
+    emit(eventName: string, playload: any): void;
+    on(eventName: string, handler: (playload: any) => void): void;
+    off(eventName: string, handler: (playload: any) => void): void;
+    clear(): void;
+    getEvents(): Record<string, any>;
   };
 }
 
@@ -62,6 +66,6 @@ export type ModuleLoaderExtension<T = Record<string, any>> = Omit<T, 'layouts'> 
 
 export interface Framework {
   readonly layouts: Record<string, VueComponent | AsyncComponent>;
-  addRoutes: (routes: RouteConfig[]) => void; // 可以被重写
-  addLayouts: (name: string | Record<string, VueComponent | AsyncComponent>, layout?: VueComponent) => void; // 可以被重写
+  addRoutes(routes: RouteConfig[]): void; // 可以被重写
+  addLayouts(name: string | Record<string, VueComponent | AsyncComponent>, layout?: VueComponent): void; // 可以被重写
 }

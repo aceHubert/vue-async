@@ -1,5 +1,8 @@
-import dynamicComponent, { namespaces as dynamicComponentPath } from './ability/dynamicComponent';
-import dynamicComponentState from './ability/dynamicComponent/storeModule';
+import dynamicComponent, {
+  namespaces as dynamicComponentPath,
+  storeModule as dynamicComponentStoreModule,
+} from './ability/dynamicComponent';
+
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';
@@ -25,7 +28,7 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
     },
   });
 
-  Object.defineProperties(Vue.prototype, {
+  const properties = {
     $moduleLoader: {
       value: createModuleLoader(Vue, vm.status),
       writable: false,
@@ -44,50 +47,12 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
       enumerable: true,
       configurable: true,
     },
-  });
+  };
 
-  // 扩展 new ModuleLoader().load() 在 Vue 实例化之前加载模块
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const _self = this;
-  Object.defineProperties(_self.prototype, {
-    load: {
-      value: createModuleLoader(Vue, vm.status),
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
-    // 需要主动注册 DynamicComponent
-    registerDynamicComponent: {
-      value: function (store: Store<any>) {
-        if (!store.hasModule(dynamicComponentPath)) {
-          store.registerModule(dynamicComponentPath, dynamicComponentState);
-          // define $dynamicComponent
-          Object.defineProperty(_self.prototype, '$dynamicComponent', {
-            value: dynamicComponent(Vue, store),
-            writable: false,
-            enumerable: true,
-            configurable: true,
-          });
-        }
-        return this;
-      },
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
-    $componentLoader: {
-      value: createComponentLoader(Vue),
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
-    $eventBus: {
-      value: createEventBus(Vue),
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
-  });
+  /**
+   * 注入到 Vue 实例
+   */
+  Object.defineProperties(Vue.prototype, properties);
 
   /**
    * router注入（当路由被注册注入时，必须调用$moduleLoaser至少一次，否则 status 状态无法变更造成路由被阻止）
@@ -134,12 +99,12 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
   };
 
   /**
-   * store 注入
-   * 添加 $dynamicComponent 方法
+   * store 注入, 添加 $dynamicComponent 方法
+   * @param store
    */
   const storeInject = (store: Store<unknown>) => {
     if (!store.hasModule(dynamicComponentPath)) {
-      store.registerModule(dynamicComponentPath, dynamicComponentState);
+      store.registerModule(dynamicComponentPath, dynamicComponentStoreModule);
       // define $dynamicComponent
       Object.defineProperty(Vue.prototype, '$dynamicComponent', {
         value: dynamicComponent(Vue, store),
@@ -165,16 +130,30 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
     _init.call(this, options);
   };
 
+  // 扩展 new ModuleLoader().load() 在 Vue 实例化之前加载模块
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  Object.defineProperties(this.prototype, {
+    // 需要主动注册 DynamicComponent
+    registerDynamicComponent: {
+      value: function (store: Store<unknown>) {
+        storeInject(store);
+        return this;
+      },
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+    load: properties.$moduleLoader,
+    loadComponent: properties.$componentLoader,
+    eventBus: properties.$eventBus,
+  });
+
   // Used to avoid multiple mixins being setup
   // when in dev mode and hot module reload
   // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
   if (Vue.$__module_loader_installed__) return;
   // eslint-disable-next-line @typescript-eslint/camelcase
   Vue.$__module_loader_installed__ = true;
-
-  if (typeof window !== 'undefined' && !window.Vue) {
-    window.Vue = Vue as any;
-  }
 
   Vue.mixin({
     beforeCreate() {
