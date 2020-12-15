@@ -1,11 +1,15 @@
 /**
  * eventBus
  */
-import { VueConstructor } from 'vue';
+
 import { warn, error } from '@vue-async/utils';
 
+// Types
+import { VueConstructor } from 'vue';
+import { ModuleContext } from 'types/module';
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function (Vue: VueConstructor) {
+export default function (Vue: VueConstructor): ModuleContext['$eventBus'] {
   let events: {
     [eventName: string]: any;
   } = {};
@@ -16,7 +20,7 @@ export default function (Vue: VueConstructor) {
      * @param {string} eventName 事件名称
      * @param {any} payload 事件载荷
      */
-    emit(eventName: string, payload: any) {
+    emit(eventName, payload) {
       if (!events[eventName]) {
         return warn(
           process.env.NODE_ENV === 'production',
@@ -32,7 +36,7 @@ export default function (Vue: VueConstructor) {
      * @param eventName 事件名称
      * @param handler 处理事件的方法
      */
-    on(eventName: string, handler: (payload: any) => void) {
+    on(eventName, handler) {
       if (typeof handler === 'function') {
         if (!events[eventName]) events[eventName] = new Set();
         events[eventName].add(handler);
@@ -48,7 +52,7 @@ export default function (Vue: VueConstructor) {
      * @param eventName 事件名称
      * @param handler 处理事件的方法
      */
-    off(eventName: string, handler: (payload: any) => void) {
+    off(eventName, handler) {
       if (!handler) {
         return warn(false, '[moduleLoader] handler must be a valid event function');
       } else if (!events.hasOwnProperty(eventName)) {

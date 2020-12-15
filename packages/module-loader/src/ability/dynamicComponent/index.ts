@@ -1,22 +1,27 @@
 /**
  * dynamicComponent
  */
+import { error } from '@vue-async/utils';
+
+// Types
 import { VueConstructor } from 'vue';
 import { Store } from 'vuex';
-import { error } from '@vue-async/utils';
-import { DynamicComponent } from '../../../types';
+import { ModuleContext } from 'types/module';
+
+export { default as storeModule } from './storeModule';
 
 export const namespaces = 'dynamicComponent';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function (Vue: VueConstructor, store: Store<any>) {
+export default function (Vue: VueConstructor, store: Store<any>): ModuleContext['$dynamicComponent'] {
   return {
+    namespaces,
     /**
      * add component to store
      * @param component vue component
      * @param position position
      */
-    add(component: DynamicComponent, position?: string) {
+    add(component, position) {
       if (!(typeof component === 'object' || typeof component === 'function')) {
         return error(
           process.env.NODE_ENV === 'production',

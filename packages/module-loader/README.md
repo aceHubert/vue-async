@@ -155,6 +155,19 @@ Type: `Object`
 
 注：当主组件引用`vue-router`包后，将会自动注入方法解决404问题，需要在主程序中添加一条配置 `name` 为 `404` `page-not-found` `not-found` 或 `path` 为 `*` 的路由后生效
 
+<br>
+<br>
+<br>
+
+## <font color="red">问题</font>
+1、webpack 打包 Can't resolve "module"  
+``` json
+  {
+    node:{
+      module:'empty'
+    }
+  }
+```
 
 
 

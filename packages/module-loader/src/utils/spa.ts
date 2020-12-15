@@ -70,18 +70,18 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
   return new Promise((resolve, reject) => {
     noteGlobalProps(proxy);
 
-    const script = document.createElement('script');
+    const script = proxy.document.createElement('script');
     script.src = entry;
     script.onload = () => {
       const propName = getGlobalProp(proxy);
       const exports = propName ? proxy[propName] || {} : {};
       resolve(exports);
     };
-    script.onerror = () => {
+    script.onerror = (err) => {
       error(process.env.NODE_ENV === 'production', `[moduleLoader] script had a problem to create, entry：${entry}`);
-      reject(new Error('script load error'));
+      reject(new Error(`script load error, error: ${err}`));
     };
-    document.body.appendChild(script);
+    proxy.document.body.appendChild(script);
   });
 }
 

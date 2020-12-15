@@ -7,8 +7,9 @@ export type DynamicComponent =
   | ({ component: VueComponent | AsyncComponent; name?: string } & Record<string, any>);
 
 export interface ModuleContext {
-  $componentLoader: (componentName: string, path: string) => Promise<VueComponent>;
+  $componentLoader: (componentName: string, path: string, styles?: string | string[]) => Promise<VueComponent>;
   $dynamicComponent?: {
+    namespaces: string;
     add: (component: DynamicComponent, position?: string) => void;
     remove: (name: string, position?: string) => void;
   };

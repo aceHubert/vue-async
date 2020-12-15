@@ -1,7 +1,7 @@
-import * as path from 'path';
-import alias from '@rollup/plugin-alias';
-import serve from 'rollup-plugin-serve';
-import typescript from 'rollup-plugin-typescript2';
+// import * as path from 'path';
+// import alias from '@rollup/plugin-alias';
+// import serve from 'rollup-plugin-serve';
+// import typescript from 'rollup-plugin-typescript2';
 import { builds, genConfig } from './rollup.config.js';
 
 // const config = genConfig(builds['iife-dev'], true);
@@ -38,6 +38,6 @@ import { builds, genConfig } from './rollup.config.js';
 //   }),
 // ]);
 
-const config = [genConfig(builds['es'], true), genConfig(builds['cjs-dev'])];
+const config = [genConfig(builds['es'], true)];
 
 export default config;

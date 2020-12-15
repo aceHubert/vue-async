@@ -1,13 +1,14 @@
 /**
  * moduleLoader
  */
-import { VueConstructor } from 'vue';
 import { error as globalError, warn as globalWarn, isPlainObject, isFunction } from '@vue-async/utils';
-import vm from 'vm';
 import * as spa from '../utils/spa';
+import * as ssr from '../utils/ssr';
 
 // Types
-import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from '../../types';
+import { VueConstructor } from 'vue';
+import { Context as vmContext } from 'vm';
+import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from 'types/module';
 
 interface MutableRefObject<T> {
   current: T;
@@ -78,11 +79,7 @@ function validateExportLifecycle(exports: any) {
 }
 
 /** 获取生命周期对象 */
-function getLifecyclesFromExports(
-  scriptExports: any,
-  moduleName: string,
-  global: WindowProxy | vm.Context,
-): Lifecycles {
+function getLifecyclesFromExports(scriptExports: any, moduleName: string, global: WindowProxy | vmContext): Lifecycles {
   if (validateExportLifecycle(scriptExports)) {
     const _export = (scriptExports && scriptExports.default) || scriptExports;
     return isFunction(_export) ? { bootstrap: _export } : scriptExports;
@@ -150,24 +147,27 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
         const { moduleName, entry, styles = [], args } = module;
         // server render
         if (Vue.prototype.$isServer) {
-          // todo: ssr
-          return Promise.resolve();
-          // const global = ssr.createSandbox();
-          // return ssr
-          //   .execScript(entry, global)
-          //   .then((scriptExports) => {
-          //     const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-          //     bootstrap.call(_self, Vue, args);
-          //   })
-          //   .catch((err) => {
-          //     // 异常不阻止当前执行，error 中处理
-          //     try {
-          //       error(err.message, module);
-          //     } catch {}
-          //   });
+          const global = ssr.createSandbox();
+
+          return ssr
+            .execScript(entry, global)
+            .then((scriptExports: any) => {
+              const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+              bootstrap.call(_self, Vue, args);
+            })
+            .catch((err: Error) => {
+              // 异常不阻止当前执行，error 中处理
+              try {
+                error(err.message, module);
+              } catch {}
+            });
         } else {
           // todo: load in sandbox
-          const global = window;
+          const global: WindowProxy = window;
+
+          if (!global.Vue) {
+            global.Vue = Vue;
+          }
 
           // load styles
           spa.execStyles(styles, moduleName);
@@ -175,11 +175,11 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
           // exec script
           return spa
             .execScript(entry, global)
-            .then((scriptExports) => {
+            .then((scriptExports: any) => {
               const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
               bootstrap.call(_self, Vue, args);
             })
-            .catch((err) => {
+            .catch((err: Error) => {
               // 异常不阻止当前执行，error 中处理
               try {
                 error(err.message, module);
