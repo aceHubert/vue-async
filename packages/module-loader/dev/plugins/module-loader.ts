@@ -4,10 +4,10 @@ import VueRouter, { RouteConfig } from 'vue-router';
 import ModuleLoader, { Modules } from '@vue-async/module-loader';
 import { root, megreRoutes, lazyLoadView } from '../router/utils';
 
-Vue.use(ModuleLoader);
-
 // Types
 import { Plugin } from '@nuxt/types';
+
+Vue.use(ModuleLoader);
 
 const plugin: Plugin = async (cxt) => {
   const { app, store } = cxt;

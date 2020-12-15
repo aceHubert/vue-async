@@ -2,6 +2,7 @@ import dynamicComponent, {
   namespaces as dynamicComponentPath,
   storeModule as dynamicComponentStoreModule,
 } from './ability/dynamicComponent';
+
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';

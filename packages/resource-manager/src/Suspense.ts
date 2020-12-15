@@ -1,7 +1,9 @@
 import Vue, { CreateElement, VNode, VNodeChildren } from 'vue';
 import { error } from '@vue-async/utils';
 import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
-import { UseOptions, AsyncFactory } from '../types';
+
+// Types
+import { UseOptions, AsyncFactory } from 'types/resource-mananger';
 
 export const RESOLVED = 'resolved';
 export const REJECTED = 'rejected';

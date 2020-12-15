@@ -1,5 +1,5 @@
 import Vue, { VNode } from 'vue';
-import { UseOptions, AsyncFactory, SuspenseComponent } from '../types';
+import { UseOptions, AsyncFactory, SuspenseComponent } from 'types/resource-mananger';
 
 declare module 'vue/types/vue' {
   interface Vue {

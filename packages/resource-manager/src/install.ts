@@ -1,6 +1,8 @@
-import { VueConstructor } from 'vue';
 import Suspense, { COMPONENT_NAME } from './Suspense';
-import { UseOptions } from '../types';
+
+// Types
+import { VueConstructor } from 'vue';
+import { UseOptions } from 'types/resource-mananger';
 
 export default function install(Vue: VueConstructor, options: UseOptions = {}) {
   if ((install as any).installed) return;
