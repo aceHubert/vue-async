@@ -1,13 +1,14 @@
-import Vue, { CreateElement, VNode, VNodeChildren } from 'vue';
+import Vue from 'vue';
 import { error } from '@vue-async/utils';
 import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
 
 // Types
-import { UseOptions, AsyncFactory } from 'types/resource-mananger';
+import { CreateElement, VNode, VNodeChildren } from 'vue';
+import { AsyncFactory } from 'types/resource-mananger';
 
 export const RESOLVED = 'resolved';
 export const REJECTED = 'rejected';
-export const COMPONENT_NAME = '__VueSuspense__';
+export const COMPONENT_NAME = 'VueSuspense';
 
 export const del = (asyncFactory: AsyncFactory, error?: any) => {
   const suspIns = asyncFactory.suspenseInstance;
@@ -111,7 +112,7 @@ export default Vue.extend({
     popSuspenseInstance();
   },
   render(h: CreateElement) {
-    const isVisible = ((this.$options as any).suspense as UseOptions).mode === 'visible';
+    const isVisible = this.$options.suspense?.mode === 'visible';
     const emptyVNode = this._e();
     const fallback = this.displayLoading ? this.$slots.fallback || [emptyVNode] : [emptyVNode];
     // The `children` is the real content to be rendered

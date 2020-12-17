@@ -1,4 +1,6 @@
-import Suspense, { COMPONENT_NAME } from './Suspense';
+import Suspense, { COMPONENT_NAME } from './ability/Suspense';
+import lazy from './ability/lazy';
+import createResource from './ability/createResource';
 
 // Types
 import { VueConstructor } from 'vue';
@@ -20,6 +22,17 @@ export default function install(Vue: VueConstructor, options: UseOptions = {}) {
   Vue.setSuspenseOptions = (options: UseOptions) => {
     Object.assign(opts, options);
   };
+
+  Vue.lazy = lazy.bind(null);
+
+  Object.defineProperties(Vue.prototype, {
+    createResource: {
+      value: createResource.bind(null),
+      writable: false,
+      enumerable: true,
+      configurable: true,
+    },
+  });
 
   Vue.mixin({
     created(this: Vue) {

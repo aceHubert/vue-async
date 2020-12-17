@@ -1,19 +1,21 @@
-import Vue, { Component as VueComponent, VNode } from 'vue';
+import Vue from 'vue';
 import { error } from '@vue-async/utils';
-import { PropsDefinition, DefaultProps } from 'vue/types/options';
 import { del, add, has } from './Suspense';
 import { currentSuspenseInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
 
 // Types
+import { Component as VueComponent, VNode } from 'vue';
+import { ExtendedVue } from 'vue/types/vue';
+import { PropsDefinition, DefaultProps } from 'vue/types/options';
 import { AsyncFactory, SuspenseComponent } from 'types/resource-mananger';
 
 export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
   asyncFactory: AsyncFactory,
   props?: PropsDef,
-): VueComponent {
+): ExtendedVue<Vue, {}, {}, {}, PropsDef> {
   return Vue.extend({
-    name: 'SuspenseLazy',
+    name: 'VueSuspenseLazy',
     props: props,
     created() {
       asyncFactory.suspenseInstance = (currentSuspenseInstance as Vue) || findSuspenseInstance(this);

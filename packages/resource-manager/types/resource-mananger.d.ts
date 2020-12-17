@@ -1,4 +1,5 @@
 import { Component as VueComponent, PluginFunction } from 'vue';
+import { ExtendedVue } from 'vue/types/vue';
 import { PropsDefinition, DefaultProps } from 'vue/types/options';
 
 export type UseOptions = {
@@ -29,7 +30,7 @@ export const Suspense: SuspenseComponent;
 export const lazy: Lazy;
 
 export interface Lazy<PropsDef = PropsDefinition<DefaultProps>> {
-  (asyncFactory: AsyncFactory, props?: PropsDef): VueComponent;
+  (asyncFactory: AsyncFactory, props?: PropsDef): ExtendedVue<Vue, {}, {}, {}, PropsDef>;
 }
 
 // CreateResource

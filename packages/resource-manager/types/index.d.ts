@@ -1,3 +1,4 @@
+import './vue';
 import { ResourceManager } from './resource-mananger';
 
 export default ResourceManager;

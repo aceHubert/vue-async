@@ -15,9 +15,6 @@ declare module 'vue/types/vue' {
     _self: Vue;
     [key: string]: any;
   }
-  interface VueConstructor {
-    setSuspenseOptions(options: UseOptions): void;
-  }
 }
 
 declare module 'vue/types/options' {

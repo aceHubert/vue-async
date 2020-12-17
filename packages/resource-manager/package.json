@@ -13,9 +13,7 @@
     "vue",
     "vue-async",
     "resource-mananger",
-    "async-module",
-    "async-loader",
-    "microfront"
+    "suspense"
   ],
   "files": [
     "src",
@@ -23,6 +21,7 @@
     "types/*.d.ts"
   ],
   "scripts": {
+    "dev": "concurrently --raw \"rollup -c --environment TARGET:es -w\"  \"node ./dev/server.js\"",
     "build": "rollup -c --environment BUILD:production",
     "build:es": "rollup -c --environment TARGET:es,BUILD:production",
     "release": "bash scripts/release.sh",
@@ -41,6 +40,14 @@
   },
   "dependencies": {
     "@vue-async/utils": "^1.1.0"
+  },
+  "devDependencies": {
+    "@nuxt/types": "^2.14.6",
+    "@nuxt/typescript-build": "^2.0.3",
+    "nuxt": "^2.14.6",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^8.4.1",
+    "vue-template-compiler": "^2.6.11"
   },
   "peerDependencies": {
     "vue": "^2.6.0"
