@@ -8,7 +8,14 @@
       "gitTagVersion": false,
       "gitReset": false,
       "allowBranch": ["master"],
-      "ignoreChanges": ["**/CHANGELOG.md", "**/node_modules/**", "**/package.json", "**/*.md", "**/test/**"],
+      "ignoreChanges": [
+        "**/CHANGELOG.md",
+        "**/node_modules/**",
+        "**/package.json",
+        "**/*.md",
+        "**/test/**",
+        "**/dev/**"
+      ],
       "message": "chore(release): publish"
     }
   },

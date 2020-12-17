@@ -18,7 +18,8 @@
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
     "prepublishOnly": "yarn install && yarn changelog && yarn build",
-    "release": "lerna publish"
+    "release": "lerna publish",
+    "postpublish": "node ./scripts/resetPackage.js"
   },
   "config": {
     "commitizen": {
@@ -72,8 +73,7 @@
     "ts-jest": "^24.2.0",
     "ttypescript": "^1.5.10",
     "typescript": "^3.7.2",
-    "util": "^0.12.1",
-    "vuepress": "^1.5.0"
+    "util": "^0.12.1"
   },
   "husky": {
     "hooks": {
@@ -87,9 +87,14 @@
       "docs"
     ],
     "nohoist": [
-      "@vue-async/module-loader/nuxt",
-      "@vue-async/module-loader/nuxt/**",
-      "@vue-async/module-loader/@nuxt/types"
+      "docs/**/*",
+      "**/nuxt",
+      "**/nuxt/**",
+      "**/@nuxt/types",
+      "@vue-async/resource-manager/vue-class-component",
+      "@vue-async/resource-manager/vue-class-component/**/*",
+      "@vue-async/resource-manager/vue-property-decorator",
+      "@vue-async/resource-manager/vue-property-decorator/**/*"
     ]
   }
 }
