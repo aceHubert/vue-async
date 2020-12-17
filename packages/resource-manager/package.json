@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/resource-manager",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Resource Manager.",
   "main": "dist/resource-manager.common.js",

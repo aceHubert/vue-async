@@ -13,12 +13,16 @@ async function run() {
     changedFiles.forEach((filename) => {
       if (path.basename(filename) === 'package.json') {
         const packagePath = path.resolve(__dirname, '../', filename);
-        const jsonPackage = JSON.parse(fs.readFileSync(packagePath, { encoding: 'utf8' }));
-        // private 不为 true 时 npm publish 会生成 head 的 guid 字段
-        if (!jsonPackage.private && jsonPackage.head) {
-          delete jsonPackage.head;
-          fs.writeFileSync(packagePath, JSON.stringify(jsonPackage, null, 2));
-        }
+        fs.access(packagePath, (err) => {
+          if (err) return;
+
+          const jsonPackage = JSON.parse(fs.readFileSync(packagePath, { encoding: 'utf8' }));
+          // private 不为 true 时 npm publish 会生成 head 的 guid 字段
+          if (!jsonPackage.private && jsonPackage.gitHead) {
+            delete jsonPackage.gitHead;
+            fs.writeFileSync(packagePath, JSON.stringify(jsonPackage, null, 2) + '\n');
+          }
+        });
       }
     });
   } catch (err) {
