@@ -1,3 +1,3 @@
 import './vue';
 
-export { Framework, DynamicComponent, ModuleContext } from './module';
+export { Framework, ModuleContext } from './module';

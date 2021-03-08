@@ -1,18 +1,5 @@
-import { VueConstructor, Component as VueComponent, AsyncComponent, PluginFunction } from 'vue';
+import { VueConstructor, Component as VueComponent, PluginFunction } from 'vue';
 import { RouteConfig } from 'vue-router';
-import { Store } from 'vuex';
-
-export declare class ModuleLoader<T = Record<string, any>> {
-  constructor(options?: ModuleLoaderExtension<T>);
-  readonly framework: Framework & T;
-  registerDynamicComponent(store: Store<any>): ModuleLoader;
-  load: ModuleContext['$moduleLoader'];
-  loadComponent: ModuleContext['$componentLoader'];
-  eventBus: ModuleContext['$eventBus'];
-
-  static install: PluginFunction<never>;
-  static version: string;
-}
 
 export type ModuleRemoteConfig = {
   moduleName: string;
@@ -27,32 +14,20 @@ export type ModuleRemoteConfig = {
  * { libName:{ entry: 'remote/xx.js', ...rest}} // object entry with specified lib name
  * (Vue)=> Promise<void> | void  // function
  */
-type ModuleData =
+export type ModuleConfig =
   | ModuleRemoteConfig
   | Record<string, string | Omit<ModuleRemoteConfig, 'moduleName'>>
   | ((Vue: VueConstructor) => Promise<void> | void);
 
-export type Modules = ModuleData | ModuleData[];
-
-export type ModuleLoaderOption = {
+export type ModuleLoaderOptions = {
   sync?: true;
   success?: () => void; // all module loaded
   error?: (msg: string, module?: any) => void; // every single module loaded error with message, module: formated module config
 };
 
-export type DynamicComponent =
-  | VueComponent
-  | AsyncComponent
-  | ({ component: VueComponent | AsyncComponent; name?: string } & Record<string, any>);
-
 export interface ModuleContext {
-  $moduleLoader(moduleConfig: Modules, opts?: ModuleLoaderOption): Promise<void>;
+  $moduleLoader(config: ModuleConfig | ModuleConfig[], options?: ModuleLoaderOptions): Promise<void>;
   $componentLoader(componentName: string, path: string, styles?: string | string[]): Promise<VueComponent>;
-  $dynamicComponent?: {
-    namespaces: string;
-    add(component: DynamicComponent, position?: string): void;
-    remove(name: string, position?: string): void;
-  };
   $eventBus: {
     emit(eventName: string, playload: any): void;
     on(eventName: string, handler: (playload: any) => void): void;
@@ -62,10 +37,17 @@ export interface ModuleContext {
   };
 }
 
-export type ModuleLoaderExtension<T = Record<string, any>> = Omit<T, 'layouts'> & Partial<Omit<Framework, 'layouts'>>;
-
 export interface Framework {
-  readonly layouts: Record<string, VueComponent | AsyncComponent>;
   addRoutes(routes: RouteConfig[]): void; // 可以被重写
-  addLayouts(name: string | Record<string, VueComponent | AsyncComponent>, layout?: VueComponent): void; // 可以被重写
+}
+
+export declare class ModuleLoader<Options extends Record<string, any> = {}> {
+  constructor(options?: Options);
+  readonly framework: Framework & Options;
+  load: ModuleContext['$moduleLoader'];
+  loadComponent: ModuleContext['$componentLoader'];
+  eventBus: ModuleContext['$eventBus'];
+
+  static install: PluginFunction<never>;
+  static version: string;
 }

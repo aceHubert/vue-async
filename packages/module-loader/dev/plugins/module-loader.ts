@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import ModuleLoader, { Modules } from '@vue-async/module-loader';
+import ModuleLoader, { ModuleConfig } from '@vue-async/module-loader';
 import { root, megreRoutes, lazyLoadView } from '../router/utils';
 
 // Types
@@ -10,7 +10,7 @@ import { Plugin } from '@nuxt/types';
 Vue.use(ModuleLoader);
 
 const plugin: Plugin = async (cxt) => {
-  const { app, store } = cxt;
+  const { app } = cxt;
 
   // if (process.server) {
   //   beforeNuxtRender(({ Components, nuxtState }) => {
@@ -27,8 +27,9 @@ const plugin: Plugin = async (cxt) => {
   }
 
   const moduleLoader = new ModuleLoader({
+    layout: {},
     addRoutes,
-  }).registerDynamicComponent(store);
+  });
 
   // should be loading config from remote here
   addRoutes([
@@ -75,7 +76,7 @@ const plugin: Plugin = async (cxt) => {
     },
   ]);
 
-  const modules: Modules = [
+  const modules: ModuleConfig[] = [
     {
       // page 异步加载
       dymanicRouter: {
@@ -84,12 +85,14 @@ const plugin: Plugin = async (cxt) => {
           addRoutes,
         },
       },
-      // dymanicComponent: {
-      //   entry: 'http://localhost:7002/dymanicComponent/dymanicComponent.umd.js',
-      //   styles: 'http://localhost:7002/dymanicComponent/dymanicComponent.css',
-      // },
-      // sortTest: 'http://localhost:7002/sortTest/sortTest.umd.js',
+
+      sortTest: 'http://localhost:7002/sortTest/sortTest.umd.js',
     },
+    // {
+    //   moduleName: 'module-js',
+    //   entry: 'http://localhost:7002/module-js/module-js.umd.js',
+    //   styles: 'http://localhost:7002/module-js/module-js.css',
+    // },
     // {
     //   // 同名
     //   moduleName: 'dymanicComponent',

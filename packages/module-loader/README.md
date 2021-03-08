@@ -40,10 +40,10 @@ app.$moduleLoader(ModuleConfig).then(()=>{
 
 // 方法二 (在 nuxtjs 的 plugin 中使用时)
 var plugin = (context) => {
-  // 这里需要手动注册 dynamicComponent，
-  // 子模块中才可以能过 this.$dynamicComponent.add()等方法
-  var moduleLoader = 
-    new ModuleLoader({}).registerDynamicComponent(context.store);
+  var moduleLoader = new ModuleLoader({
+    // 自定义扩展参数，
+    fn:()=>{}
+  });
 
   await moduleLoader.load(ModuleConfig)
 
@@ -140,19 +140,6 @@ Type: `Object`
 &nbsp;&nbsp;&nbsp; `off(eventName, (playload)=>{})` 移除事件  
 &nbsp;&nbsp;&nbsp; `clean()` 移除所有事件  
 &nbsp;&nbsp;&nbsp; `getEvents()` 获取所有事件  
-<br>
-
-<b>`this.$dynamicComponent`</b>  
-子模块注册动态组件到主程序 `store` namespace `dynamicComponent` 中  
-当使用方法一在 `new Vue({})` 之后调用时，如果引用了 `vuex` 将会自动注入此方法  
-当使用方法二在 Vue 实例之前调用时，需要手动 `registerDynamicComponent(store)` 之后才可以被调用  
-
-&nbsp;&nbsp;&nbsp; 方法：  
-&nbsp;&nbsp;&nbsp; `add(component, position)` 添加组件到指定的位置  
-&nbsp;&nbsp;&nbsp; `remove(name, position)` 从指定位置移除指定名字组件  
-&nbsp;&nbsp;&nbsp; 注意：  
-&nbsp;&nbsp;&nbsp; `component`: 需要配置 `name` 属性 或 通过 `{ name: '', component: Compnent }` 自定义名称，移出时通过 name 移除  
-&nbsp;&nbsp;&nbsp; `position` 可选项， 默认值：'GLOBAL'  
 <br>
 
 <b>`this.$moduleLoadManager`</b>  
