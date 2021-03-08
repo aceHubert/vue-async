@@ -5,12 +5,10 @@
   "license": "MIT",
   "scripts": {
     "serve": "node src/server.js",
-    "build": "concurrently --raw \"yarn build:dymanicRouter\" \"yarn build:dymanicComponent\" \"yarn build:components\"",
+    "build": "concurrently --raw \"yarn build:dymanicRouter\" \"yarn build:components\" \"yarn build:js-test\"",
     "build:dymanicRouter": "node scripts/buildModule.js src/dymanicRouter",
-    "build:dymanicComponent": "node scripts/buildModule.js src/dymanicComponent",
     "build:components": "node scripts/buildModule.js src/componentA src/componentB.vue",
     "build:js-test": "node scripts/buildModule.js src/module-js",
-    "build:ts-test": "node scripts/buildModule.js src/module-ts",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },

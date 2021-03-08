@@ -1,8 +1,3 @@
-import dynamicComponent, {
-  namespaces as dynamicComponentPath,
-  storeModule as dynamicComponentStoreModule,
-} from './ability/dynamicComponent';
-
 import createEventBus from './ability/eventBus';
 import createModuleLoader from './ability/moduleLoader';
 import createComponentLoader from './ability/componentLoader';
@@ -10,7 +5,6 @@ import ModuleLoader from './framework';
 
 // Types
 import { VueConstructor } from 'vue';
-import { Store } from 'vuex';
 import VueRouter, { Route, RawLocation } from 'vue-router';
 
 export default function install(this: typeof ModuleLoader, Vue: VueConstructor) {
@@ -98,23 +92,6 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
     }
   };
 
-  /**
-   * store 注入, 添加 $dynamicComponent 方法
-   * @param store
-   */
-  const storeInject = (store: Store<unknown>) => {
-    if (!store.hasModule(dynamicComponentPath)) {
-      store.registerModule(dynamicComponentPath, dynamicComponentStoreModule);
-      // define $dynamicComponent
-      Object.defineProperty(Vue.prototype, '$dynamicComponent', {
-        value: dynamicComponent(Vue, store),
-        writable: false,
-        enumerable: true,
-        configurable: true,
-      });
-    }
-  };
-
   const _init = Vue.prototype._init;
   /**
    * 从 Vue root.options 中获取 router | store 实例
@@ -124,25 +101,12 @@ export default function install(this: typeof ModuleLoader, Vue: VueConstructor) 
     if (options.router) {
       routerInject(options.router);
     }
-    if (options.store) {
-      storeInject(options.store);
-    }
+
     _init.call(this, options);
   };
 
   // 扩展 new ModuleLoader().load() 在 Vue 实例化之前加载模块
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   Object.defineProperties(this.prototype, {
-    // 需要主动注册 DynamicComponent
-    registerDynamicComponent: {
-      value: function (store: Store<unknown>) {
-        storeInject(store);
-        return this;
-      },
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
     load: properties.$moduleLoader,
     loadComponent: properties.$componentLoader,
     eventBus: properties.$eventBus,

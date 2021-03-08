@@ -8,13 +8,13 @@ import * as ssr from '../utils/ssr';
 // Types
 import { VueConstructor } from 'vue';
 import { Context as vmContext } from 'vm';
-import { Modules, ModuleData, ModuleRemoteConfig, ModuleLoaderOption } from 'types/module';
+import { ModuleConfig, ModuleRemoteConfig, ModuleLoaderOptions } from 'types/module';
 
 interface MutableRefObject<T> {
   current: T;
 }
 
-type FormatModuleData = (ModuleRemoteConfig & { styles?: string[] }) | Extract<ModuleData, Function>;
+type FormatModuleData = (ModuleRemoteConfig & { styles?: string[] }) | Extract<ModuleConfig, Function>;
 
 type Lifecycles = {
   bootstrap: (vue: VueConstructor, args?: ModuleRemoteConfig['args']) => void;
@@ -23,16 +23,19 @@ type Lifecycles = {
 };
 
 /** 格式化模块配置 */
-function formatModules(modules: Modules, errorCallback: ModuleLoaderOption['error'] = () => {}): FormatModuleData[] {
-  if (Array.isArray(modules)) {
-    return modules.reduce((prev, curr) => [...prev, ...formatModules(curr)], [] as FormatModuleData[]);
-  } else if (isPlainObject(modules)) {
-    const _modules = modules as Dictionary<any>;
+function formatModules(
+  config: ModuleConfig | ModuleConfig[],
+  errorCallback: ModuleLoaderOptions['error'] = () => {},
+): FormatModuleData[] {
+  if (Array.isArray(config)) {
+    return config.reduce((prev, curr) => [...prev, ...formatModules(curr)], [] as FormatModuleData[]);
+  } else if (isPlainObject(config)) {
+    const _modules = config as Dictionary<any>;
     // no lib name
     if (_modules.entry && typeof _modules.entry === 'string') {
       return [
         {
-          ...modules,
+          ...config,
           styles: _modules.styles ? (!Array.isArray(_modules.styles) ? [_modules.styles] : _modules.styles) : [],
         } as FormatModuleData,
       ];
@@ -54,10 +57,10 @@ function formatModules(modules: Modules, errorCallback: ModuleLoaderOption['erro
             },
       );
     }
-  } else if (isFunction(modules)) {
-    return [modules];
+  } else if (isFunction(config)) {
+    return [config];
   } else {
-    errorCallback(`not support "${typeof modules}" type module`, modules);
+    errorCallback(`not support "${typeof config}" type module`, config);
     return [];
   }
 }
@@ -102,19 +105,23 @@ function getLifecyclesFromExports(scriptExports: any, moduleName: string, global
 }
 
 export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
-  return function loader(this: unknown, modules: Modules, opts: ModuleLoaderOption = {}): Promise<void> {
+  return function loader(
+    this: unknown,
+    config: ModuleConfig | ModuleConfig[],
+    options: ModuleLoaderOptions = {},
+  ): Promise<void> {
     const {
       sync,
       success,
       error = (msg: string) => {
         globalError(true, msg);
       },
-    } = opts;
+    } = options;
 
     status.current = false;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _self = this;
-    const _modules = formatModules(modules, error);
+    const _modules = formatModules(config, error);
 
     // 按顺序同步执行
     if (sync === true) {

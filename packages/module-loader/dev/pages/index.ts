@@ -5,11 +5,8 @@ import Vuex from 'vuex';
 
 export default Vue.extend({
   name: 'Playground',
-  computed: Vuex.mapState('dynamicComponent', { dynamicComponents: 'dashboard' }),
+  computed: Vuex.mapState('moduleJS', ['index']),
   render(h) {
-    const children = Object.values(this.dynamicComponents || {}).map((component: any) =>
-      h(component.component || component),
-    );
     return h('div', { staticClass: 'playground' }, [
       h(
         'router-link',
@@ -36,7 +33,6 @@ export default Vue.extend({
         { staticStyle: { margin: '0 10px 5px', display: 'block' }, props: { to: { name: 'component-loading' } } },
         'async component in 3s',
       ),
-      ...children,
     ]);
   },
 });
