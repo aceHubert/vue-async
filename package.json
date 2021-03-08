@@ -1,7 +1,7 @@
 {
   "name": "vue-async",
-  "version": "1.1.1",
-  "description": "Vue Async",
+  "version": "2.0.0",
+  "description": "Vue模块化加载和公共方法",
   "private": true,
   "repository": {
     "type": "git",
