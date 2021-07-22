@@ -1,9 +1,10 @@
 /**
  * moduleLoader
  */
-import { error as globalError, warn as globalWarn, isPlainObject, isFunction } from '@vue-async/utils';
+import warning from 'warning';
+import { isPlainObject, isFunction } from '@vue-async/utils';
 import * as spa from '../utils/spa';
-import * as ssr from '../utils/ssr';
+// import * as ssr from '../utils/ssr';
 
 // Types
 import { VueConstructor } from 'vue';
@@ -88,7 +89,7 @@ function getLifecyclesFromExports(scriptExports: any, moduleName: string, global
     return isFunction(_export) ? { bootstrap: _export } : scriptExports;
   }
 
-  globalWarn(
+  warning(
     process.env.NODE_ENV === 'production',
     `[moduleLoader] lifecycle not found from ${moduleName} entry exports, fallback to get from window['${moduleName}']`,
   );
@@ -114,7 +115,7 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
       sync,
       success,
       error = (msg: string) => {
-        globalError(true, msg);
+        warning(false, msg);
       },
     } = options;
 
@@ -153,46 +154,46 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
       else {
         const { moduleName, entry, styles = [], args } = module;
         // server render
-        if (Vue.prototype.$isServer) {
-          const global = ssr.createSandbox();
+        // if (Vue.prototype.$isServer) {
+        //   const global = ssr.createSandbox();
 
-          return ssr
-            .execScript(entry, global)
-            .then((scriptExports: any) => {
-              const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-              bootstrap.call(_self, Vue, args);
-            })
-            .catch((err: Error) => {
-              // 异常不阻止当前执行，error 中处理
-              try {
-                error(err.message, module);
-              } catch {}
-            });
-        } else {
-          // todo: load in sandbox
-          const global: WindowProxy = window;
+        //   return ssr
+        //     .execScript(entry, global)
+        //     .then((scriptExports: any) => {
+        //       const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+        //       bootstrap.call(_self, Vue, args);
+        //     })
+        //     .catch((err: Error) => {
+        //       // 异常不阻止当前执行，error 中处理
+        //       try {
+        //         error(err.message, module);
+        //       } catch {}
+        //     });
+        // } else {
+        // todo: load in sandbox
+        const global: WindowProxy = window;
 
-          if (!global.Vue) {
-            global.Vue = Vue;
-          }
-
-          // load styles
-          spa.execStyles(styles, moduleName);
-
-          // exec script
-          return spa
-            .execScript(entry, global)
-            .then((scriptExports: any) => {
-              const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-              bootstrap.call(_self, Vue, args);
-            })
-            .catch((err: Error) => {
-              // 异常不阻止当前执行，error 中处理
-              try {
-                error(err.message, module);
-              } catch {}
-            });
+        if (!global.Vue) {
+          global.Vue = Vue;
         }
+
+        // load styles
+        spa.execStyles(styles, moduleName);
+
+        // exec script
+        return spa
+          .execScript(entry, global)
+          .then((scriptExports: any) => {
+            const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+            bootstrap.call(_self, Vue, args);
+          })
+          .catch((err: Error) => {
+            // 异常不阻止当前执行，error 中处理
+            try {
+              error(err.message, module);
+            } catch {}
+          });
+        // }
       }
     }
 

@@ -26,7 +26,6 @@
     "dev": "concurrently --raw \"cd ../../dev-modules && yarn serve\" \"rollup -c ./rollup.config.dev.js -w\" \"node ./dev/server.js\"",
     "build": "rollup -c --environment BUILD:production",
     "build:es": "rollup -c --environment TARGET:es,BUILD:production",
-    "build:dev-modules": "cd dev-modules && node scripts/buildModule.js src/dymanicRouter",
     "release": "bash scripts/release.sh",
     "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
@@ -42,11 +41,13 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.1.0"
+    "@vue-async/utils": "^1.1.0",
+    "warning": "^4.0.3"
   },
   "devDependencies": {
     "@nuxt/types": "^2.14.6",
     "@nuxt/typescript-build": "^2.0.3",
+    "@types/warning": "^3.0.0",
     "nuxt": "^2.14.6"
   },
   "peerDependencies": {

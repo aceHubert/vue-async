@@ -1,8 +1,7 @@
 /**
  * eventBus
  */
-
-import { warn, error } from '@vue-async/utils';
+import warning from 'warning';
 
 // Types
 import { VueConstructor } from 'vue';
@@ -22,7 +21,7 @@ export default function (Vue: VueConstructor): ModuleContext['$eventBus'] {
      */
     emit(eventName, payload) {
       if (!events[eventName]) {
-        return warn(
+        return warning(
           process.env.NODE_ENV === 'production',
           `[moduleLoader] event "${eventName}" is triggered, but no listeners，nothing will be happening.`,
         );
@@ -41,10 +40,7 @@ export default function (Vue: VueConstructor): ModuleContext['$eventBus'] {
         if (!events[eventName]) events[eventName] = new Set();
         events[eventName].add(handler);
       } else {
-        error(
-          process.env.NODE_ENV === 'production',
-          `[moduleLoader] handler must be a function, but recived ${typeof handler}`,
-        );
+        warning(false, `[moduleLoader] handler must be a function, but recived ${typeof handler}`);
       }
     },
     /**
@@ -54,9 +50,9 @@ export default function (Vue: VueConstructor): ModuleContext['$eventBus'] {
      */
     off(eventName, handler) {
       if (!handler) {
-        return warn(false, '[moduleLoader] handler must be a valid event function');
+        return warning(false, '[moduleLoader] handler must be a valid event function');
       } else if (!events.hasOwnProperty(eventName)) {
-        return error(
+        return warning(
           process.env.NODE_ENV === 'production',
           `[moduleLoader] no event name of "${eventName}" is on listening`,
         );

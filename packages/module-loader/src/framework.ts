@@ -1,5 +1,6 @@
+import warning from 'warning';
 import { RouteConfig } from 'vue-router';
-import { error, warn, hasOwn } from '@vue-async/utils';
+import { hasOwn } from '@vue-async/utils';
 import install from './install';
 
 // Types
@@ -19,7 +20,7 @@ export default class ModuleLoader<Options = Record<string, any>> {
         if (!hasOwn(this._framework, key)) {
           this._framework[key] = value;
         } else {
-          warn(process.env.NODE_ENV === 'production', `参数 ${key} 已在在`);
+          warning(process.env.NODE_ENV === 'production', `${key} has been defined`);
         }
       });
   }
@@ -39,7 +40,7 @@ export default class ModuleLoader<Options = Record<string, any>> {
       if (root.$router) {
         root.$router.addRoutes(routes);
       } else {
-        error(process.env.NODE_ENV === 'production', 'vm.$router未定义');
+        warning(process.env.NODE_ENV === 'production', 'vm.$router is not exists!');
       }
     };
   }

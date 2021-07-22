@@ -2,10 +2,10 @@
  * componentLoader
  */
 import Vue from 'vue';
-import { warn as globalWarn, isPlainObject, isFunction, hasOwn } from '@vue-async/utils';
-
-import * as ssr from '../utils/ssr';
+import warning from 'warning';
+import { isPlainObject, isFunction, hasOwn } from '@vue-async/utils';
 import * as spa from '../utils/spa';
+// import * as ssr from '../utils/ssr';
 
 // Types
 import { VueConstructor, Component as VueComponent } from 'vue';
@@ -34,8 +34,8 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
     return (scriptExports && scriptExports.default) || scriptExports;
   }
 
-  globalWarn(
-    true,
+  warning(
+    false,
     `[moduleLoader] component not found from ${componentName} entry exports, fallback to get from window['${componentName}']`,
   );
 
@@ -52,31 +52,31 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (Vue: VueConstructor) => {
   return function loader(componentName: string, src: string, styles?: string | string[]): Promise<VueComponent> {
-    if (Vue.prototype.$isServer) {
-      const global = ssr.createSandbox();
+    // if (Vue.prototype.$isServer) {
+    //   const global = ssr.createSandbox();
 
-      return ssr.execScript(src, global).then((scriptExports) => {
-        return getComponentFromExport(scriptExports, componentName, global);
-      });
-    } else {
-      const global: WindowProxy = window;
+    //   return ssr.execScript(src, global).then((scriptExports) => {
+    //     return getComponentFromExport(scriptExports, componentName, global);
+    //   });
+    // } else {
+    const global: WindowProxy = window;
 
-      if (!global.Vue) {
-        global.Vue = Vue;
-      }
-
-      // load styles
-      if (styles) {
-        if (typeof styles === 'string') {
-          styles = [styles];
-        }
-        spa.execStyles(styles, componentName);
-      }
-
-      // exec script
-      return spa.execScript(src, global).then((scriptExports) => {
-        return getComponentFromExport(scriptExports, componentName, global);
-      });
+    if (!global.Vue) {
+      global.Vue = Vue;
     }
+
+    // load styles
+    if (styles) {
+      if (typeof styles === 'string') {
+        styles = [styles];
+      }
+      spa.execStyles(styles, componentName);
+    }
+
+    // exec script
+    return spa.execScript(src, global).then((scriptExports) => {
+      return getComponentFromExport(scriptExports, componentName, global);
+    });
+    // }
   };
 };

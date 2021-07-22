@@ -2,7 +2,7 @@
  * @author Hubert
  * fork from https://github.com/kuitos/import-html-entry/blob/master/src/utils.js
  */
-import { error } from '@vue-async/utils';
+import warning from 'warning';
 
 const isIE11 = typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Trident') !== -1;
 
@@ -78,7 +78,7 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
       resolve(exports);
     };
     script.onerror = (err) => {
-      error(process.env.NODE_ENV === 'production', `[moduleLoader] script had a problem to create, entry：${entry}`);
+      warning(process.env.NODE_ENV === 'production', `[moduleLoader] script had a problem to create, entry：${entry}`);
       reject(new Error(`script load error, error: ${err}`));
     };
     proxy.document.body.appendChild(script);
