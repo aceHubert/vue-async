@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { error } from '@vue-async/utils';
+import warning from 'warning';
 import { del, add, has } from './Suspense';
 import { currentSuspenseInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
@@ -44,7 +44,7 @@ export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
           this.$forceUpdate();
         })
         .catch((err) => {
-          error(process.env.NODE_ENV === 'production', err);
+          warning(process.env.NODE_ENV === 'production', err.message);
           del(asyncFactory, err);
         });
     },

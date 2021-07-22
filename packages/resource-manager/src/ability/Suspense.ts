@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { error } from '@vue-async/utils';
+import warning from 'warning';
 import { pushSuspenseInstance, popSuspenseInstance, currentSuspenseInstance } from './currentInstance';
 
 // Types
@@ -31,7 +31,7 @@ export const del = (asyncFactory: AsyncFactory, error?: any) => {
 export const add = (asyncFactory: AsyncFactory) => {
   const suspIns = currentSuspenseInstance || asyncFactory.suspenseInstance;
   if (!suspIns) {
-    return error(process.env.NODE_ENV === 'production', 'No Suspense instance');
+    return warning(process.env.NODE_ENV === 'production', 'No Suspense instance');
   }
   const asyncFactorys = suspIns.asyncFactorys || (suspIns.asyncFactorys = new Set());
 
@@ -45,7 +45,7 @@ export const add = (asyncFactory: AsyncFactory) => {
 export const has = (asyncFactory: AsyncFactory) => {
   const suspIns = currentSuspenseInstance || asyncFactory.suspenseInstance;
   if (!suspIns) {
-    return error(process.env.NODE_ENV === 'production', 'No Suspense instance');
+    return warning(process.env.NODE_ENV === 'production', 'No Suspense instance');
   }
   return suspIns.asyncFactorys && suspIns.asyncFactorys.has(asyncFactory);
 };
@@ -90,7 +90,7 @@ export default Vue.extend({
       this.$on(RESOLVED, () => {
         this.destoryLoading();
         this.resolved = true;
-        reslove();
+        reslove(null);
       });
 
       this.$on(REJECTED, (err: Error) => {

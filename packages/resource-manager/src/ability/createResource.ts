@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { error } from '@vue-async/utils';
+import warning from 'warning';
 import { del, add } from './Suspense';
 import { currentInstance, currentSuspenseInstance, setCurrentInstance } from './currentInstance';
 import findSuspenseInstance from './findSuspenseInstance';
@@ -83,8 +83,8 @@ export default function CreateResource<I = any, R = any, E = Error>(
             del(uniqueWrapFactory);
           }
         })
-        .catch((err: E) => {
-          error(process.env.NODE_ENV === 'production', (err as any).message);
+        .catch((err) => {
+          warning(process.env.NODE_ENV === 'production', err.message);
 
           $res.$$error = options && options.onError ? options.onError(err) : err;
 
