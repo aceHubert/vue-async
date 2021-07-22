@@ -1,7 +1,6 @@
 /**
  * tools
  */
-import { isUndef } from './types';
 export const hasSymbol = typeof Symbol === 'function' && Symbol.for;
 
 export const noop: any = (_: any) => _;
@@ -46,33 +45,9 @@ export function createUid() {
   return Math.random().toString(36).substring(3, 8);
 }
 
-export function assert(condition: any, msg: string) {
+export function assert(condition: boolean, err: string | Error) {
   if (!condition) {
-    throw new Error(`error: ${msg}`);
-  }
-}
-
-export function warn(condition: boolean, msg: string, vm?: any) {
-  if (!condition) {
-    if (isUndef(vm)) {
-      // eslint-disable-next-line no-console
-      console.warn(`warning: ${msg}`);
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn(`warning: ${msg}`, vm);
-    }
-  }
-}
-
-export function error(condition: boolean, msg: string, vm?: any) {
-  if (!condition) {
-    if (isUndef(vm)) {
-      // eslint-disable-next-line no-console
-      console.error(`error: ${msg}`);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(`error: ${msg}`, vm);
-    }
+    throw typeof err === 'string' ? new Error(`error: ${err}`) : err;
   }
 }
 
