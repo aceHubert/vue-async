@@ -126,6 +126,29 @@ Type: `Object`
 此参数与 `$moduleLoadManager` 区别在于此参数只会传递给单个子模块调用  
 <br>
 
+### options
+<b>`sync`</b>  
+Type: `Boolean`
+子模块是否按同步的方式执行加载，即按List的顺序执行。
+
+<b>`onLoading`</b>  
+Type: `Function`  
+参数: name: 模块名  
+模块加载前
+
+<b>`onLoaded`</b>  
+Type: `Function`  
+参数: name: 模块名  
+模块加载成功
+
+
+<b>`onError`</b>  
+Type: `Function`  
+参数: name: 模块名  
+模块加载失败
+
+<br>
+
 ## Vue 上下文注入方法 
 <b>`this.$componentLoader(remote url)`</b>  
 远程加载单个组件，返回 `Promise<VueComponent>`, 可作为 Vue 异步组件直接加载。  

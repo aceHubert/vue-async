@@ -20,8 +20,29 @@ export type ModuleConfig =
   | ((Vue: VueConstructor) => Promise<void> | void);
 
 export type ModuleLoaderOptions = {
+  /**
+   * 模块是否按同步方式执行加载
+   */
   sync?: true;
-  success?: () => void; // all module loaded
+  /**
+   * 模块加载前
+   */
+  onLoading?: (name: string) => void | Promise<void>;
+  /**
+   * 模块加载成功
+   */
+  onLoaded?: (name: string) => void | Promise<void>;
+  /**
+   * 模块加载失败
+   */
+  onError?: (name: string, error: Error) => void | Promise<void>;
+  /**
+   * 所有模块加载成功时（已过时）
+   */
+  success?: () => void;
+  /**
+   * 模块加载失败时（已过时）
+   */
   error?: (msg: string, module?: any) => void; // every single module loaded error with message, module: formated module config
 };
 

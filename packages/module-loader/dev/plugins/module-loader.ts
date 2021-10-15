@@ -104,11 +104,11 @@ const plugin: Plugin = async (cxt) => {
     //   moduleName: 'wrongName',
     //   entry: 'http://localhost:7002/dymanicComponentCopy/dymanicComponent.umd.js',
     // },
-    // {
-    //   // 错误 entry (执行 error)
-    //   moduleName: 'wrongEntry',
-    //   entry: 'http://www.xx.com/error.umd.js',
-    // },
+    {
+      // 错误 entry (执行 error)
+      moduleName: 'wrongEntry',
+      entry: 'http://www.xx.com/error.umd.js',
+    },
     // // function module
     // (_Vue: any) => {
     //   console.log('[dev] function module');
@@ -118,6 +118,18 @@ const plugin: Plugin = async (cxt) => {
   await moduleLoader
     .load(modules, {
       sync: true,
+      onBeforeLoad: (name) => {
+        console.log(`${name} loading`);
+      },
+      onBeforeMount: (name) => {
+        console.log(`${new Date()}: ${name} loaded`);
+      },
+      onAfterMount: (name) => {
+        console.log(`${new Date()}: ${name} loaded`);
+      },
+      onError: (name, error) => {
+        console.error(`${name} error, ${error.message}`);
+      },
       // success: () => {
       //   // app.$mount('#app');
       // },

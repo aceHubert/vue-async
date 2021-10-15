@@ -109,5 +109,7 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
 export function execStyles(styles: string[], _styleFor?: string) {
   // load css
   if (styles.length) {
+    // do something
   }
+  return Promise.resolve();
 }
