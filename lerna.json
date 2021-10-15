@@ -4,9 +4,6 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "conventionalCommits": true,
-      "gitTagVersion": false,
-      "gitReset": false,
       "allowBranch": ["master"],
       "ignoreChanges": [
         "**/CHANGELOG.md",
