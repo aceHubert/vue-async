@@ -23,6 +23,15 @@ type Lifecycles = {
   // unmount: () => void;
 };
 
+const noop = () => {};
+
+function promisify(promise: any): Promise<any> {
+  if (promise && promise instanceof Promise && typeof promise.then === 'function') {
+    return promise;
+  }
+  return Promise.resolve(promise);
+}
+
 /** 格式化模块配置 */
 function formatModules(
   config: ModuleConfig | ModuleConfig[],
@@ -113,10 +122,13 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
   ): Promise<void> {
     const {
       sync,
-      success,
-      error = (msg: string) => {
-        warning(false, msg);
+      onLoading = noop,
+      onLoaded = noop,
+      onError = (name, error) => {
+        warning(false, `An error occurred while loading module "${name}", Error: ${error.message}`);
       },
+      success,
+      error,
     } = options;
 
     status.current = false;
@@ -141,7 +153,7 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
       );
     }
 
-    function exec(module: FormatModuleData) {
+    async function exec(module: FormatModuleData) {
       // local module
       if (isFunction(module)) {
         const result = module.call(_self, Vue);
@@ -177,22 +189,28 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
           global.Vue = Vue;
         }
 
-        // load styles
-        spa.execStyles(styles, moduleName);
+        try {
+          // load styles
+          await spa.execStyles(styles, moduleName);
 
-        // exec script
-        return spa
-          .execScript(entry, global)
-          .then((scriptExports: any) => {
-            const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-            bootstrap.call(_self, Vue, args);
-          })
-          .catch((err: Error) => {
-            // 异常不阻止当前执行，error 中处理
-            try {
+          // exec script
+          const scriptExports = await spa.execScript(entry, global);
+          await promisify(onLoading(moduleName));
+          const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
+          await promisify(bootstrap.call(_self, Vue, args));
+          await promisify(onLoaded(moduleName));
+        } catch (err) {
+          // 异常不阻止当前执行，error 中处理
+          try {
+            await promisify(onError(moduleName, err));
+            // 方法已过时
+            if (error && typeof error === 'function') {
+              // eslint-disable-next-line no-console
+              console.warn('"error" function is deprecated, using "onError" function!');
               error(err.message, module);
-            } catch {}
-          });
+            }
+          } catch {}
+        }
         // }
       }
     }

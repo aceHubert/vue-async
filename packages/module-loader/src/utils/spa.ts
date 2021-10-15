@@ -87,15 +87,21 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
 
 /** 加载 styles */
 export function execStyles(styles: string[], styleFor?: string) {
-  // load css
   if (styles.length) {
-    (styles as string[]).map((href) => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = href;
-      styleFor && (link.dataset.styleFor = styleFor);
-      document.getElementsByTagName('head')[0].appendChild(link);
-    });
+    return Promise.all(
+      styles.map((href) => {
+        return new Promise((resolve) => {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.type = 'text/css';
+          link.href = href;
+          styleFor && (link.dataset.styleFor = styleFor);
+          link.onload = resolve;
+          link.onerror = resolve;
+          document.getElementsByTagName('head')[0].appendChild(link);
+        });
+      }),
+    );
   }
+  return Promise.resolve();
 }
