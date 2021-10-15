@@ -1,3 +1,8 @@
 export default function () {
-  console.log('sortTest');
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      console.log('sortTest');
+      resolve(null);
+    }, 3000);
+  });
 }

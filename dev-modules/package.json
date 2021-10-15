@@ -4,11 +4,12 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "serve": "node src/server.js",
-    "build": "concurrently --raw \"yarn build:dymanicRouter\" \"yarn build:components\" \"yarn build:js-test\"",
+    "serve": "yarn build && node src/server.js",
+    "build": "concurrently --raw \"yarn build:dymanicRouter\" \"yarn build:components\" \"yarn build:js-test\" \"yarn build:sortTest\"",
     "build:dymanicRouter": "node scripts/buildModule.js src/dymanicRouter",
     "build:components": "node scripts/buildModule.js src/componentA src/componentB.vue",
     "build:js-test": "node scripts/buildModule.js src/module-js",
+    "build:sortTest": "node scripts/buildModule.js src/sortTest",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint"
   },
