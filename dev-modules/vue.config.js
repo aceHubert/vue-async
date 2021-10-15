@@ -22,7 +22,9 @@ module.exports = {
     extract: true,
     loaderOptions: {
       postcss: {
-        path: __dirname,
+        postcssOptions: {
+          path: __dirname,
+        },
       },
       less: {
         javascriptEnabled: true,
