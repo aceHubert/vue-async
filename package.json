@@ -18,8 +18,7 @@
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz",
     "prepublishOnly": "yarn install --ignore-scripts && yarn changelog && yarn build",
-    "release": "lerna publish",
-    "postpublish": "node ./scripts/resetPackage.js"
+    "release": "lerna publish"
   },
   "config": {
     "commitizen": {
