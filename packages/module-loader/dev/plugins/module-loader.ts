@@ -118,13 +118,10 @@ const plugin: Plugin = async (cxt) => {
   await moduleLoader
     .load(modules, {
       sync: true,
-      onBeforeLoad: (name) => {
+      onLoading: (name) => {
         console.log(`${name} loading`);
       },
-      onBeforeMount: (name) => {
-        console.log(`${new Date()}: ${name} loaded`);
-      },
-      onAfterMount: (name) => {
+      onLoaded: (name) => {
         console.log(`${new Date()}: ${name} loaded`);
       },
       onError: (name, error) => {
