@@ -1,4 +1,5 @@
 import './vue';
+import './hook';
 import { ModuleLoader } from './module';
 
 export default ModuleLoader;
