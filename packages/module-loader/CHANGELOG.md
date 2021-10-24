@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.0.0...@vue-async/module-loader@3.1.0) (2021-10-24)
+
+
+### Features
+
+* 添加hooks功能 ([c85d883](https://github.com/aceHubert/vue-async/commit/c85d883dbc077c8e0f1378e50a90f0a8043c0029))
+* **module-loader:** 添加模块加载的生命周期 ([4f0e2cc](https://github.com/aceHubert/vue-async/commit/4f0e2cc23e2f9a8e4c4e7627f222589f17136860))
+
+
+
+
+
 # 3.0.0 (2021-07-22)
 
 
