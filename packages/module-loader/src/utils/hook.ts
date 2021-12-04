@@ -126,7 +126,7 @@ export default class POHook {
 
   public applyFilters<T = unknown, R = T>(value: T, ...args: unknown[]): Promise<R> {
     const sortFuncs = Object.entries(this.callbacks)
-      .sort(([a], [b]) => (a === b ? 0 : a < b ? -1 : 1))
+      .sort(([a], [b]) => Number(a) - Number(b))
       .reduce((prev, [_priority, callbacks]) => prev.concat(callbacks), [] as Callback[]);
 
     if (sortFuncs.length) {
