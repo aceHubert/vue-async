@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.1.0...@vue-async/module-loader@3.1.1) (2021-12-04)
+
+
+### Bug Fixes
+
+* entries 后 sort key 是字符串比较错误 ([1b97a05](https://github.com/aceHubert/vue-async/commit/1b97a05db55648e043c1206ab2e987d1447a3052))
+
+
+
+
+
 # [3.1.0](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.0.0...@vue-async/module-loader@3.1.0) (2021-10-24)
 
 
