@@ -18,7 +18,6 @@
     "microfront"
   ],
   "files": [
-    "src",
     "dist/*.js",
     "types/*.d.ts"
   ],
