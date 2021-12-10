@@ -1,4 +1,5 @@
 import ModuleLoader from './framework';
+import hook from './ability/hooks';
 
 const install = ModuleLoader.install;
 
@@ -6,6 +7,7 @@ ModuleLoader.install = (Vue) => {
   install.call(ModuleLoader, Vue);
 };
 
+export { hook };
 export default ModuleLoader;
 
 // Auto install if it is not done yet and `window` has `Vue`.
