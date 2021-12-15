@@ -137,10 +137,11 @@ export default class POHook {
       // eslint-disable-next-line no-inner-declarations
       function exec(index: number, value: unknown, resolve: (result: any) => void) {
         const cb = sortFuncs[index];
+        const _args = [...args];
         if (!_doingAction) {
-          args.unshift(value);
+          _args.unshift(value);
         }
-        const result = cb.func.apply(null, args.slice(0, cb.acceptedArgs));
+        const result = cb.func.apply(null, _args.slice(0, cb.acceptedArgs));
         if (index === sortFuncs.length - 1) {
           result instanceof Promise ? result.then(resolve) : resolve(result);
         } else if (result instanceof Promise) {
