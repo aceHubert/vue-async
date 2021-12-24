@@ -7,50 +7,55 @@
  */
 
 export type MobileDeviceType = {
-  type: 'mobild' | 'ios' | 'android';
-  env?: 'wechat' | 'wxwork' | 'dingtalk' | 'webo' | 'qq';
+  type: 'mobile' | 'ios' | 'android';
+  env?: 'wechat' | 'wxwork' | 'dingtalk' | 'feishu' | 'weibo' | 'qq';
   masklayer?: boolean;
 };
 
 export type PcDeviceType = {
   type: 'pc';
-  env?: 'wechat' | 'wxwork' | 'dingtalk';
+  env?: 'wechat' | 'wxwork' | 'dingtalk' | 'feishu';
 };
 
 export type DeviceType = MobileDeviceType | PcDeviceType;
 
-function isWechat(ua: string) {
+export function isWechat(ua: string = navigator.userAgent) {
   return /MicroMessenger/i.test(ua);
 }
 
-function isWechatWork(ua: string) {
+export function isWechatWork(ua: string = navigator.userAgent) {
   return /wxwork/i.test(ua);
 }
 
-function isWeibo(ua: string) {
+export function isWeibo(ua: string = navigator.userAgent) {
   return /Weibo/i.test(ua);
 }
 
-function isQQ(ua: string) {
+export function isQQ(ua: string = navigator.userAgent) {
   return /QQ/i.test(ua);
 }
 
-function isDingTalk(ua: string) {
+export function isDingTalk(ua: string = navigator.userAgent) {
   return /DingTalk/i.test(ua);
 }
 
-function isMoible(ua: string) {
+export function isFeiShu(ua: string = navigator.userAgent) {
+  return /Lark/i.test(ua);
+}
+
+export function isMoible(ua: string = navigator.userAgent) {
   return /(Android|webOS|iPhone|iPod|tablet|BlackBerry|Mobile)/i.test(ua);
 }
 
-function isIOS(ua: string) {
+export function isIOS(ua: string = navigator.userAgent) {
   return /iPhone|iPad|iPod/i.test(ua);
 }
 
-function isAndroid(ua: string) {
+export function isAndroid(ua: string = navigator.userAgent) {
   return /Android/i.test(ua);
 }
-export function deviceType(ua: string) {
+
+export function deviceType(ua: string = navigator.userAgent): DeviceType {
   if (isMoible(ua)) {
     if (isIOS(ua)) {
       if (isWechat(ua)) {
@@ -83,6 +88,12 @@ export function deviceType(ua: string) {
           env: 'dingtalk',
           masklayer: true,
         };
+      } else if (isFeiShu(ua)) {
+        return {
+          type: 'ios',
+          env: 'feishu',
+          masklayer: true,
+        };
       } else {
         return {
           type: 'ios',
@@ -113,6 +124,18 @@ export function deviceType(ua: string) {
           env: 'qq',
           masklayer: true,
         };
+      } else if (isDingTalk(ua)) {
+        return {
+          type: 'android',
+          env: 'dingtalk',
+          masklayer: true,
+        };
+      } else if (isFeiShu(ua)) {
+        return {
+          type: 'android',
+          env: 'feishu',
+          masklayer: true,
+        };
       } else {
         return {
           type: 'android',
@@ -128,19 +151,21 @@ export function deviceType(ua: string) {
       return {
         type: 'pc',
         env: 'dingtalk',
-        masklayer: true,
+      };
+    } else if (isFeiShu(ua)) {
+      return {
+        type: 'pc',
+        env: 'feishu',
       };
     } else if (isWechat(ua)) {
       return {
         type: 'pc',
         env: 'wechat',
-        masklayer: true,
       };
     } else if (isWechatWork(ua)) {
       return {
         type: 'pc',
         env: 'wxwork',
-        masklayer: true,
       };
     } else {
       return {
