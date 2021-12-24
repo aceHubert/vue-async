@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.1.2...@vue-async/module-loader@3.1.3) (2021-12-24)
+
+**Note:** Version bump only for package @vue-async/module-loader
+
+
+
+
+
 ## [3.1.2](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.1.1...@vue-async/module-loader@3.1.2) (2021-12-15)
 
 
