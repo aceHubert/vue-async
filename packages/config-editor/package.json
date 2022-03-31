@@ -1,8 +1,8 @@
 {
   "name": "@vue-async/config-editor",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
-  "description": "Module Loader Core.",
+  "description": "A config editor component.",
   "main": "dist/config-editor.common.js",
   "umd:main": "dist/config-editor.umd.js",
   "module": "dist/config-editor.esm.js",
@@ -12,7 +12,8 @@
   "keywords": [
     "vue",
     "vue-async",
-    "config-editor"
+    "config-editor",
+    "josn"
   ],
   "files": [
     "dist/*.js",
