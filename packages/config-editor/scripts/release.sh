@@ -20,18 +20,20 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # build
   VERSION=$VERSION npm run build
 
-  # commit
-  # git add -A
-  # git commit -m "build: build $VERSION"
-  # tag version
-  npm version "$VERSION" --message "build: release $VERSION"
-
-  # publish
-  git push origin refs/tags/v"$VERSION"
-  git push
   if [[ -z $RELEASE_TAG ]]; then
     npm publish
   else
     npm publish --tag "$RELEASE_TAG"
   fi
+
+  # commit
+  git add -A
+  git commit -m "chore(release): publish v$VERSION"
+  # tag version
+  git tag -a @vue-async/config-editor@"$VERSION" -m "chore(release): publish v$VERSION"
+  npm version "$VERSION" --message "chore(release): publish v$VERSION"
+
+  # publish
+  git push origin refs/tags/@vue-async/config-editor@"$VERSION"
+  git push
 fi
