@@ -44,10 +44,11 @@
     "@typescript-eslint/parser": "^2.12.0",
     "@zerollup/ts-transform-paths": "^1.7.18",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-import": "^1.13.3",
     "child_process": "^1.0.2",
     "commitizen": "^4.0.3",
     "concurrently": "^5.1.0",
-    "core-js": "^3.6.5",
+    "core-js": "^3.8.3",
     "cross-env": "^6.0.3",
     "cz-lerna-changelog": "^2.0.2",
     "eslint": "^6.1.0",
@@ -64,6 +65,7 @@
     "prettier": "^2.0.5",
     "rollup": "^1.27.2",
     "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^1.4.2",
     "rollup-plugin-license": "^2.0.0",
     "rollup-plugin-serve": "^1.0.1",
@@ -90,10 +92,12 @@
       "**/nuxt",
       "**/nuxt/**",
       "**/@nuxt/types",
-      "@vue-async/resource-manager/vue-class-component",
-      "@vue-async/resource-manager/vue-class-component/**/*",
-      "@vue-async/resource-manager/vue-property-decorator",
-      "@vue-async/resource-manager/vue-property-decorator/**/*"
+      "**/vue-class-component",
+      "**/vue-class-component/**/*",
+      "**/vue-property-decorator",
+      "**/vue-property-decorator/**/*",
+      "@vue-async/config-editor/monaco-editor",
+      "@vue-async/config-editor/monaco-editor-webpack-plugin"
     ]
   }
 }

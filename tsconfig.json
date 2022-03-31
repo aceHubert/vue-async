@@ -52,6 +52,8 @@
     "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
     "paths": {
       /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+      "@vue-async/config-editor": ["packages/config-editor/src"],
+      "@vue-async/config-editor/*": ["packages/config-editor/src/*"],
       "@vue-async/module-loader": ["packages/module-loader/src"],
       "@vue-async/module-loader/*": ["packages/module-loader/src/*"],
       "@vue-async/resource-manager": ["packages/resource-manager/src"],

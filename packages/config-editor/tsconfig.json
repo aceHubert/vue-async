@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "jsx": "preserve",
+    "composite": true
+  },
+  "include": ["src", "types"],
+  "references": [{ "path": "../utils" }]
+}

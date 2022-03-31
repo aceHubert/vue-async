@@ -1,0 +1,68 @@
+{
+  "name": "@vue-async/config-editor",
+  "version": "1.0.0",
+  "author": "Hubert<yi.xiang@live.com>",
+  "description": "Module Loader Core.",
+  "main": "dist/config-editor.common.js",
+  "umd:main": "dist/config-editor.umd.js",
+  "module": "dist/config-editor.esm.js",
+  "unpkg": "dist/config-editor.js",
+  "jsdelivr": "dist/config-editor.js",
+  "typings": "types/index.d.ts",
+  "keywords": [
+    "vue",
+    "vue-async",
+    "config-editor"
+  ],
+  "files": [
+    "dist/*.js",
+    "types/*.d.ts"
+  ],
+  "scripts": {
+    "dev": "concurrently --raw \"rollup -c --environment TARGET:es,CLEAN:false -w\" \"node ./dev/server.js\"",
+    "build": "rollup -c --environment BUILD:production",
+    "build:es": "rollup -c --environment TARGET:es,BUILD:production",
+    "release": "bash scripts/release.sh",
+    "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
+    "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
+    "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aceHubert/vue-async.git",
+    "directory": "packages/config-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/aceHubert/vus-async/issues"
+  },
+  "dependencies": {
+    "lodash.startcase": "^4.4.0",
+    "view-design": "^4.7.0",
+    "warning": "^4.0.3"
+  },
+  "devDependencies": {
+    "@nuxt/types": "^2.14.6",
+    "@nuxt/typescript-build": "^2.0.3",
+    "@types/lodash.startcase": "^4.4.6",
+    "@types/warning": "^3.0.0",
+    "@vue/babel-preset-app": "^5.0.4",
+    "@vue/compiler-sfc": "^3.2.31",
+    "autoprefixer": "^9.8.6",
+    "monaco-editor": "0.30.1",
+    "monaco-editor-webpack-plugin": "6.0.0",
+    "nuxt": "^2.14.6",
+    "postcss":"^8.4.12",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-vue": "^5.0.0",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^8.4.1",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "peerDependencies": {
+    "vue": "^2.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

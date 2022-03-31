@@ -1,0 +1,78 @@
+@text-color: #333;
+
+.va-property {
+  padding: 8px 10px 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: @text-color;
+
+  &:hover {
+    background-color: #eee;
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  &-title__item {
+    color: lighten(@text-color, 15%);
+
+    & + &:not(&--current):before {
+      content: '';
+      margin: 0 3px;
+      display: inline-block;
+      height: 4px;
+      width: 4px;
+      border-width: 1px 1px 0 0;
+      border-color: lighten(@text-color, 20%);
+      border-style: solid;
+      transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0); // rotate(45deg);
+      position: relative;
+      top: -2px;
+    }
+
+    & + &--current::before {
+      content: ':';
+      margin: 0 3px;
+    }
+
+    &--current {
+      color: @text-color;
+    }
+  }
+
+  &__description {
+    margin: 0 0 6px;
+    color: lighten(@text-color, 20%);
+    cursor: pointer;
+  }
+
+  .ivu-form-item {
+    margin-bottom: 0;
+  }
+
+  .ivu-table-tip {
+    display: none;
+  }
+
+  .va-not-support {
+    color: @text-color;
+
+    &:hover {
+      color: @link-hover-color;
+    }
+  }
+}
+
+.va-object-property,
+.va-array-property {
+  .va-action--when-hover {
+    display: none;
+  }
+
+  .ivu-table-row:hover .va-action--when-hover {
+    display: initial;
+  }
+}
