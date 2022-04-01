@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/config-editor",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "A config editor component.",
   "main": "dist/config-editor.common.js",
