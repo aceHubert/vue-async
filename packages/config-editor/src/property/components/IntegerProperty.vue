@@ -23,9 +23,6 @@ import { Input, Form, FormItem, Tooltip } from 'view-design';
 export default Vue.extend({
   name: 'IntegerProperty',
   inheritAttrs: false,
-  model: {
-    event: 'change',
-  },
   components: {
     IInput: Input,
     IForm: Form,
@@ -100,7 +97,7 @@ export default Vue.extend({
       val !== this.current.value && (this.current.value = val);
     },
   },
-   mounted() {
+  mounted() {
     if (this.value !== undefined) {
       (this.$refs['form'] as any).validate();
     }

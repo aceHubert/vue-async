@@ -86,7 +86,7 @@ export default Vue.extend({
     },
   },
   data() {
-    const currentValue: Record<string, any> = this.value || {};
+    const currentValue: Record<string, any> = JSON.parse(JSON.stringify(this.value || {}));
     const properties: Record<string, any> = this.schema.properties;
     return {
       currentValue,
@@ -146,6 +146,24 @@ export default Vue.extend({
         return Object.keys(properties).filter((key) => !currentKeys.includes(key));
       }
       return [];
+    },
+  },
+  watch: {
+    value(val: Record<string, any>) {
+      if (JSON.stringify(val) !== JSON.stringify(this.currentValue)) {
+        this.currentValue = JSON.parse(JSON.stringify(val || {}));
+        const properties: Record<string, any> = this.schema.properties;
+        this.tableData = Object.keys(this.currentValue)
+          .filter((key) => {
+            return properties ? Object.keys(properties).includes(key) : true;
+          })
+          .map((key) => ({
+            key,
+            value: val[key],
+            isEdit: false,
+            isValid: true,
+          }));
+      }
     },
   },
   methods: {
@@ -208,7 +226,6 @@ export default Vue.extend({
     },
     onAddProperty() {
       const { properties, additionalProperties } = this.schema;
-
       if (additionalProperties) {
         this.tableData.push({
           key: undefined,

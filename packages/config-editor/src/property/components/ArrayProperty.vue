@@ -72,7 +72,7 @@ export default Vue.extend({
     },
   },
   data() {
-    const currentValue: Array<any> = this.value || [];
+    const currentValue: Array<any> = JSON.parse(JSON.stringify(this.value || []));
     return {
       currentValue,
       tableColumns: [
@@ -100,6 +100,18 @@ export default Vue.extend({
     isEditable(): boolean {
       const { items } = this.schema;
       return items.type !== 'object' && items.type !== 'array';
+    },
+  },
+  watch: {
+    value(val: Array<any>, oldVal: Array<any>) {
+      if (JSON.stringify(val) !== JSON.stringify(this.currentValue)) {
+        this.currentValue = JSON.parse(JSON.stringify(val || []));
+        this.tableData = this.currentValue.map((value) => ({
+          value,
+          isEdit: false,
+          isValid: true,
+        }));
+      }
     },
   },
   methods: {

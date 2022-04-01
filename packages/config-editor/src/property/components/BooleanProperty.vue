@@ -21,9 +21,6 @@ import { Checkbox, Select, Option } from 'view-design';
 export default Vue.extend({
   name: 'BooleanProperty',
   inheritAttrs: false,
-  model: {
-    event: 'change',
-  },
   components: {
     ICheckbox: Checkbox,
     ISelect: Select,
@@ -41,6 +38,7 @@ export default Vue.extend({
   },
   methods: {
     onChange(value: boolean | number) {
+      this.$emit('input', Boolean(value));
       this.$emit('change', Boolean(value));
     },
   },

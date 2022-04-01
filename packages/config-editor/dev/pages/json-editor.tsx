@@ -16,14 +16,16 @@ export default Vue.extend({
       required: true,
     },
   },
-  data(): { editor?: monaco.editor.IStandaloneCodeEditor } {
+  data(): { currentValue: Record<string, any>; editor?: monaco.editor.IStandaloneCodeEditor } {
     return {
+      currentValue: { ...this.value },
       editor: undefined,
     };
   },
   watch: {
-    value(val, oldVal) {
-      if (this.editor && JSON.stringify(val) !== JSON.stringify(oldVal)) {
+    value(val) {
+      if (this.editor && JSON.stringify(val) !== JSON.stringify(this.currentValue)) {
+        this.currentValue = { ...val };
         const model = this.editor.getModel()!;
         this.editor.pushUndoStop();
         // @ts-expect-error
@@ -78,7 +80,7 @@ export default Vue.extend({
     initMoraco() {
       // a made up unique URI for our model
       const modelUri = monaco.Uri.parse('schema:/root.json');
-      const model = monaco.editor.createModel(JSON.stringify(this.value, null, 2), 'json', modelUri);
+      const model = monaco.editor.createModel(JSON.stringify(this.currentValue, null, 2), 'json', modelUri);
       const schemas = (this.schemas as Array<Record<string, any>>).map(({ $id, id, ...schema }, index) => ({
         uri: id || $id || `http://items/schema-${index}.json`, // id of the first schema
         fileMatch: [modelUri.toString()], // associate with our model

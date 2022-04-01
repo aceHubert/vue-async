@@ -1,9 +1,9 @@
 <template>
   <div class="va-editor">
-    <p v-if="freezeSchema.title" class="va-editor__title">{{ freezeSchema.title }}</p>
-    <div class="va-editor__items">
+    <div v-for="(schema, index) in schemas" :key="index" class="va-editor-item">
+      <p v-if="schema.title" class="va-editor-item__title">{{ schema.title }}</p>
       <va-property
-        v-for="(schema, key) in freezeSchema.properties"
+        v-for="(schema, key) in schema.properties"
         :key="key"
         :schema="{ ...schema, title: schema.title ? [schema.title] : key.split('.') }"
         :path="key"
@@ -21,20 +21,13 @@ import Property from '../property';
 
 export default Vue.extend({
   name: 'Editor',
-  model: {
-    event: 'change',
-  },
   components: {
     VaProperty: Property,
   },
   props: {
-    schema: {
-      type: Object,
+    schemas: {
+      type: Array,
       required: true,
-      validator(val: Record<string, any>) {
-        // 根目录必须是 object
-        return val.type === 'object' && val.properties;
-      },
     },
     value: {
       type: Object,
@@ -44,7 +37,6 @@ export default Vue.extend({
   data() {
     return {
       currentValue: this.value,
-      freezeSchema: Object.freeze(this.schema),
     };
   },
   watch: {
@@ -61,7 +53,10 @@ export default Vue.extend({
       } else {
         this.$set(this.currentValue as any, key, value);
       }
-      this.$emit('change', JSON.parse(JSON.stringify(this.currentValue)));
+      const pure = JSON.parse(JSON.stringify(this.currentValue));
+
+      this.$emit('input', pure);
+      this.$emit('change', pure);
     },
   },
 });
