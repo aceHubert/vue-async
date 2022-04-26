@@ -2,9 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "dist",
-    "composite": true
+    "lib": ["ESNext", "DOM"]
   },
-  "include": ["src", "types"],
-  "references": [{ "path": "../utils" }]
+  "include": ["./src/**/*.ts", "types"],
+  "exclude": ["./test/*", "./esm/*", "./lib/*"]
 }

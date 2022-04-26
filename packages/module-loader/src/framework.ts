@@ -1,6 +1,7 @@
 import warning from 'warning';
 import { RouteConfig } from 'vue-router';
 import { hasOwn } from '@vue-async/utils';
+import { version } from './version';
 import install from './install';
 
 // Types
@@ -9,8 +10,8 @@ import { Framework } from 'types/module';
 
 export default class ModuleLoader<Options = Record<string, any>> {
   static install = install;
+  static version = version;
   static installed = false;
-  static version = '__VERSION__';
 
   private _framework: Record<string, any> = {};
 

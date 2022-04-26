@@ -5,18 +5,19 @@
   },
   "compilerOptions": {
     /* Basic Options */
-    "target": "ESNext" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */,
-    "module": "ESNext" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
+    "target": "es5" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017','ES2018' or 'ESNEXT'. */,
+    "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
     // if using webpack 2+ or rollup, to leverage tree shaking:
     //  "module": "es2015",
     "lib": [
       /* Specify library files to be included in the compilation */
-      "es2015",
-      "es2016",
-      "es2017",
-      "es2018",
-      "dom",
-      "dom.iterable"
+      "ESNext"
+      // "es2015",
+      // "es2016",
+      // "es2017",
+      // "es2018",
+      // "dom",
+      // "dom.iterable"
     ],
     "allowJs": true /* Allow javascript files to be compiled. */,
     // "checkJs": true,                       /* Report errors in .js files. */
@@ -24,7 +25,7 @@
     // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
     "sourceMap": true /* Generates corresponding '.map' file. */,
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "./dist" /* Redirect output structure to the directory. */,
+    "outDir": "dist" /* Redirect output structure to the directory. */,
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "removeComments": true,                /* Do not emit comments to output. */
     // "noEmit": true,                        /* Do not emit outputs. */
@@ -52,14 +53,7 @@
     "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
     "paths": {
       /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
-      "@vue-async/config-editor": ["packages/config-editor/src"],
-      "@vue-async/config-editor/*": ["packages/config-editor/src/*"],
-      "@vue-async/module-loader": ["packages/module-loader/src"],
-      "@vue-async/module-loader/*": ["packages/module-loader/src/*"],
-      "@vue-async/resource-manager": ["packages/resource-manager/src"],
-      "@vue-async/resource-manager/*": ["packages/resource-manager/src/*"],
-      "@vue-async/utils": ["packages/utils/src"],
-      "@vue-async/utils/*": ["packages/utils/src/*"]
+      "@vue-async/*": ["packages/*/src"]
     },
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                       /* List of folders to include type definitions from. */

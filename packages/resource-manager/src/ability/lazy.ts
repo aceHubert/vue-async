@@ -34,7 +34,7 @@ export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
       asyncFactory.$$waiter = promise;
 
       promise
-        .then((C) => {
+        .then((C: any) => {
           // Compatible ES Module
           if (C.__esModule && C.default) {
             C = C.default;
@@ -43,7 +43,7 @@ export default function Lazy<PropsDef = PropsDefinition<DefaultProps>>(
           // Trigger update
           this.$forceUpdate();
         })
-        .catch((err) => {
+        .catch((err: any) => {
           warning(process.env.NODE_ENV === 'production', err.message);
           del(asyncFactory, err);
         });

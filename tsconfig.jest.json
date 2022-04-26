@@ -5,5 +5,5 @@
     "module": "commonjs",
     "types": ["node", "jest", "vue"]
   },
-  "include": ["test/**/*.spec.ts", "test/helpers/*.ts", "src/**/*.d.ts", "types"]
+  "exclude": ["./packages/*/esm", "./packages/*/lib"]
 }

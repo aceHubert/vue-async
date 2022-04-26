@@ -11,7 +11,7 @@ module.exports = () => {
     plugins: [{ src: 'plugins/resource-manager' }],
     buildModules: ['@nuxt/typescript-build'],
     build: {
-      transpile: ['@vue-async/utils', '@vue-async/resource-manager'],
+      transpile: ['@vue-async/resource-manager'],
     },
   };
 };

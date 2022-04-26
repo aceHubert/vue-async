@@ -134,7 +134,7 @@ export default class POHook {
 
       return new Promise((resolve) => exec(0, value, resolve));
 
-      // eslint-disable-next-line no-inner-declarations
+      // @ts-ignore
       function exec(index: number, value: unknown, resolve: (result: any) => void) {
         const cb = sortFuncs[index];
         const _args = [...args];

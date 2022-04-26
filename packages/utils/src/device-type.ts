@@ -1,11 +1,3 @@
-/**
- *
- * @param {*} ua ,就是userAgent
- * @returns  type: 设备类型
- *           env: 访问环境(微信/微博/qq)
- *           masklayer: 就是给外部拿到判断是否显示遮罩层的,一些特殊环境要引导用户到外部去打开访问
- */
-
 export type MobileDeviceType = {
   type: 'mobile' | 'ios' | 'android';
   env?: 'wechat' | 'wxwork' | 'dingtalk' | 'feishu' | 'weibo' | 'qq';
@@ -20,11 +12,11 @@ export type PcDeviceType = {
 export type DeviceType = MobileDeviceType | PcDeviceType;
 
 export function isWechat(ua: string = navigator.userAgent) {
-  return /MicroMessenger/i.test(ua);
+  return /MicroMessenger/i.test(ua) && !/wxwork/i.test(ua);
 }
 
 export function isWechatWork(ua: string = navigator.userAgent) {
-  return /wxwork/i.test(ua);
+  return /wxwork/i.test(ua) && !/MicroMessenger/i.test(ua);
 }
 
 export function isWeibo(ua: string = navigator.userAgent) {
@@ -55,6 +47,13 @@ export function isAndroid(ua: string = navigator.userAgent) {
   return /Android/i.test(ua);
 }
 
+/**
+ *
+ * @param {*} ua ,就是userAgent
+ * @returns  type: 设备类型
+ *           env: 访问环境(微信/微博/qq)
+ *           masklayer: 就是给外部拿到判断是否显示遮罩层的,一些特殊环境要引导用户到外部去打开访问
+ */
 export function deviceType(ua: string = navigator.userAgent): DeviceType {
   if (isMoible(ua)) {
     if (isIOS(ua)) {

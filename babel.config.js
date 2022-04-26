@@ -12,7 +12,7 @@ module.exports = (api) => {
         '@babel/preset-env',
         {
           modules: false, // 对ES6的模块文件不做转化，以便使用tree shaking、sideEffects等
-          spec: true,
+          spec: false,
           forceAllTransforms: true,
           useBuiltIns: 'usage', // 根据使用导入
           corejs: {
@@ -21,6 +21,7 @@ module.exports = (api) => {
           },
         },
       ],
+      ['@babel/preset-typescript'],
     ],
     babelrcRoots: ['.', 'packages/*'],
   };

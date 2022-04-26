@@ -1,3 +1,4 @@
-const version = '__VERSION__';
-
-export { version };
+export * from './device-type';
+export * from './tools';
+export * from './types';
+export * from './version';

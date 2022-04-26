@@ -6,6 +6,7 @@
 build
 dist
 scripts
+type-artefacts
 node_modules
-
+version.[jt]s
 
