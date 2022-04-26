@@ -1,19 +1,22 @@
-import { Vue, Component } from 'vue-property-decorator';
+import Vue from 'vue';
 import CreateResource from '../components/CreateResource';
 
 const LazyLoad1 = Vue.lazy(() => import('../components/Load1'));
 const LazyLoad2 = Vue.lazy(() => import('../components/Load2'), { message: String });
 
-@Component
-export default class Index extends Vue {
-  visible = false;
-
-  handleVisible(e: any) {
-    this.visible = e.target.checked;
-    Vue.setSuspenseOptions({ mode: this.visible ? 'visible' : 'hidden' });
-    this.$forceUpdate();
-  }
-
+export default Vue.extend({
+  data() {
+    return {
+      visible: false,
+    };
+  },
+  methods: {
+    handleVisible(e: any) {
+      this.visible = e.target.checked;
+      Vue.setSuspenseOptions({ mode: this.visible ? 'visible' : 'hidden' });
+      this.$forceUpdate();
+    },
+  },
   render() {
     return (
       <div id="app">
@@ -39,5 +42,5 @@ export default class Index extends Vue {
         </div>
       </div>
     );
-  }
-}
+  },
+});
