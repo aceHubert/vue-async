@@ -2,9 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "declaration": false,
     "paths": {
       "@vue-async/*": ["packages/*"]
-    }
+    },
+    "declaration": false
   }
 }

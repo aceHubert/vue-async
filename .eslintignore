@@ -5,8 +5,9 @@
 /.changelog
 build
 dist
+esm
+lib
 scripts
-type-artefacts
 node_modules
 version.[jt]s
 

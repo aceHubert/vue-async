@@ -15,12 +15,28 @@ const presets = () => {
   const externals = {
     vue: 'Vue',
     '@vue/composition-api': 'VueCompositionAPI',
+    '@formily/reactive-vue': 'Formily.ReactiveVue',
+    '@formily/reactive': 'Formily.Reactive',
+    '@formily/path': 'Formily.Path',
+    '@formily/shared': 'Formily.Shared',
+    '@formily/validator': 'Formily.Validator',
+    '@formily/core': 'Formily.Core',
+    '@formily/json-schema': 'Formily.JSONSchema',
     '@formily/vue': 'Formily.Vue',
+    '@monaco-editor/loader': 'monaco_loader',
+    '@vue-async/components': 'VueAsync.Components',
     '@vue-async/module-loader': 'VueAsync.ModuleLoader',
     '@vue-async/resource-manager': 'VueAsync.ResourceManager',
     // '@vue-async/utils': 'VueAsync.Utils', // 打包到dist, 并 tree shakeing
   };
   return [
+    resolve({
+      browser: true,
+      // Set the root directory to be the parent folder
+      rootDir: path.join(__dirname, '..'),
+      extensions,
+      // modulesOnly: true,
+    }),
     // 使用 @babel/preset-typescript 编译 ts
     // typescript({
     //   tsconfig: './tsconfig.build.json',
@@ -31,13 +47,6 @@ const presets = () => {
     //     },
     //   },
     // }),
-    resolve({
-      browser: true,
-      // Set the root directory to be the parent folder
-      rootDir: path.join(__dirname, '..'),
-      extensions,
-      // modulesOnly: true,
-    }),
     commonjs(),
     babel({
       // https://babeljs.io/docs/en/options#rootMode
@@ -80,7 +89,17 @@ export const removeImportStyleFromInputFilePlugin = () => ({
   },
 });
 
+/**
+ * base rollup config
+ * 如果 plugins 最后一个是函数，返回的plugins 将添加到presets
+ */
 export default (filename, targetName, ...plugins) => {
+  function onwarn(warning, warn) {
+    // ignoer 'this' rewrite with 'undefined' warn
+    if (warning.code === 'THIS_IS_UNDEFINED') return;
+    warn(warning); // this requires Rollup 0.46
+  }
+
   const base = [
     {
       input: 'src/index.ts',
@@ -96,6 +115,7 @@ export default (filename, targetName, ...plugins) => {
       },
       external: ['vue'],
       plugins: [...presets(), ...plugins, createEnvPlugin('development')],
+      onwarn,
     },
     {
       input: 'src/index.ts',
@@ -111,6 +131,7 @@ export default (filename, targetName, ...plugins) => {
       },
       external: ['vue'],
       plugins: [...presets(), terser(), ...plugins, createEnvPlugin('production')],
+      onwarn,
     },
   ];
 
@@ -129,9 +150,13 @@ export default (filename, targetName, ...plugins) => {
         format: 'es',
         file: `dist/${filename}.all.d.ts`,
       },
+      external: ['vue'],
       plugins: [
         dts({
           respectExternal: true,
+          compilerOptions: {
+            exclude: ['**/vue/**'],
+          },
         }),
         ...plugins,
       ],
