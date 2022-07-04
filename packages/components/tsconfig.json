@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "plugins": [{ "transform": "./transformer-vue-jsx.ts", "afterDeclarations": true }],
+    "lib": ["ESNext", "DOM"]
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "exclude": ["./test/*", "./dev/*", "./esm/*", "./lib/*"]
+}

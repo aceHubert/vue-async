@@ -1,0 +1,27 @@
+@import '../../style/variable.less';
+
+@config-editor-prefix-cls: ~'@{vac-prefix}-config-editor';
+
+.@{config-editor-prefix-cls} {
+  position: relative;
+
+  &-item {
+    & + & {
+      margin-top: 15px;
+    }
+
+    &__title {
+      padding: 0 10px;
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 2;
+
+      &:hover {
+        background-color: #eee;
+      }
+    }
+  }
+}
+
+@import './group';
