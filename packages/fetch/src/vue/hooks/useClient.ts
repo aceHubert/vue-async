@@ -1,11 +1,11 @@
 import { inject, ref, Ref } from 'vue-demi';
-import { AjaxClientSymbol } from '../shared/context';
+import { FetchClientSymbol } from '../shared/context';
 
 // Types
 import { Client } from '../../types';
 
 export function useClient(): Ref<Client> {
-  const client = inject(AjaxClientSymbol, ref<any>());
+  const client = inject(FetchClientSymbol, ref<any>());
 
   return client;
 }

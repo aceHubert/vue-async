@@ -1,5 +1,5 @@
 import { defineComponent, provide, toRef, h, PropType } from 'vue-demi';
-import { AjaxClientSymbol, AjaxRegistApiSymbol, AjaxUrlPrefixSymbol } from '../shared/context';
+import { FetchClientSymbol, FetchRegistApiSymbol, FetchUrlPrefixSymbol } from '../shared/context';
 import { FragmentComponent as Fragment } from '../shared/fragment';
 import { useClient } from '../hooks/useClient';
 
@@ -22,13 +22,13 @@ export const FetchProvider = defineComponent({
   setup(props: FetchProviderProps, { slots }) {
     const client = useClient();
 
-    provide(AjaxClientSymbol, toRef(props, 'client'));
-    provide(AjaxRegistApiSymbol, toRef(props, 'api'));
-    provide(AjaxUrlPrefixSymbol, toRef(props, 'prefix'));
+    provide(FetchClientSymbol, toRef(props, 'client'));
+    provide(FetchRegistApiSymbol, toRef(props, 'api'));
+    provide(FetchUrlPrefixSymbol, toRef(props, 'prefix'));
 
     // @ts-ignore
     if (client.value) {
-      throw new Error('There can only be one Ajax Client Context in the Vue Tree');
+      throw new Error('There can only be one Fetch Client Context in the Vue Tree');
     }
 
     return () => h(Fragment, {}, slots.default?.());

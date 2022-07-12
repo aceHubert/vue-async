@@ -54,11 +54,11 @@ export interface Response<T = any> {
   request?: any;
 }
 
-export interface AjaxPromise<T = any> extends Promise<Response<T>> {}
+export interface FetchPromise<T = any> extends Promise<Response<T>> {}
 
 export interface Client {
-  (config: RequestConfig): AjaxPromise;
-  (url: string, config?: RequestConfig): AjaxPromise;
+  (config: RequestConfig): FetchPromise;
+  (url: string, config?: RequestConfig): FetchPromise;
 
   request<T = any, R = Response<T>>(config: RequestConfig): Promise<R>;
   get<T = any, R = Response<T>>(url: string, config?: RequestConfig): Promise<R>;
@@ -89,9 +89,11 @@ export type TransApiResult<MethodUrl> = MethodUrl extends MethodUrlFn<infer Resu
   ? CheckAny<Params> extends 'yes'
     ? (
         config?: Partial<Omit<RequestConfig, 'params' | 'data'> & { params?: Params; data?: Data }>,
-      ) => AjaxPromise<Result>
-    : (config: Partial<Omit<RequestConfig, 'params' | 'data'>> & { params: Params; data?: Data }) => AjaxPromise<Result>
-  : (config?: Partial<RequestConfig>) => AjaxPromise;
+      ) => FetchPromise<Result>
+    : (
+        config: Partial<Omit<RequestConfig, 'params' | 'data'>> & { params: Params; data?: Data },
+      ) => FetchPromise<Result>
+  : (config?: Partial<RequestConfig>) => FetchPromise;
 
 export type RegistApi<C extends Record<string, MethodUrl>> = {
   [P in keyof C]: TransApiResult<C[P]>;

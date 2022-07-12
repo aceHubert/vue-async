@@ -1,8 +1,8 @@
 import { inject, ref, Ref } from 'vue-demi';
-import { AjaxUrlPrefixSymbol } from '../shared/context';
+import { FetchUrlPrefixSymbol } from '../shared/context';
 
 export function useUrlPrefix(): Ref<string> {
-  const prefix = inject(AjaxUrlPrefixSymbol, ref<any>());
+  const prefix = inject(FetchUrlPrefixSymbol, ref<any>());
 
   return prefix;
 }

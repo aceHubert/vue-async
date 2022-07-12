@@ -2,7 +2,7 @@
   "name": "@vue-async/fetch",
   "version": "1.0.0-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
-  "description": "Ajax.",
+  "description": "Fetch.",
   "main": "lib/index.js",
   "umd:main": "dist/fetch.umd.production.js",
   "module": "esm/index.js",
@@ -55,13 +55,13 @@
     "vue-frag": "^1.4.0"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.14.6",
+    "@nuxt/types": "^2.15.0",
     "@nuxt/typescript-build": "^2.0.3",
     "@nuxtjs/composition-api": "^0.32.0",
     "@types/warning": "^3.0.0",
     "@vue/composition-api": "^1.7.0",
     "axios": "^0.21.1",
-    "nuxt": "^2.14.6",
+    "nuxt": "^2.15.0",
     "vue": "^2.6.12",
     "vue3": "npm:vue@3"
   },

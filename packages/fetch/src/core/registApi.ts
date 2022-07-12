@@ -7,7 +7,7 @@ import {
   TransApiResult,
   RegistApi,
   RequestConfig,
-  AjaxPromise,
+  FetchPromise,
 } from '../types';
 
 const REQUEST_HEADERS = {
@@ -67,7 +67,7 @@ export function registApi<C extends Record<string, MethodUrl>>(client: Client, a
 }
 
 function transfromToRequest(
-  request: (url: string, config?: RequestConfig) => AjaxPromise,
+  request: (url: string, config?: RequestConfig) => FetchPromise,
   methodUrl: MethodUrl,
   prefix = '',
 ): TransApiResult<MethodUrl> {

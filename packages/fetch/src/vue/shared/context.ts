@@ -3,8 +3,8 @@ import { InjectionKey, Ref } from 'vue-demi';
 // Types
 import { Client, RegistApi } from '../../types';
 
-export const AjaxClientSymbol: InjectionKey<Ref<Client>> = Symbol('__AjaxClient__');
+export const FetchClientSymbol: InjectionKey<Ref<Client>> = Symbol('__FetchPromiseClient__');
 
-export const AjaxRegistApiSymbol: InjectionKey<Ref<RegistApi<any>>> = Symbol('__AjaxRegistApi__');
+export const FetchRegistApiSymbol: InjectionKey<Ref<RegistApi<any>>> = Symbol('__FetchRegistApi__');
 
-export const AjaxUrlPrefixSymbol: InjectionKey<Ref<string>> = Symbol('__AjaxUrlPrefix__');
+export const FetchUrlPrefixSymbol: InjectionKey<Ref<string>> = Symbol('__FetchUrlPrefix__');

@@ -5,11 +5,7 @@ export interface FetchProviderProps {
   api?: RegistApi<any>;
   prefix?: string;
 }
-export declare const FetchProvider: import('vue').ComponentOptions<
-  import('vue').default,
-  import('@vue/composition-api').ShallowUnwrapRef<() => import('vue').VNode> & import('@vue/composition-api').Data,
-  {},
-  {},
+export declare const FetchProvider: import('vue-demi').DefineComponent<
   {
     client: {
       type: PropType<Client>;
@@ -22,40 +18,34 @@ export declare const FetchProvider: import('vue').ComponentOptions<
       type: PropType<string>;
     };
   },
-  import('@vue/composition-api').ExtractPropTypes<{
-    client: {
-      type: PropType<Client>;
-      required: true;
-    };
-    api: {
-      type: PropType<RegistApi<any>>;
-    };
-    prefix: {
-      type: PropType<string>;
-    };
-  }>
-> &
-  Omit<import('vue').VueConstructor<import('vue').default>, never> &
-  (new (...args: any[]) => import('@vue/composition-api').ComponentRenderProxy<
+  () => import('vue-demi').VNode<
+    import('vue-demi').RendererNode,
+    import('vue-demi').RendererElement,
     {
-      client: Client;
-    } & {
-      api?: RegistApi<any> | undefined;
-      prefix?: string | undefined;
-    },
-    import('@vue/composition-api').ShallowUnwrapRef<() => import('vue').VNode>,
-    import('@vue/composition-api').Data,
-    {},
-    {},
-    {},
-    {},
-    {},
-    {
-      client: Client;
-    } & {
-      api?: RegistApi<any> | undefined;
-      prefix?: string | undefined;
-    },
-    {},
-    true
-  >);
+      [key: string]: any;
+    }
+  >,
+  unknown,
+  {},
+  {},
+  import('vue-demi').ComponentOptionsMixin,
+  import('vue-demi').ComponentOptionsMixin,
+  Record<string, any>,
+  string,
+  import('vue-demi').VNodeProps & import('vue-demi').AllowedComponentProps & import('vue-demi').ComponentCustomProps,
+  Readonly<
+    import('vue-demi').ExtractPropTypes<{
+      client: {
+        type: PropType<Client>;
+        required: true;
+      };
+      api: {
+        type: PropType<RegistApi<any>>;
+      };
+      prefix: {
+        type: PropType<string>;
+      };
+    }>
+  >,
+  {}
+>;
