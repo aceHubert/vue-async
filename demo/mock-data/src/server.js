@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const express = require('express');
 const path = require('path');
 const glob = require('glob');
@@ -25,11 +26,11 @@ app.all('*', function (req, res, next) {
   }
 });
 
-glob(path.resolve(__dirname, '..', 'src/*.js'), (err, files) => {
+glob(path.resolve(__dirname, 'apis/*.js'), (err, files) => {
   if (err) {
     throw err;
   }
-  
+
   files.forEach((file) => {
     try {
       const config = require(file);
