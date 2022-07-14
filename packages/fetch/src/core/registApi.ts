@@ -1,5 +1,5 @@
 import {
-  Client,
+  FetchClient,
   Method,
   MethodUrl,
   MethodUrlWithConfig,
@@ -57,7 +57,7 @@ export function typedUrl<R, P, D>(
   }
 }
 
-export function registApi<C extends Record<string, MethodUrl>>(client: Client, apis: C, prefix?: string): RegistApi<C> {
+export function registApi<C extends Record<string, MethodUrl>>(client: FetchClient, apis: C, prefix?: string): RegistApi<C> {
   const result = {} as RegistApi<C>;
   Object.keys(apis).forEach((methodName) => {
     const methodUrl = apis[methodName];

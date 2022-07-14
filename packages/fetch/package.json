@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch",
-  "version": "1.0.0-alpha.0",
+  "version": "0.1.0-alpha.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Fetch.",
   "main": "lib/index.js",
@@ -8,7 +8,7 @@
   "module": "esm/index.js",
   "unpkg": "dist/fetch.umd.production.js",
   "jsdelivr": "dist/fetch.umd.production.js",
-  "typings": "type-artefacts/cur/index.d.ts",
+  "typings": "types/index.d.ts",
   "keywords": [
     "vue",
     "vue-async",
@@ -18,27 +18,20 @@
   "files": [
     "dist",
     "lib",
-    "esm",
-    "bin",
-    "scripts"
+    "esm"
   ],
   "scripts": {
-    "postinstall": "node ./scripts/postinstall.js",
-    "serve": "concurrently --raw \"cd ../../demo/mock-data && yarn serve\" \"tsc --project tsconfig.build.json --module es2015 --outDir esm -watch\" \"tsc --project tsconfig.types.json --outDir type-artefacts/cur -watch\" \"node ./dev/server.js\"",
+    "postinstall": "vue-demi-fix",
+    "serve:playground": "nuxi dev playground --port 7002 --open",
+    "serve": "concurrently --raw \"cd ../_mock-data && yarn serve\" \"tsc --project tsconfig.build.json --module es2015 --outDir esm -watch\" \"tsc --project tsconfig.types.json -watch\" \"yarn serve:playground\"",
     "prebuild": "node -p \"'export const version: string = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rimraf -rf lib esm dist type-artefacts && yarn build:cjs && yarn build:esm && yarn build:umd && yarn build:types",
     "build:cjs": "tsc --project tsconfig.build.json",
     "build:esm": "tsc --project tsconfig.build.json --module es2015 --outDir esm",
     "build:umd": "rollup --config",
-    "build:types": "npm run build:types-vue2 && npm run build:types-vue3",
-    "build:types-vue2": "npx vue-demi-switch 2 vue2 && tsc --project tsconfig.types.json --outDir type-artefacts/v2",
-    "build:types-vue3": "npx vue-demi-switch 3 vue3 && tsc --project tsconfig.types.json --outDir type-artefacts/v3 && tsc --project tsconfig.types.json --outDir type-artefacts/cur && npx vue-demi-switch 2",
+    "build:types": "tsc --project tsconfig.types.json",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
-  },
-  "bin": {
-    "fetch-vue-fix": "bin/fetch-vue-fix.js",
-    "fetch-vue-switch": "bin/fetch-vue-switch.js"
   },
   "license": "MIT",
   "repository": {
@@ -50,29 +43,14 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "fs-extra": "^10.0.0",
-    "vue-demi": "^0.9.0",
-    "vue-frag": "^1.4.0"
+    "vue-demi": "^*"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.15.0",
-    "@nuxt/typescript-build": "^2.0.3",
-    "@nuxtjs/composition-api": "^0.32.0",
-    "@types/warning": "^3.0.0",
-    "@vue/composition-api": "^1.7.0",
     "axios": "^0.21.1",
-    "nuxt": "^2.15.0",
-    "vue": "^2.6.12",
-    "vue3": "npm:vue@3"
+    "nuxt": "~3.0.0-rc.0"
   },
   "peerDependencies": {
-    "@vue/composition-api": "~1.0.0",
-    "vue": "^2.6.0 || >=3.0.0-rc.0"
-  },
-  "peerDependenciesMeta": {
-    "@vue/composition-api": {
-      "optional": true
-    }
+    "vue": "^2.6.0 || ~3.0.0"
   },
   "publishConfig": {
     "access": "public"

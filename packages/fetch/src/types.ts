@@ -1,12 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-import * as VueDemi from 'vue-demi';
-
-class Helper<Props> {
-  Return = VueDemi.defineComponent({} as { props: Record<keyof Props, any> });
-}
-
-export type DefineComponent<Props> = Helper<Props>['Return'];
-
 export type Method =
   | 'get'
   | 'GET'
@@ -56,7 +47,7 @@ export interface Response<T = any> {
 
 export interface FetchPromise<T = any> extends Promise<Response<T>> {}
 
-export interface Client {
+export interface FetchClient {
   (config: RequestConfig): FetchPromise;
   (url: string, config?: RequestConfig): FetchPromise;
 
