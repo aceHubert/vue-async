@@ -1,5 +1,6 @@
 import warning from 'warning';
-import { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
+import { debug } from './env';
 
 export type RetryOptions = {
   /**
@@ -48,6 +49,10 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
       // formula(2 ^ c - 1 / 2) * 1000(for mS to seconds)
       const backoff = new Promise(function (resolve) {
         const backOffDelay = curOptions.delay ? (1 / 2) * (Math.pow(2, config[RetryCountSymbol]!) - 1) * 1000 : 1;
+        warning(
+          !debug,
+          `${config.url}: retry delay ${backOffDelay}ms`,
+        );
         setTimeout(function () {
           resolve(null);
         }, backOffDelay);
@@ -55,7 +60,7 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
 
       // Return the promise in which recalls axios to retry the request
       return backoff.then(function () {
-        warning(process.env.NODE_ENV === 'production', `${config.url}: retry ${config[RetryCountSymbol]} time(s)`);
+        warning(!debug, `${config.url}: retry ${config[RetryCountSymbol]} time(s)`);
         return axiosInstance(config);
       });
     }

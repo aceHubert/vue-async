@@ -1,13 +1,12 @@
 import { defineComponent, ref, unref } from 'vue-demi';
-import { useRegistApi } from '@vue-async/fetch';
+import { useFetch } from '@vue-async/fetch';
 import axios, { CancelTokenSource } from 'axios';
 import type { ApiConfig } from '../apis';
 
 export default defineComponent({
   name: 'Playground',
   setup() {
-    const registApiRef = useRegistApi<ApiConfig>();
-    const registApi = unref(registApiRef);
+    const fetch = useFetch<ApiConfig>();
     const timeoutRef = ref(0);
     const cancelTimeoutRef = ref(0);
     const cancelTokenRef = ref<CancelTokenSource | null>(null);
@@ -19,7 +18,7 @@ export default defineComponent({
       const timer = window.setInterval(() => {
         cancelTimeoutRef.value > 0 && (cancelTimeoutRef.value -= 1);
       }, 1000);
-      registApi
+      fetch.registApis
         .timeout({
           cancelToken: cancelTokenRef.value.token,
         })
@@ -44,7 +43,7 @@ export default defineComponent({
       const timer = window.setInterval(() => {
         timeoutRef.value > 0 && (timeoutRef.value -= 1);
       }, 1000);
-      registApi
+      fetch.registApis
         .timeout({
           timeout,
         })
@@ -57,7 +56,7 @@ export default defineComponent({
     };
 
     const sendErrorRequest = (catchError = true) => {
-      registApi
+      fetch.registApis
         .error400({
           catchError,
         })
@@ -67,7 +66,7 @@ export default defineComponent({
     };
 
     const sendLoadingRequret = (loading = true) => {
-      registApi
+      fetch.registApis
         .timeout({
           params: {
             countdown: 5,
@@ -84,7 +83,7 @@ export default defineComponent({
 
     const localLoadingRef = ref(false);
     const sendLocalLoadingRequret = () => {
-      registApi
+      fetch.registApis
         .timeout({
           params: {
             countdown: 5,
@@ -105,7 +104,7 @@ export default defineComponent({
     };
 
     const sendRetryRequest = (retry = true) => {
-      registApi
+      fetch.registApis
         .getUsers({
           retry,
         })
@@ -118,7 +117,7 @@ export default defineComponent({
     };
 
     const sendLocalRetryRequest = () => {
-      registApi
+      fetch.registApis
         .getUsers({
           retry: {
             maxCount: 1,
@@ -133,7 +132,7 @@ export default defineComponent({
     };
 
     const sendNoDelayRetryRequest = () => {
-      registApi
+      fetch.registApis
         .getUsers({
           retry: {
             maxCount: 3,
@@ -152,12 +151,12 @@ export default defineComponent({
       return (
         <div>
           <div>
-            <p>timeout: {cancelTimeoutRef.value}</p>
+            <p>cancel in time: {cancelTimeoutRef.value}s</p>
             <input type="button" value="Submit" onClick={() => sendRequest()}></input> &nbsp;
             {cancelTimeoutRef.value > 0 && <input type="button" value="Cancel" onClick={() => cancelRequest()}></input>}
           </div>
           <div>
-            <p>timeout: {timeoutRef.value}</p>
+            <p>timeout: {timeoutRef.value}s</p>
             <input type="button" value="Timeout 5s" onClick={() => sendTimeoutRequest()}></input> &nbsp;
           </div>
           <div>

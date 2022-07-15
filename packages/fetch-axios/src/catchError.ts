@@ -1,5 +1,6 @@
 import warning from 'warning';
-import { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
+import { debug } from './env';
 
 export type CatchErrorOptions = {
   /**
@@ -11,7 +12,7 @@ export type CatchErrorOptions = {
 const defaultOptions: CatchErrorOptions = {
   handler: (error: Error) => {
     warning(
-      process.env.NODE_ENV === 'production',
+      !debug,
       `Error is catched by default handler and stop propagation error out, Error message: ${error.message}`,
     );
     return new Promise(() => {});
