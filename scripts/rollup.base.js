@@ -6,6 +6,7 @@ import babel from '@rollup/plugin-babel';
 import externalGlobals from 'rollup-plugin-external-globals';
 import injectProcessEnv from 'rollup-plugin-inject-process-env';
 import dts from 'rollup-plugin-dts';
+import lisence from 'rollup-plugin-license';
 import { terser } from 'rollup-plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
@@ -14,16 +15,6 @@ const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 const presets = () => {
   const externals = {
     vue: 'Vue',
-    '@vue/composition-api': 'VueCompositionAPI',
-    '@formily/reactive-vue': 'Formily.ReactiveVue',
-    '@formily/reactive': 'Formily.Reactive',
-    '@formily/path': 'Formily.Path',
-    '@formily/shared': 'Formily.Shared',
-    '@formily/validator': 'Formily.Validator',
-    '@formily/core': 'Formily.Core',
-    '@formily/json-schema': 'Formily.JSONSchema',
-    '@formily/vue': 'Formily.Vue',
-    '@monaco-editor/loader': 'monaco_loader',
     '@vue-async/components': 'VueAsync.Components',
     '@vue-async/module-loader': 'VueAsync.ModuleLoader',
     '@vue-async/resource-manager': 'VueAsync.ResourceManager',
@@ -73,6 +64,17 @@ const createEnvPlugin = (env) => {
   );
 };
 
+const createLisencePlugin = () => {
+  // 从执行目录 package.json 中获取
+  const packageConfig = require(path.resolve(process.cwd(), 'package.json'));
+  return lisence({
+    banner: {
+      commentStyle: 'regular', // The default
+      content: `${packageConfig.name}@${packageConfig.version}`,
+    },
+  });
+};
+
 const inputFilePath = path.join(process.cwd(), 'src/index.ts');
 
 const noUIDtsPackages = ['utils'];
@@ -91,9 +93,8 @@ export const removeImportStyleFromInputFilePlugin = () => ({
 
 /**
  * base rollup config
- * 如果 plugins 最后一个是函数，返回的plugins 将添加到presets
  */
-export default (filename, targetName, ...plugins) => {
+export default (filename, targetName) => {
   function onwarn(warning, warn) {
     // ignoer 'this' rewrite with 'undefined' warn
     if (warning.code === 'THIS_IS_UNDEFINED') return;
@@ -113,8 +114,7 @@ export default (filename, targetName, ...plugins) => {
           id: filename,
         },
       },
-      external: ['vue'],
-      plugins: [...presets(), ...plugins, createEnvPlugin('development')],
+      plugins: [...presets(), createEnvPlugin('development'), createLisencePlugin()],
       onwarn,
     },
     {
@@ -129,8 +129,7 @@ export default (filename, targetName, ...plugins) => {
           id: filename,
         },
       },
-      external: ['vue'],
-      plugins: [...presets(), terser(), ...plugins, createEnvPlugin('production')],
+      plugins: [...presets(), terser(), createEnvPlugin('production'), createLisencePlugin()],
       onwarn,
     },
   ];
@@ -142,7 +141,7 @@ export default (filename, targetName, ...plugins) => {
         format: 'es',
         file: `dist/${filename}.d.ts`,
       },
-      plugins: [dts(), ...plugins],
+      plugins: [dts(), createLisencePlugin()],
     });
     base.push({
       input: 'esm/index.d.ts',
@@ -150,7 +149,6 @@ export default (filename, targetName, ...plugins) => {
         format: 'es',
         file: `dist/${filename}.all.d.ts`,
       },
-      external: ['vue'],
       plugins: [
         dts({
           respectExternal: true,
@@ -158,7 +156,7 @@ export default (filename, targetName, ...plugins) => {
             exclude: ['**/vue/**'],
           },
         }),
-        ...plugins,
+        createLisencePlugin(),
       ],
     });
   }

@@ -1,6 +1,6 @@
 {
-  "name": "vue-async",
-  "version": "3.0.0",
+  "name": "root",
+  "version": "1.0.0",
   "description": "Vue模块化加载和公共方法",
   "private": true,
   "repository": {
@@ -99,9 +99,7 @@
       "docs/**/*",
       "**/nuxt",
       "**/nuxt/**",
-      "**/@nuxt/types",
-      "@vue-async/components/monaco-editor",
-      "@vue-async/components/monaco-editor-webpack-plugin"
+      "**/@nuxt/types"
     ]
   }
 }

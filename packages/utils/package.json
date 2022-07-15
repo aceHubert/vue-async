@@ -39,12 +39,7 @@
   "bugs": {
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
-  "dependencies": {
-    "vue": "^2.6.11"
-  },
-  "peerDependencies": {
-    "vue": "^2.6.0"
-  },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }
