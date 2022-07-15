@@ -1,3 +1,4 @@
+import { isVue2, Vue2 } from 'vue-demi';
 import { fetchSymbol } from './rootFetch';
 
 export function FetchVuePlugin(Vue: any) {
@@ -37,4 +38,17 @@ export function FetchVuePlugin(Vue: any) {
       }
     },
   });
+}
+
+// Auto install if it is not done yet and `window` has `Vue` in Vue2.
+// To allow users to avoid auto-installation in some cases,
+if (isVue2 && typeof window !== 'undefined' && window.Vue) {
+  window.Vue.use(FetchVuePlugin);
+}
+
+// @internal
+declare global {
+  interface Window {
+    Vue: typeof Vue2;
+  }
 }
