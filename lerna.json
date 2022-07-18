@@ -7,7 +7,7 @@
       "conventionalCommits": true,
       "gitTagVersion": true,
       "gitReset": true,
-      "allowBranch": ["master", "feature/build"],
+      "allowBranch": ["master"],
       "ignoreChanges": [
         "**/CHANGELOG.md",
         "**/node_modules/**",
@@ -16,7 +16,7 @@
         "**/test/**",
         "**/dev/**"
       ],
-      "message": "chore(release): 😊 publish %s"
+      "message": "chore(release): 😊 publish"
     }
   },
   "version": "independent",
