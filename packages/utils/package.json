@@ -3,12 +3,11 @@
   "version": "1.3.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Utils.",
-  "main": "dist/utils.common.js",
-  "umd:main": "dist/utils.umd.js",
-  "module": "dist/utils.esm.js",
-  "unpkg": "dist/utils.js",
-  "jsdelivr": "dist/utils.js",
-  "typings": "types/index.d.ts",
+  "main": "lib/index.js",
+  "umd:main": "dist/utils.umd.production.js",
+  "module": "esm/index.js",
+  "unpkg": "dist/utils.umd.production.js",
+  "jsdelivr": "dist/utils.umd.production.js",
   "keywords": [
     "vue",
     "vue-async",
@@ -18,15 +17,16 @@
     "microfront"
   ],
   "files": [
-    "src",
-    "dist/*.js",
-    "types/*.d.ts"
+    "dist",
+    "lib",
+    "esm"
   ],
   "scripts": {
-    "build": "rollup -c --environment BUILD:production",
-    "build:es": "rollup -c --environment TARGET:es,BUILD:production",
-    "release": "bash scripts/release.sh",
-    "test": "cross-env NODE_ENV=test jest --passWithNoTests --config jest.config.json",
+    "prebuild": "node -p \"'export const version: string = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
+    "build": "rimraf -rf lib esm dist && yarn build:cjs && yarn build:esm && yarn build:umd",
+    "build:cjs": "tsc --project tsconfig.build.json",
+    "build:esm": "tsc --project tsconfig.build.json --module es2015 --outDir esm",
+    "build:umd": "rollup --config",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
   },
@@ -39,12 +39,7 @@
   "bugs": {
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
-  "dependencies": {
-    "vue": "^2.6.11"
-  },
-  "peerDependencies": {
-    "vue": "^2.6.0"
-  },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }

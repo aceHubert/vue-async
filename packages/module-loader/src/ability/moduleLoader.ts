@@ -199,7 +199,7 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
           const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
           await promisify(bootstrap.call(_self, Vue, args));
           await promisify(onLoaded(moduleName));
-        } catch (err) {
+        } catch (err: any) {
           // 异常不阻止当前执行，error 中处理
           try {
             await promisify(onError(moduleName, err));

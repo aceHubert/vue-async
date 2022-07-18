@@ -91,3 +91,8 @@ sw.*
 
 # Lerna changelog cache files
 .changelog/
+
+# build
+dist/
+lib/
+esm/

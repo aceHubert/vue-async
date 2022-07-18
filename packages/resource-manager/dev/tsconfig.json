@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@vue-async/*": ["packages/*"]
     },
     "types": ["@types/node", "@nuxt/types"]
   },

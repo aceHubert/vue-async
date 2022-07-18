@@ -88,7 +88,7 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
           })(entry.substr(entry.lastIndexOf('/') + 1), rawData.toString());
 
           resolve(exports);
-        } catch (err) {
+        } catch (err: any) {
           warning(
             process.env.NODE_ENV === 'production',
             `[moduleLoader] script had a problem to create, entry：${entry}`,

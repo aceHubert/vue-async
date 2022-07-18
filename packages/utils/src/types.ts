@@ -3,7 +3,7 @@
  */
 
 export function isUndef(v: any): boolean {
-  return v === undefined || v === null;
+  return v === void 0;
 }
 
 export function isArray<T>(x: unknown): x is T[] {
@@ -25,7 +25,7 @@ export function isFunction(x: unknown): x is Function {
 
 // Inlined Object.is polyfill.
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-export function objectIs(x: any, y: any) {
+export function objectIs(x: any, y: any): boolean {
   if (x === y) {
     return x !== 0 || 1 / x === 1 / y;
   }
@@ -45,4 +45,27 @@ export function isPrimitive(value: any): boolean {
     typeof value === 'undefined' ||
     value === null
   );
+}
+
+export function equals(x: any, y: any): boolean {
+  const f1 = x instanceof Object;
+  const f2 = y instanceof Object;
+  if (!f1 || !f2) {
+    return x === y;
+  }
+  if (Object.keys(x).length !== Object.keys(y).length) {
+    return false;
+  }
+  const newX = Object.keys(x);
+  for (let p in newX) {
+    p = newX[p];
+    const a = x[p] instanceof Object;
+    const b = y[p] instanceof Object;
+    if (a && b) {
+      return equals(x[p], y[p]);
+    } else if (x[p] !== y[p]) {
+      return false;
+    }
+  }
+  return true;
 }

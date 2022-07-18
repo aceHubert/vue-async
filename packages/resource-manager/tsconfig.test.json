@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "compilerOptions": {
-    "module": "commonjs",
-    "types": ["node", "jest", "vue"]
-  },
-  "include": ["test/**/*.spec.ts", "test/helpers/*.ts"]
-}
