@@ -44,10 +44,6 @@ export interface Fetch<C extends Record<string, MethodUrl> = any> {
    */
   install: (app: App) => void;
   /**
-   * @internal TODO:
-   */
-  use: (plugin: FetchPlugin) => Fetch<C>;
-  /**
    * Current fetch client with `Vue.createFetch()`
    */
   client: FetchClient;
@@ -55,11 +51,6 @@ export interface Fetch<C extends Record<string, MethodUrl> = any> {
    * Registered api functions
    */
   registApis: RegistApi<C>;
-  /**
-   * Installed fetch plugins
-   * @internal
-   */
-  _p: FetchPlugin[];
   /**
    * App linked to this Fetch instance
    * @internal
@@ -81,8 +72,4 @@ export interface FetchPluginContext {
    * Current app created with `Vue.createApp()`.
    */
   app: App;
-}
-
-export interface FetchPlugin {
-  (context: FetchPluginContext): void;
 }
