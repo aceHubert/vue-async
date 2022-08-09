@@ -17792,7 +17792,7 @@ vue@^2.6.12:
     "@vue/compiler-sfc" "2.7.8"
     csstype "^3.1.0"
 
-vue@^3.2.37:
+vue@^3.0.0, vue@^3.2.37:
   name vue3
   version "3.2.37"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.37.tgz#da220ccb618d78579d25b06c7c21498ca4e5452e"
