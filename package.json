@@ -13,6 +13,7 @@
     "test:utils": "jest packages/utils/",
     "prepublishOnly": "yarn install --ignore-scripts && yarn changelog && yarn build && yarn test",
     "release": "lerna publish --dist-tag next",
+    "release:package": "lerna publish from-package --dist-tag next",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
     "lint:fix": "lerna run lint:fix --parallel",
