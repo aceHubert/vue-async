@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch-axios",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Axios adapter for Ajax.",
   "main": "lib/index.js",
@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/warning": "^3.0.0",
-    "@vue-async/fetch": "^0.1.0-alpha.0",
+    "@vue-async/fetch": "^0.1.0-alpha.1",
     "axios": "^0.21.1",
     "nuxt": "~3.0.0-rc.0"
   },
