@@ -14,7 +14,8 @@
         "**/package.json",
         "**/*.md",
         "**/test/**",
-        "**/dev/**"
+        "**/dev/**",
+        "**/src/version.ts"
       ],
       "message": "chore(release): 😊 publish"
     }
