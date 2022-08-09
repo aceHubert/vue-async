@@ -7,7 +7,7 @@
       "conventionalCommits": true,
       "gitTagVersion": true,
       "gitReset": true,
-      "allowBranch": ["master"],
+      "allowBranch": ["master", "next"],
       "ignoreChanges": [
         "**/CHANGELOG.md",
         "**/node_modules/**",
