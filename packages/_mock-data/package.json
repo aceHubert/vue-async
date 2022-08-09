@@ -1,0 +1,17 @@
+{
+  "name": "@test/mock-data",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "serve": "nodemon --delay 1 --watch src/apis src/server.js"
+  },
+  "dependencies": {
+    "cli-color": "^2.0.3"
+  },
+  "workspaces": {
+    "nohoist": [
+      "**"
+    ]
+  }
+}

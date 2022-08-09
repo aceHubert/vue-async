@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 // import typescript from 'rollup-plugin-typescript2';
+import json from '@rollup/plugin-json';
 import externalGlobals from 'rollup-plugin-external-globals';
 import injectProcessEnv from 'rollup-plugin-inject-process-env';
 import dts from 'rollup-plugin-dts';
@@ -15,7 +16,9 @@ const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 const presets = () => {
   const externals = {
     vue: 'Vue',
+    '@vue/composition-api': 'VueCompositionAPI',
     '@vue-async/components': 'VueAsync.Components',
+    '@vue-async/fetch': 'VueAsync.Fetch',
     '@vue-async/module-loader': 'VueAsync.ModuleLoader',
     '@vue-async/resource-manager': 'VueAsync.ResourceManager',
     // '@vue-async/utils': 'VueAsync.Utils', // 打包到dist, 并 tree shakeing
@@ -46,6 +49,7 @@ const presets = () => {
       babelHelpers: 'bundled',
       extensions,
     }),
+    json(),
     externalGlobals(externals, {
       exclude: ['**/*.{less,sass,scss}'],
     }),
@@ -114,7 +118,7 @@ export default (filename, targetName) => {
           id: filename,
         },
       },
-      plugins: [...presets(), createEnvPlugin('development'), createLisencePlugin()],
+      plugins: [...presets(filename, targetName), createEnvPlugin('development'), createLisencePlugin()],
       onwarn,
     },
     {
@@ -129,7 +133,7 @@ export default (filename, targetName) => {
           id: filename,
         },
       },
-      plugins: [...presets(), terser(), createEnvPlugin('production'), createLisencePlugin()],
+      plugins: [...presets(filename, targetName), terser(), createEnvPlugin('production'), createLisencePlugin()],
       onwarn,
     },
   ];
