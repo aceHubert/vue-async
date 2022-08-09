@@ -1,4 +1,7 @@
 import { App, getCurrentInstance, InjectionKey, inject } from 'vue-demi';
+import { debug } from '../env';
+
+// Types
 import { FetchClient, RegistApi, MethodUrl } from '../types';
 
 /**
@@ -18,9 +21,9 @@ export const setActiveFetch = (fetch: Fetch | undefined) => (activeFetch = fetch
  * Get the currently active fetch if there is any.
  */
 export const getActiveFetch = <C extends Record<string, MethodUrl> = any>() =>
-  ((getCurrentInstance() && inject(fetchSymbol)) || activeFetch) as Fetch<C>;
+  ((getCurrentInstance() && inject(FetchSymbol)) || activeFetch) as Fetch<C>;
 
-export const fetchSymbol: InjectionKey<Fetch> = Symbol();
+export const FetchSymbol: InjectionKey<Fetch> = debug ? Symbol.for('__Fetch__') : Symbol();
 
 export type FetchOptions = {
   /**

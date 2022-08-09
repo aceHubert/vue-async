@@ -1,5 +1,5 @@
-import { isVue2, Vue2 } from 'vue-demi';
-import { fetchSymbol } from './rootFetch';
+import { Vue2 } from 'vue-demi';
+import { FetchSymbol } from './rootFetch';
 
 export function FetchVuePlugin(Vue: any) {
   // Used to avoid multiple mixins being setup
@@ -24,7 +24,7 @@ export function FetchVuePlugin(Vue: any) {
             set: (v) => Object.assign(provideCache, v),
           });
         }
-        (this as any)._provided[fetchSymbol as any] = fetch;
+        (this as any)._provided[FetchSymbol as any] = fetch;
 
         // propagate the fetch instance in an SSR friendly way
         // avoid adding it to nuxt twice
@@ -42,7 +42,7 @@ export function FetchVuePlugin(Vue: any) {
 
 // Auto install if it is not done yet and `window` has `Vue` in Vue2.
 // To allow users to avoid auto-installation in some cases,
-if (isVue2 && typeof window !== 'undefined' && window.Vue) {
+if (typeof window !== 'undefined' && window.Vue) {
   window.Vue.use(FetchVuePlugin);
 }
 

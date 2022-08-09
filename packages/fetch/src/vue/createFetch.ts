@@ -1,6 +1,6 @@
 import { isVue2, markRaw } from 'vue-demi';
 import { registApi } from '../core/registApi';
-import { Fetch, FetchOptions, fetchSymbol, setActiveFetch } from './rootFetch';
+import { Fetch, FetchOptions, FetchSymbol, setActiveFetch } from './rootFetch';
 
 // Types
 import { FetchClient, MethodUrl } from '../types';
@@ -10,11 +10,11 @@ export function createFetch<C extends Record<string, MethodUrl>>(client: FetchCl
   const fetch: Fetch = markRaw({
     install(app) {
       // this allows calling useFetch() outside of a component setup after
-      // installing fetch's plugin
       setActiveFetch(fetch);
+
       if (!isVue2) {
         fetch._a = app;
-        app.provide(fetchSymbol, fetch);
+        app.provide(FetchSymbol, fetch);
         app.config.globalProperties.$fetch = fetch;
       }
     },

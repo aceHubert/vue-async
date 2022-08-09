@@ -15,7 +15,7 @@ export declare const setActiveFetch: (fetch: Fetch | undefined) => Fetch<any> | 
  * Get the currently active fetch if there is any.
  */
 export declare const getActiveFetch: <C extends Record<string, MethodUrl> = any>() => Fetch<C>;
-export declare const fetchSymbol: InjectionKey<Fetch>;
+export declare const FetchSymbol: InjectionKey<Fetch>;
 export declare type FetchOptions = {
     /**
      * Register api object
@@ -54,7 +54,4 @@ export interface FetchPluginContext {
      * Current app created with `Vue.createApp()`.
      */
     app: App;
-}
-export interface FetchPlugin {
-    (context: FetchPluginContext): void;
 }
