@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
 export declare type RetryOptions = {
     /**
      * 最大重试试次数，默认值：3

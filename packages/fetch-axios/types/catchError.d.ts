@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios';
 export declare type CatchErrorOptions = {
     /**
      * 全局 error catch 处理方法
