@@ -26,7 +26,7 @@ export type ResponseType = 'arraybuffer' | 'blob' | 'document' | 'json' | 'text'
 
 export interface RequestConfig {
   url?: string;
-  method?: Method;
+  method?: Method | string;
   headers?: any;
   params?: any;
   data?: any;

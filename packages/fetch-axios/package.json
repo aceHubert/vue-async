@@ -50,7 +50,7 @@
   "devDependencies": {
     "@types/warning": "^3.0.0",
     "@vue-async/fetch": "^0.1.0-alpha.0",
-    "axios": "^0.21.1",
+    "axios": "^0.27.1",
     "nuxt": "~3.0.0-rc.0"
   },
   "peerDependencies": {

@@ -3,7 +3,7 @@ export declare type RequestType = 'json' | 'form';
 export declare type ResponseType = 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream';
 export interface RequestConfig {
     url?: string;
-    method?: Method;
+    method?: Method | string;
     headers?: any;
     params?: any;
     data?: any;

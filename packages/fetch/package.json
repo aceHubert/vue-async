@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Fetch.",
   "main": "lib/index.js",
@@ -47,7 +47,7 @@
     "vue-demi": "^*"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.27.1",
     "nuxt": "~3.0.0-rc.0",
     "vue": "^3.0.0"
   },
