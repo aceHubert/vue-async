@@ -1,5 +1,5 @@
 import { Vue2 } from 'vue-demi';
-import { FetchSymbol } from './rootFetch';
+import { fetchSymbol } from './rootFetch';
 
 export function FetchVuePlugin(Vue: any) {
   // Used to avoid multiple mixins being setup
@@ -24,11 +24,11 @@ export function FetchVuePlugin(Vue: any) {
             set: (v) => Object.assign(provideCache, v),
           });
         }
-        (this as any)._provided[FetchSymbol as any] = fetch;
+        (this as any)._provided[fetchSymbol as any] = fetch;
 
         // propagate the fetch instance in an SSR friendly way
         // avoid adding it to nuxt twice
-        if (!this.$pinia) {
+        if (!this.$fetch) {
           this.$fetch = fetch;
         }
 

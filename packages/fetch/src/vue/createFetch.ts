@@ -1,12 +1,12 @@
 import { isVue2, markRaw } from 'vue-demi';
-import { registApi } from '../core/registApi';
-import { Fetch, FetchOptions, FetchSymbol, setActiveFetch } from './rootFetch';
+import { fetchSymbol, setActiveFetch, Fetch, RegistApiPlugin } from './rootFetch';
+import { FetchClient, RegistApi } from '../types';
 
-// Types
-import { FetchClient, MethodUrl } from '../types';
+export function createFetch(client: FetchClient): Fetch {
+  let _p: Fetch['_p'] = [];
+  // plugins added before calling app.use(pinia)
+  let toBeInstalled: RegistApiPlugin[] = [];
 
-export function createFetch<C extends Record<string, MethodUrl>>(client: FetchClient, options: FetchOptions): Fetch<C> {
-  const registApis = registApi(client, options.apis, options.prefix);
   const fetch: Fetch = markRaw({
     install(app) {
       // this allows calling useFetch() outside of a component setup after
@@ -14,16 +14,29 @@ export function createFetch<C extends Record<string, MethodUrl>>(client: FetchCl
 
       if (!isVue2) {
         fetch._a = app;
-        app.provide(FetchSymbol, fetch);
+        app.provide(fetchSymbol, fetch);
         app.config.globalProperties.$fetch = fetch;
+
+        toBeInstalled.forEach((plugin) => _p.push(plugin));
+        toBeInstalled = [];
       }
     },
-    client,
-    registApis,
+    use(plugin) {
+      if (!this._a && !isVue2) {
+        toBeInstalled.push(plugin);
+      } else {
+        _p.push(plugin);
+      }
+      return this;
+    },
     // it's actually undefined here
     // @ts-expect-error
     _a: null,
-    _o: options,
+    // store regist apis
+    _r: new Map<string, RegistApi<any>>(),
+    // regist api plugins
+    _p,
+    client,
   });
 
   return fetch;

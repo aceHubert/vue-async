@@ -1,3 +1,5 @@
+import { Fetch } from './vue/rootFetch';
+
 export type Method =
   | 'get'
   | 'GET'
@@ -24,18 +26,29 @@ export type RequestType = 'json' | 'form';
 
 export type ResponseType = 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream';
 
-export interface RequestConfig {
+/**
+ * request config
+ */
+export interface RequestConfig<D = any> {
   url?: string;
   method?: Method | string;
   headers?: any;
   params?: any;
-  data?: any;
+  data?: D;
   // 请求的的数据类型 json / form(x-www-form-urlencoded)
   requestType?: RequestType;
   responseType?: ResponseType;
   validateStatus?: ((status: number) => boolean) | null;
+  /**
+   * From 'registApi' unique id, format to `{prefix}/{methodName}`
+   * @internal
+   */
+  _registId?: string;
 }
 
+/**
+ * response
+ */
 export interface Response<T = any> {
   data: T;
   status: number;
@@ -47,6 +60,9 @@ export interface Response<T = any> {
 
 export interface FetchPromise<T = any> extends Promise<Response<T>> {}
 
+/**
+ * fetch client
+ */
 export interface FetchClient {
   (config: RequestConfig): FetchPromise;
   (url: string, config?: RequestConfig): FetchPromise;
@@ -61,8 +77,17 @@ export interface FetchClient {
   patch<T = any, R = Response<T>>(url: string, data?: any, config?: RequestConfig): Promise<R>;
 }
 
+/**
+ * method url definition
+ */
 export type MethodUrl = string | MethodUrlWithConfig | MethodUrlFn;
+/**
+ * method url with local config
+ */
 export type MethodUrlWithConfig = [Partial<RequestConfig>, string];
+/**
+ * function method url
+ */
 export type MethodUrlFn<R = any, P = any, D = any> = (params: P) => string | MethodUrlWithConfig;
 
 /**
@@ -76,6 +101,9 @@ type CheckNever<T> = T extends never ? 'yes' : 'no';
  */
 type CheckAny<T> = CheckNever<T> extends 'no' ? 'no' : 'yes';
 
+/**
+ * method url transfor to request definition
+ */
 export type TransApiResult<MethodUrl> = MethodUrl extends MethodUrlFn<infer Result, infer Params, infer Data>
   ? CheckAny<Params> extends 'yes'
     ? (
@@ -86,6 +114,46 @@ export type TransApiResult<MethodUrl> = MethodUrl extends MethodUrlFn<infer Resu
       ) => FetchPromise<Result>
   : (config?: Partial<RequestConfig>) => FetchPromise;
 
+/**
+ * Return type of 'registApi' result
+ */
 export type RegistApi<C extends Record<string, MethodUrl>> = {
   [P in keyof C]: TransApiResult<C[P]>;
 };
+
+/**
+ *  'defineRegistApi' options
+ */
+export interface DefineRegistApiOptions<C extends Record<string, MethodUrl>> {
+  /**
+   * cached id
+   */
+  id: string;
+  /**
+   * Register api object
+   * example: {
+   *  getUsers: typedUrl<User[]>`get /users`,
+   *  getUser: typedUrl<User, { id: string | number }>`/user/${'id'}`,
+   *  addUser: typedUrl<User, any, Partial<Omit<User, 'id'>>>`post /user`,
+   *  updateFile: typedUrl<string>({headers:{'content-type':'form-data'}})`post /upload/image`
+   * }
+   */
+  apis: C;
+  /**
+   * base url
+   */
+  prefix?: string;
+}
+
+/**
+ * Options use for plugin
+ */
+export interface DefineRegistApiOptionsInPlugin<C extends Record<string, MethodUrl>>
+  extends Omit<DefineRegistApiOptions<C>, 'id'> {}
+
+/**
+ * Return type of 'defineRegistApi' result
+ */
+export interface RegistApiDefinition<C extends Record<string, MethodUrl>> {
+  (fetch?: Fetch): RegistApi<C>;
+}

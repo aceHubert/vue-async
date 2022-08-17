@@ -1,17 +1,5 @@
-import type { AxiosInstance, AxiosRequestConfig } from 'axios';
-
-export type LoadingHandler = () => () => void;
-
-export type LoadingOptions = {
-  /**
-   * 延迟调用处理方法毫秒数，默认值：260
-   */
-  delay?: number;
-  /**
-   * 全局 loading 处理方法
-   */
-  handler?: LoadingHandler;
-};
+import type { AxiosInstance, AxiosRequestConfig, AxiosInterceptorOptions } from 'axios';
+import type { LoadingHandler, LoadingOptions } from '../types';
 
 export const StopLoadingFnSymbol = '__StopLoading__';
 export const ResponseFinishedSymbol = '__LoadingResponseFinished__';
@@ -40,18 +28,38 @@ function stopLoading(config: AxiosRequestConfig) {
   stopLoadingFnOrSymbol && stopLoadingFnOrSymbol !== ResponseFinishedSymbol && stopLoadingFnOrSymbol();
 }
 
-export function registLoading(axios: AxiosInstance, options: LoadingOptions) {
+/**
+ * register loading handler
+ * @param axios axios instance
+ * @param options loading options
+ * @param useOptions interceptor use options
+ */
+export function registLoading(axios: AxiosInstance, options: LoadingOptions, useOptions?: AxiosInterceptorOptions) {
   const curOptions = { ...defaultOptions, ...options };
 
-  axios.interceptors.request.use((config) => {
-    const { loading } = config;
-    const delay = curOptions.delay || 0;
-    const loadingFn = typeof loading === 'function' ? loading : curOptions.handler;
-    if (!!loading && loadingFn) {
-      startLoading(config, loadingFn, delay);
-    }
-    return config;
-  });
+  axios.interceptors.request.use(
+    (config) => {
+      const { loading } = config;
+      let delay = curOptions.delay || 0;
+      let loadingFn = curOptions.handler;
+      // 如果有本地设置
+      if (loading && typeof loading !== 'boolean') {
+        if (typeof loading === 'function') {
+          loadingFn = loading;
+        } else {
+          loading.delay !== void 0 && (delay = loading.delay);
+          loadingFn = loading.handler;
+        }
+      }
+      // loading 设置为true 或本地定义时并且loading 函数被设置时启动
+      if (!!loading && loadingFn) {
+        startLoading(config, loadingFn, delay);
+      }
+      return config;
+    },
+    undefined,
+    useOptions,
+  );
   axios.interceptors.response.use(
     (response) => {
       stopLoading(response.config);
@@ -62,19 +70,19 @@ export function registLoading(axios: AxiosInstance, options: LoadingOptions) {
       stopLoading(error.config);
       return Promise.reject(error);
     },
+    useOptions,
   );
 }
 
 declare module 'axios' {
   export interface AxiosRequestConfig {
-    loading?: boolean | LoadingHandler;
+    loading?: boolean | LoadingHandler | Required<LoadingOptions>;
     [StopLoadingFnSymbol]?: typeof ResponseFinishedSymbol | ReturnType<LoadingHandler>;
   }
 }
 
-// @ts-ignore
-declare module '@vue-async/fetch' {
+declare module '@vue-async/fetch/types/types' {
   export interface RequestConfig {
-    loading?: boolean | LoadingHandler;
+    loading?: boolean | LoadingHandler | Required<LoadingOptions>;
   }
 }

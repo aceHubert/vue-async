@@ -1,21 +1,9 @@
 import warning from 'warning';
-import type { AxiosInstance, AxiosError } from 'axios';
-import { debug } from './env';
+import { debug } from '../env';
 
-export type RetryOptions = {
-  /**
-   * 最大重试试次数，默认值：3
-   */
-  maxCount?: number;
-  /**
-   * 重试延迟(formula(2 ^ c - 1 / 2) * 1000 毫秒数)，默认值：true
-   */
-  delay?: boolean;
-  /**
-   * 自定义重试条件，默认值：没有response返回并且错误信息为`Network Error`
-   */
-  validateError?: (error: AxiosError) => boolean;
-};
+// types
+import type { AxiosInstance, AxiosError, AxiosInterceptorOptions } from 'axios';
+import type { RetryOptions } from '../types';
 
 // axios mergeConig does not support Symbol (Object.keys())
 export const RetryCountSymbol = '__RetryCount__';
@@ -49,10 +37,7 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
       // formula(2 ^ c - 1 / 2) * 1000(for mS to seconds)
       const backoff = new Promise(function (resolve) {
         const backOffDelay = curOptions.delay ? (1 / 2) * (Math.pow(2, config[RetryCountSymbol]!) - 1) * 1000 : 1;
-        warning(
-          !debug,
-          `${config.url}: retry delay ${backOffDelay}ms`,
-        );
+        warning(!debug, `${config.url}: retry delay ${backOffDelay}ms`);
         setTimeout(function () {
           resolve(null);
         }, backOffDelay);
@@ -69,10 +54,16 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
   return Promise.reject(error);
 }
 
-export function registRetry(axios: AxiosInstance, options: RetryOptions) {
+/**
+ * register retry handler
+ * @param axios axios instance
+ * @param options retry options
+ * @param useOptions interceptor use options
+ */
+export function registRetry(axios: AxiosInstance, options: RetryOptions, useOptions?: AxiosInterceptorOptions) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(undefined, (error) => retryHandler(error, curOptions, axios));
-  axios.interceptors.response.use(undefined, (error) => retryHandler(error, curOptions, axios));
+  axios.interceptors.request.use(undefined, (error) => retryHandler(error, curOptions, axios), useOptions);
+  axios.interceptors.response.use(undefined, (error) => retryHandler(error, curOptions, axios), useOptions);
 }
 
 declare module 'axios' {
@@ -82,8 +73,7 @@ declare module 'axios' {
   }
 }
 
-// @ts-ignore
-declare module '@vue-async/fetch' {
+declare module '@vue-async/fetch/types/types' {
   export interface RequestConfig {
     retry?: boolean | RetryOptions;
   }

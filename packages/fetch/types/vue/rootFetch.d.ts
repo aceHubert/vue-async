@@ -1,5 +1,5 @@
 import { App, InjectionKey } from 'vue-demi';
-import { FetchClient, RegistApi, MethodUrl } from '../types';
+import { MethodUrl, FetchClient, RegistApi, DefineRegistApiOptionsInPlugin } from '../types';
 /**
  * activeFetch must be called to handle SSR at the top of functions like
  * `fetch`, `setup`, `serverPrefetch` and others
@@ -10,28 +10,13 @@ export declare let activeFetch: Fetch | undefined;
  * actions and getters
  * @param fetch Fetch instance
  */
-export declare const setActiveFetch: (fetch: Fetch | undefined) => Fetch<any> | undefined;
+export declare const setActiveFetch: (fetch: Fetch | undefined) => Fetch | undefined;
 /**
  * Get the currently active fetch if there is any.
  */
-export declare const getActiveFetch: <C extends Record<string, MethodUrl> = any>() => Fetch<C>;
-export declare const FetchSymbol: InjectionKey<Fetch>;
-export declare type FetchOptions = {
-    /**
-     * Register api object
-     * example: {
-     *  getUsers: typedUrl<User[]>`get /users`,
-     *  getUser: typedUrl<User, { id: string | number }>`/user/${'id'}`,
-     *  addUser: typedUrl<User, any, Partial<Omit<User, 'id'>>>`post /user`,
-     * }
-     */
-    apis: Record<string, MethodUrl>;
-    /**
-     * Current fetch baseUrl with `Vue.createFetch()`, Default: `/`
-     */
-    prefix?: string;
-};
-export interface Fetch<C extends Record<string, MethodUrl> = any> {
+export declare const getActiveFetch: () => Fetch | undefined;
+export declare const fetchSymbol: InjectionKey<Fetch>;
+export interface Fetch {
     /**
      * Install fetch plugin
      */
@@ -41,17 +26,38 @@ export interface Fetch<C extends Record<string, MethodUrl> = any> {
      */
     client: FetchClient;
     /**
-     * Registered api functions
+     * Add a plugin to use every regist api
      */
-    registApis: RegistApi<C>;
+    use: (plugin: RegistApiPlugin) => Fetch;
 }
-export interface FetchPluginContext {
+/**
+ * Context argument passed to RegistApiPlugins.
+ */
+export interface RegisterPluginContext<C extends Record<string, MethodUrl> = any> {
     /**
-     * Fetch instance
+     * Fetch
      */
-    fetch: FetchClient;
+    fetch: Fetch;
     /**
      * Current app created with `Vue.createApp()`.
      */
     app: App;
+    /**
+     * regist apis
+     */
+    registApis: RegistApi<C>;
+    /**
+     * regist api options
+     */
+    options: DefineRegistApiOptionsInPlugin<C>;
+}
+/**
+ * Plugin to extend every store.
+ */
+export interface RegistApiPlugin {
+    /**
+     * Plugin to extend every registApi.
+     * @param context - RegisterPluginContext
+     */
+    (context: RegisterPluginContext): void;
 }

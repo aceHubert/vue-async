@@ -1,1 +1,1 @@
-export * from './registApi';
+export { registApi, typedUrl } from './registApi';

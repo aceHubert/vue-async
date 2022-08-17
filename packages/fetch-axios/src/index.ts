@@ -1,6 +1,5 @@
-export * from './loading';
-export * from './retry';
-export * from './catchError';
-export * from './types';
-export * from './version';
+export { version } from './version';
 export { setDebug } from './env';
+export * from './core';
+export * from './plugins';
+export * from './types';
