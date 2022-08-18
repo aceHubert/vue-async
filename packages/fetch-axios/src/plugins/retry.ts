@@ -1,17 +1,14 @@
 import { registRetry } from '../core';
 
 // Types
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
-import { RetryOptions } from '../types';
+import { AxiosInstance } from 'axios';
+import { RetryOptions, PluginDefinition } from '../types';
 
 /**
  * register 'retry' only on regist apis (and custom condition)
  * @param options cache error options
  */
-export const createRetryPlugin: (
-  options?: RetryOptions & { runWhen?: (config: AxiosRequestConfig) => boolean },
-) => RegistApiPlugin =
+export const createRetryPlugin: PluginDefinition<RetryOptions> =
   ({ runWhen = () => true, ...retryOptions } = {}) =>
   ({ fetch, options: { apis, prefix } }) => {
     const registIds = Object.keys(apis).map((methodName) => `${prefix}/${methodName}`);

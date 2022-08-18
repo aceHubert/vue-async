@@ -1,4 +1,5 @@
-import { AxiosRequestTransformer, AxiosResponseTransformer, AxiosAdapter, AxiosBasicCredentials, AxiosProxyConfig, CancelToken, TransitionalOptions, AxiosError } from 'axios';
+import { AxiosRequestConfig, AxiosRequestTransformer, AxiosResponseTransformer, AxiosAdapter, AxiosBasicCredentials, AxiosProxyConfig, CancelToken, TransitionalOptions, AxiosError } from 'axios';
+import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
 declare module 'axios' {
     interface AxiosRequestConfig {
         /**
@@ -77,3 +78,20 @@ export declare type RetryOptions = {
      */
     validateError?: (error: AxiosError) => boolean;
 };
+/**
+ * plugin options
+ */
+declare type OptionsInPlugin<O extends Record<string, any>> = {
+    /**
+     * 插件执行的条件，默认是在所有通过 'defineRegistApi()' 的方法执行,
+     * 可以以上条件上追加条件，如在某个前缀上执行等。
+     */
+    runWhen?: (config: AxiosRequestConfig) => boolean;
+} & O;
+/**
+ * plugin definition for package '@vue-async/fetch'
+ */
+export interface PluginDefinition<O extends Record<string, any>> {
+    (options?: OptionsInPlugin<O>): RegistApiPlugin;
+}
+export {};

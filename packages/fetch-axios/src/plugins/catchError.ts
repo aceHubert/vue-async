@@ -1,17 +1,14 @@
 import { registCatchError } from '../core';
 
 // Types
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
-import { CatchErrorOptions } from '../types';
+import { AxiosInstance } from 'axios';
+import { CatchErrorOptions, PluginDefinition } from '../types';
 
 /**
  * register 'cacheError' only on regist apis (and custom condition)
  * @param options cache error options
  */
-export const createCatchErrorPlugin: (
-  options?: CatchErrorOptions & { runWhen?: (config: AxiosRequestConfig) => boolean },
-) => RegistApiPlugin =
+export const createCatchErrorPlugin: PluginDefinition<CatchErrorOptions> =
   ({ runWhen = () => true, ...catchErrorOptions } = {}) =>
   ({ fetch, options: { apis, prefix } }) => {
     const registIds = Object.keys(apis).map((methodName) => `${prefix}/${methodName}`);

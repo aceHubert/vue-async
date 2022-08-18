@@ -1,17 +1,14 @@
 import { registLoading } from '../core';
 
 // Types
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
-import { LoadingOptions } from '../types';
+import { AxiosInstance } from 'axios';
+import { LoadingOptions, PluginDefinition } from '../types';
 
 /**
  * register 'loading' only on regist apis (and custom condition)
  * @param options cache error options
  */
-export const createLoadingPlugin: (
-  options?: LoadingOptions & { runWhen?: (config: AxiosRequestConfig) => boolean },
-) => RegistApiPlugin =
+export const createLoadingPlugin: PluginDefinition<LoadingOptions> =
   ({ runWhen = () => true, ...loadingOptions } = {}) =>
   ({ fetch, options: { apis, prefix } }) => {
     const registIds = Object.keys(apis).map((methodName) => `${prefix}/${methodName}`);
