@@ -1,6 +1,7 @@
 ## @vue-async/fetch
 
-> `Vue 3.x` or `Vue 2.16.x + @vue/composition-api`
+> 在 `Vue 3.x` or `Vue 2.16.x + @vue/composition-api` 中使用，  
+> 同时支持在Vue实例外调用，以及手动控制当前激活的fetch对象
 
 ## 安装
 
@@ -17,40 +18,45 @@ npm i -S @vue-async/fetch
 ```javascript
 // 直接使用
 import axios from 'axios';
-import { regisApi, defineApi } from '@vue-async/fetch';
-
-export const apiConfig = defineApi({
-  getUsers: typedUrl<User[]>`get /users`, 
-  // get 可以省略
-  getUser: typedUrl<User, { id: string | number }>`/user/${'id'}`, 
-  addUser: typedUrl<User, any, Partial<Omit<User, 'id'>>>`post /user`,
-});
+import { regisApi } from '@vue-async/fetch';
 
 const axiosInstance = axios.create({
   timeout: 5000
 })
+
 const prefix = 'http://api/base_url'
+const userApi = registApi(axiosInstance, {
+  getUsers: typedUrl<User[]>`get /users`,
+  // get 可以省略
+  getUser: typedUrl<User, { id: string | number }>`/user/${'id'}`,
+  addUser: typedUrl<User, any, Partial<Omit<User, 'id'>>>`post /user`,
+}, prefix);
 
-const apis = registApi(axiosInstance, apiConfig, prefix);
-
-apis.getUsers().then(({data})=>{ console.log(data)});
+userApi.getUsers().then(({data})=>{ console.log(data)});
 // params 参数
-apis.getUsers({ params:{id:1} }).then(({data})=>{ console.log(data)});
-// body 参数 
-apis.addUser({ data:{ id:1,name:'张三' }}).then(({data})=>{ console.log(data)});
+userApi.getUsers({ params:{id:1} }).then(({data})=>{ console.log(data)});
+// body 参数
+userApi.addUser({ data:{ id:1,name:'张三' }}).then(({data})=>{ console.log(data)});
 
 ```
 
 ```javascript
 // Vue2
 import Vue from 'vue'
-import { createFetch, FetchVuePlugin } from '@vue-async/fetch';
+import { createFetch, defineRegistApi, setActiveFetch, FetchVuePlugin } from '@vue-async/fetch';
 
 Vue.use(FetchVuePlugin);
 
-const fetch = createFetch(axiosInstance,{
-  apis: apiConfig,
-  prefix
+const fetch = createFetch(axiosInstance)
+
+// 注册 registApi 插件
+fetch.use(plugin)
+
+// 定义 regsitApi
+const useUserApi = defineRegistApi('user',{
+  apis:{
+    getUsers: typedUrl<User[]>`get /users`
+  }
 })
 
 new Vue({
@@ -62,44 +68,67 @@ new Vue({
 {
   created(){
     this.$fetch.client // => axiosInstance from createFetch
-    this.$fetch.registApis // => 使用 registApi 方法返回的 apis
+
+    //激活当前使用的fetch对象
+    setActiveFetch(fetch)
+    // 使用user api
+    const userApi = useUserApi();
+    // 或使用其它的fetch对象注册regist api
+    const userApi = useUserApi(fetch);
+    userApi.getUsers()
   }
 }
 // 或者
 {
-  inject:['fetch'],
+  inject:{
+    'fetch':{from: fetchSymbol}
+  },
   created(){
     this.fetch
   }
 }
+
+
+// 在 @vue/composition-api 中使用 registApi
+import { defineComponent } from '@vue/composition-api'
+
+defineComponent({
+  setup(){
+    const userApi = useUserApi();
+    userApi.getUsers()
+  }
+})
 ```
 
 ```javascript
 // Vue3
-import { createApp } from 'vue'
-import { createFetch } from '@vue-async/fetch';
+import { createApp, defineComponent } from 'vue'
+import { createFetch, defineRegistApi } from '@vue-async/fetch';
 
-const fetch = createFetch(axiosInstance,{
-  apis: apiConfig,
-  prefix
-})
+const fetch = createFetch(axiosInstance)
 
 const app = createApp({
   ...
 })
-
+// install fetch
 app.use(fetch)
 
+// 注册 registApi 插件
+fetch.use(plugin)
+
+// 定义 regsitApi
+const useUserApi = defineRegistApi('user',{
+  apis:{
+    getUsers: typedUrl<User[]>`get /users`
+  },
+  prefix: '/'
+})
+
 // 组件内使用
-import { useFetch } from '@vue-async/fetch';
-
-type ApiConfig = typeof apiConfig;
-
 defineComponent({
   setup(){
-    const fetch = useFetch<ApiConfig>();
-    fetch.client // => axiosInstance from createFetch
-    fetch.registApis // => 使用 registApi 方法返回的 apis
+    const userApi = useUserApi();
+    userApi.getUsers()
   }
 })
 ```

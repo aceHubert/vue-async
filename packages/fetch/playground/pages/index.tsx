@@ -1,32 +1,32 @@
-import { defineComponent, ref, unref, inject, onMounted } from 'vue-demi';
-import { useFetch } from '@vue-async/fetch';
-import type { ApiConfig, User } from '../apis';
+import { defineComponent, ref, unref,  onMounted } from 'vue-demi';
+import { getActiveFetch } from '@vue-async/fetch';
+import { useUserApi, User } from '../apis/useUserApi';
 
 export default defineComponent({
   name: 'Playground',
   setup() {
-    const fetch = useFetch<ApiConfig>();
-    const serverBaseUrl = inject<string>('serverBaseUrl');
+    const fetch = getActiveFetch()
+    const userApi = useUserApi();
 
     const userRef = ref<User | null>(null);
     const usersRef = ref<User[]>([]);
     const newUserRef = ref<Partial<Omit<User, 'id'>>>({});
 
     const getUsers = () => {
-      fetch.registApis.getUsers().then(({ data }) => {
+      userApi.getUsers().then(({ data }) => {
         usersRef.value = data;
       });
     };
 
     const getUser = (id: number) => {
-      fetch.registApis.getUser({ params: { id } }).then(({ data }) => {
+      userApi.getUser({ params: { id } }).then(({ data }) => {
         userRef.value = data;
       });
     };
 
     const addUser = () => {
       Object.values(newUserRef.value).some((item) => !!item) &&
-        fetch.registApis
+        userApi
           .addUser({
             data: newUserRef.value,
           })
@@ -40,7 +40,7 @@ export default defineComponent({
     };
 
     const delUser = (id: number) => {
-      fetch.client.delete<boolean>(`${serverBaseUrl}/user/${id}`).then(({ data }) => {
+      fetch!.client.delete<boolean>(`http://localhost:7009/user/${id}`).then(({ data }) => {
         if (data) {
           getUsers();
         }
