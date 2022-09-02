@@ -2,6 +2,7 @@ import { defineComponent, ref } from 'vue-demi';
 import axios, { CancelTokenSource } from 'axios';
 import { fetch, loadingRef } from '../apis';
 import { useUserApi } from '../apis/useUserApi';
+import { useLocalPluginApi } from '../apis/useLocalPluginApi';
 import { pluginFetch } from '../apis/pluginFetch';
 
 export default defineComponent({
@@ -9,6 +10,7 @@ export default defineComponent({
   setup() {
     const userApi = useUserApi();
     const userPluginApi = useUserApi(pluginFetch);
+    const localPluginApi = useLocalPluginApi();
     const timeoutRef = ref(0);
     const cancelTimeoutRef = ref(0);
     const cancelTokenRef = ref<CancelTokenSource | null>(null);
@@ -107,7 +109,7 @@ export default defineComponent({
         });
     };
 
-    // 全局注册loading 
+    // 全局注册loading
     const sendLoadingRequret = (loading = true) => {
       userApi
         .timeout({
@@ -255,6 +257,20 @@ export default defineComponent({
             <input type="button" value="No Retry" onClick={() => sendRetryRequest(false)}></input> &nbsp;
             <input type="button" value="No Delay Retry(3 times)" onClick={() => sendNoDelayRetryRequest()}></input>{' '}
             &nbsp;
+          </div>
+          <div>
+            <h3>plugins</h3>
+            <input
+              type="button"
+              value="Global plugin applied to all registApis"
+              onClick={() => userApi.error400({ catchError: true })}
+            ></input>{' '}
+            &nbsp;
+            <input
+              type="button"
+              value="Plugin applied to current registApis"
+              onClick={() => localPluginApi.error400({ catchError: true })}
+            ></input>
           </div>
         </div>
       );

@@ -11,11 +11,13 @@ import {
 } from 'axios';
 import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
 
+/**
+ * @internal
+ */
 declare module 'axios' {
   export interface AxiosRequestConfig {
     /**
-     * From 'registApi' unique id, format to `{prefix}/{methodName}`
-     * @internal
+     * From 'registApi' unique id
      */
     _registId?: string;
   }
@@ -55,7 +57,7 @@ export type CatchErrorOptions = {
   /**
    * 全局 error catch 处理方法
    */
-  handler?: (err: Error) => Promise<any>;
+  handler?: (err: AxiosError) => Promise<any>;
 };
 
 /**

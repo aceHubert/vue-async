@@ -47,7 +47,7 @@ export function defineRegistApi<C extends Record<string, MethodUrl>>(
   function useRegistApi(fetch?: Fetch) {
     const currentInstance = getCurrentInstance();
 
-    fetch = fetch || ((currentInstance && inject(fetchSymbol)) as Fetch | undefined);
+    fetch = fetch || (currentInstance && inject(fetchSymbol)) || undefined;
     if (fetch) setActiveFetch(fetch);
 
     if (debug && !activeFetch) {
@@ -63,16 +63,34 @@ export function defineRegistApi<C extends Record<string, MethodUrl>>(
 
     if (!fetch._r.has(id)) {
       // creating regist apis register it to 'fetch._r'
-      const registApis = registApi(fetch.client, options.apis, options.prefix);
+      const registApis = registApi(fetch.client, options.apis, options.prefix, id);
 
-      // apply all plugins
-      fetch._p.forEach((extender) => {
-        extender({
-          fetch: fetch!,
-          app: fetch!._a,
+      // apply all local plugins
+      options.plugins?.forEach((extender) => {
+        Object.assign(
           registApis,
-          options: optionsForPlugin,
-        });
+          extender({
+            id,
+            registApis,
+            fetch: fetch!,
+            app: fetch!._a,
+            options: optionsForPlugin,
+          }),
+        );
+      });
+
+      // apply all global plugins
+      fetch._p.forEach((extender) => {
+        Object.assign(
+          registApis,
+          extender({
+            id,
+            registApis,
+            fetch: fetch!,
+            app: fetch!._a,
+            options: optionsForPlugin,
+          }),
+        );
       });
 
       fetch._r.set(id, registApis);

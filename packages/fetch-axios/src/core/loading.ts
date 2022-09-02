@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig, AxiosInterceptorOptions } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { LoadingHandler, LoadingOptions } from '../types';
 
 export const StopLoadingFnSymbol = '__StopLoading__';
@@ -34,7 +34,11 @@ function stopLoading(config: AxiosRequestConfig) {
  * @param options loading options
  * @param useOptions interceptor use options
  */
-export function registLoading(axios: AxiosInstance, options: LoadingOptions, useOptions?: AxiosInterceptorOptions) {
+export function registLoading(
+  axios: AxiosInstance,
+  options: LoadingOptions,
+  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
+) {
   const curOptions = { ...defaultOptions, ...options };
 
   axios.interceptors.request.use(
@@ -58,7 +62,7 @@ export function registLoading(axios: AxiosInstance, options: LoadingOptions, use
       return config;
     },
     undefined,
-    useOptions,
+    { runWhen },
   );
   axios.interceptors.response.use(
     (response) => {
@@ -70,7 +74,7 @@ export function registLoading(axios: AxiosInstance, options: LoadingOptions, use
       stopLoading(error.config);
       return Promise.reject(error);
     },
-    useOptions,
+    { runWhen },
   );
 }
 

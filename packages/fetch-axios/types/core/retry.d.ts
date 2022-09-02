@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosInterceptorOptions } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { RetryOptions } from '../types';
 export declare const RetryCountSymbol = "__RetryCount__";
 /**
@@ -7,7 +7,7 @@ export declare const RetryCountSymbol = "__RetryCount__";
  * @param options retry options
  * @param useOptions interceptor use options
  */
-export declare function registRetry(axios: AxiosInstance, options: RetryOptions, useOptions?: AxiosInterceptorOptions): void;
+export declare function registRetry(axios: AxiosInstance, options: RetryOptions, runWhen?: (config: AxiosRequestConfig) => boolean): void;
 declare module 'axios' {
     interface AxiosRequestConfig {
         retry?: boolean | RetryOptions;

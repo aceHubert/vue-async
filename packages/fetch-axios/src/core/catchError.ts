@@ -2,7 +2,7 @@ import warning from 'warning';
 import { debug } from '../env';
 
 // Types
-import type { AxiosInstance, AxiosError, AxiosInterceptorOptions } from 'axios';
+import type { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import type { CatchErrorOptions } from '../types';
 
 const defaultOptions: CatchErrorOptions = {
@@ -30,11 +30,21 @@ function catchErrorHandler(error: AxiosError, options: CatchErrorOptions) {
 export function registCatchError(
   axios: AxiosInstance,
   options: CatchErrorOptions = {},
-  useOptions?: AxiosInterceptorOptions,
+  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
 ) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(undefined, (error) => catchErrorHandler(error, curOptions), useOptions);
-  axios.interceptors.response.use(undefined, (error) => catchErrorHandler(error, curOptions), useOptions);
+  axios.interceptors.request.use(undefined, (error: AxiosError) => {
+    if (runWhen(error.config)) {
+      return catchErrorHandler(error, curOptions);
+    }
+    return Promise.reject(error);
+  });
+  axios.interceptors.response.use(undefined, (error) => {
+    if (runWhen(error.config)) {
+      return catchErrorHandler(error, curOptions);
+    }
+    return Promise.reject(error);
+  });
 }
 
 declare module 'axios' {

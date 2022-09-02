@@ -10,15 +10,12 @@ import { RetryOptions, PluginDefinition } from '../types';
  */
 export const createRetryPlugin: PluginDefinition<RetryOptions> =
   ({ runWhen = () => true, ...retryOptions } = {}) =>
-  ({ fetch, options: { apis, prefix } }) => {
-    const registIds = Object.keys(apis).map((methodName) => `${prefix}/${methodName}`);
-    registRetry(fetch.client as AxiosInstance, retryOptions, {
-      runWhen: (config) => {
-        return (
-          !!config._registId &&
-          registIds.includes(config._registId) && // 只对 regist api 生效
-          runWhen(config) // 自定义条件
-        );
-      },
+  ({ id, fetch }) => {
+    registRetry(fetch.client as AxiosInstance, retryOptions, (config) => {
+      return (
+        !!config._registId &&
+        id === config._registId && // 只对 regist api 生效
+        runWhen(config) // 自定义条件
+      );
     });
   };

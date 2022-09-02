@@ -1,4 +1,4 @@
-import { Fetch } from './vue/rootFetch';
+import { Fetch, RegistApiPlugin } from './vue/rootFetch';
 
 export type Method =
   | 'get'
@@ -40,7 +40,7 @@ export interface RequestConfig<D = any> {
   responseType?: ResponseType;
   validateStatus?: ((status: number) => boolean) | null;
   /**
-   * From 'registApi' unique id, format to `{prefix}/{methodName}`
+   * From 'registApi' unique id
    * @internal
    */
   _registId?: string;
@@ -126,7 +126,7 @@ export type RegistApi<C extends Record<string, MethodUrl>> = {
  */
 export interface DefineRegistApiOptions<C extends Record<string, MethodUrl>> {
   /**
-   * cached id
+   * Cached id
    */
   id: string;
   /**
@@ -140,9 +140,13 @@ export interface DefineRegistApiOptions<C extends Record<string, MethodUrl>> {
    */
   apis: C;
   /**
-   * base url
+   * Base URL
    */
   prefix?: string;
+  /**
+   * Plugins apply current registApis
+   */
+  plugins?: RegistApiPlugin[];
 }
 
 /**
@@ -150,6 +154,11 @@ export interface DefineRegistApiOptions<C extends Record<string, MethodUrl>> {
  */
 export interface DefineRegistApiOptionsInPlugin<C extends Record<string, MethodUrl>>
   extends Omit<DefineRegistApiOptions<C>, 'id'> {}
+
+/**
+ * Custom registApis properties extends from plugin
+ */
+export interface RegistApiCustomProperties<C extends Record<string, MethodUrl> = {}> {}
 
 /**
  * Return type of 'defineRegistApi' result

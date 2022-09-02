@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosInterceptorOptions } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { CatchErrorOptions } from '../types';
 /**
  * register catch error handler
@@ -6,7 +6,7 @@ import type { CatchErrorOptions } from '../types';
  * @param options catch error options
  * @param useOptions interceptor use options
  */
-export declare function registCatchError(axios: AxiosInstance, options?: CatchErrorOptions, useOptions?: AxiosInterceptorOptions): void;
+export declare function registCatchError(axios: AxiosInstance, options?: CatchErrorOptions, runWhen?: (config: AxiosRequestConfig) => boolean): void;
 declare module 'axios' {
     interface AxiosRequestConfig {
         catchError?: boolean;

@@ -11,8 +11,8 @@ const pluginFetch = createFetch(axiosInstance);
 
 pluginFetch.use(
   createCatchErrorPlugin({
-    handler: (error: Error) => {
-      alert(`global error handler: ${error.message}`);
+    handler: (error) => {
+      alert(`global error handler from plugin: ${error.message}`);
       return new Promise(() => {});
     },
   }),

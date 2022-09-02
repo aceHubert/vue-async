@@ -1,6 +1,6 @@
 import { App, getCurrentInstance, InjectionKey, inject } from 'vue-demi';
 import { debug } from '../env';
-import { MethodUrl, FetchClient, RegistApi, DefineRegistApiOptionsInPlugin } from '../types';
+import { MethodUrl, FetchClient, RegistApi, RegistApiCustomProperties, DefineRegistApiOptionsInPlugin } from '../types';
 
 /**
  * activeFetch must be called to handle SSR at the top of functions like
@@ -58,6 +58,10 @@ export interface Fetch {
  */
 export interface RegisterPluginContext<C extends Record<string, MethodUrl> = any> {
   /**
+   * Register id
+   */
+  id: string;
+  /**
    * Fetch
    */
   fetch: Fetch;
@@ -83,5 +87,5 @@ export interface RegistApiPlugin {
    * Plugin to extend every registApi.
    * @param context - RegisterPluginContext
    */
-  (context: RegisterPluginContext): void;
+  (context: RegisterPluginContext): Partial<RegistApiCustomProperties> | void;
 }

@@ -83,11 +83,27 @@ export function registApi<C extends Record<string, MethodUrl>>(
   client: FetchClient,
   apis: C,
   prefix?: string,
+): RegistApi<C>;
+/**
+ * 定义 api for plugin use
+ * @internal
+ */
+export function registApi<C extends Record<string, MethodUrl>>(
+  client: FetchClient,
+  apis: C,
+  prefix?: string,
+  id?: string,
+): RegistApi<C>;
+export function registApi<C extends Record<string, MethodUrl>>(
+  client: FetchClient,
+  apis: C,
+  prefix?: string,
+  id?: string,
 ): RegistApi<C> {
   const result = {} as RegistApi<C>;
   Object.keys(apis).forEach((methodName) => {
     const methodUrl = apis[methodName];
-    result[methodName as keyof C] = transfromToRequest(client, methodUrl, methodName, prefix) as any;
+    result[methodName as keyof C] = transfromToRequest(client, methodUrl, prefix, id) as any;
   });
   return result;
 }
@@ -95,8 +111,8 @@ export function registApi<C extends Record<string, MethodUrl>>(
 function transfromToRequest(
   request: (url: string, config?: RequestConfig) => FetchPromise,
   methodUrl: MethodUrl,
-  methodName: string,
   prefix = '',
+  id?: string,
 ): TransApiResult<MethodUrl> {
   return (config: Partial<RequestConfig> = {}) => {
     let { requestType = 'json' } = config;
@@ -134,7 +150,7 @@ function transfromToRequest(
     };
 
     // 标记为通过 registApi 注册
-    reqConfig._registId = `${prefix}/${methodName}`;
+    reqConfig._registId = id;
 
     return request(url, reqConfig);
   };

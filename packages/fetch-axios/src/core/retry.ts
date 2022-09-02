@@ -2,7 +2,7 @@ import warning from 'warning';
 import { debug } from '../env';
 
 // types
-import type { AxiosInstance, AxiosError, AxiosInterceptorOptions } from 'axios';
+import type { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import type { RetryOptions } from '../types';
 
 // axios mergeConig does not support Symbol (Object.keys())
@@ -60,10 +60,24 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
  * @param options retry options
  * @param useOptions interceptor use options
  */
-export function registRetry(axios: AxiosInstance, options: RetryOptions, useOptions?: AxiosInterceptorOptions) {
+export function registRetry(
+  axios: AxiosInstance,
+  options: RetryOptions,
+  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
+) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(undefined, (error) => retryHandler(error, curOptions, axios), useOptions);
-  axios.interceptors.response.use(undefined, (error) => retryHandler(error, curOptions, axios), useOptions);
+  axios.interceptors.request.use(undefined, (error: AxiosError) => {
+    if (runWhen(error.config)) {
+      return retryHandler(error, curOptions, axios);
+    }
+    return Promise.reject(error);
+  });
+  axios.interceptors.response.use(undefined, (error: AxiosError) => {
+    if (runWhen(error.config)) {
+      return retryHandler(error, curOptions, axios);
+    }
+    return Promise.reject(error);
+  });
 }
 
 declare module 'axios' {

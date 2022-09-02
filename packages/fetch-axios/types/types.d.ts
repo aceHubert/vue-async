@@ -1,14 +1,5 @@
 import { AxiosRequestConfig, AxiosRequestTransformer, AxiosResponseTransformer, AxiosAdapter, AxiosBasicCredentials, AxiosProxyConfig, CancelToken, TransitionalOptions, AxiosError } from 'axios';
 import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
-declare module 'axios' {
-    interface AxiosRequestConfig {
-        /**
-         * From 'registApi' unique id, format to `{prefix}/{methodName}`
-         * @internal
-         */
-        _registId?: string;
-    }
-}
 declare module '@vue-async/fetch/types/types' {
     interface RequestConfig {
         transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
@@ -42,7 +33,7 @@ export declare type CatchErrorOptions = {
     /**
      * 全局 error catch 处理方法
      */
-    handler?: (err: Error) => Promise<any>;
+    handler?: (err: AxiosError) => Promise<any>;
 };
 /**
  * loading handler, return unloading handler

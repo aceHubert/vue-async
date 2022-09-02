@@ -1,5 +1,5 @@
 import { Vue2 } from 'vue-demi';
-import { fetchSymbol } from './rootFetch';
+import { fetchSymbol, setActiveFetch } from './rootFetch';
 
 export function FetchVuePlugin(Vue: any) {
   // Used to avoid multiple mixins being setup
@@ -31,6 +31,9 @@ export function FetchVuePlugin(Vue: any) {
         if (!this.$fetch) {
           this.$fetch = fetch;
         }
+
+        // this allows calling useFetch() outside of a component setup after
+        setActiveFetch(fetch);
 
         fetch._a = this as any;
       } else {
