@@ -8,6 +8,10 @@ module.exports = {
   },
   '/error': (req, resp) => {
     const { status = 400 } = req.query;
-    resp.status(isNaN(status) ? 400 : Number(status)), resp.send('Error 400');
+    resp.status(isNaN(status) ? 400 : Number(status));
+    resp.send({
+      code: status + '',
+      message: `Error ${status}`,
+    });
   },
 };
