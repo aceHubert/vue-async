@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "3.1.4",
+  "version": "3.2.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader Core.",
   "main": "lib/index.js",
@@ -24,7 +24,7 @@
     "types"
   ],
   "scripts": {
-    "serve:playground":"nuxt dev playground -p 7001",
+    "serve:playground": "nuxt dev playground -p 7001",
     "serve": "concurrently --raw \"tsc --project tsconfig.build.json --module es2015 --outDir esm -watch\" \"yarn serve:playground\"",
     "prebuild": "node -p \"'export const version: string = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rimraf -rf lib esm dist && yarn build:cjs && yarn build:esm && yarn build:umd",
@@ -44,7 +44,7 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.3.1",
+    "@vue-async/utils": "^1.3.2",
     "warning": "^4.0.3"
   },
   "devDependencies": {
