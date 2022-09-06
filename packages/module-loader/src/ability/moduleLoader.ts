@@ -2,7 +2,7 @@
  * moduleLoader
  */
 import warning from 'warning';
-import { isPlainObject, isFunction } from '@vue-async/utils';
+import { isPlainObject, isArray, isFunction } from '@vue-async/utils';
 import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';
 
@@ -10,6 +10,7 @@ import * as spa from '../utils/spa';
 import { VueConstructor } from 'vue';
 import { Context as vmContext } from 'vm';
 import { ModuleConfig, ModuleRemoteConfig, ModuleLoaderOptions } from 'types/module';
+import { Bootstrap } from 'types/sub';
 
 interface MutableRefObject<T> {
   current: T;
@@ -18,14 +19,14 @@ interface MutableRefObject<T> {
 type FormatModuleData = (ModuleRemoteConfig & { styles?: string[] }) | Extract<ModuleConfig, Function>;
 
 type Lifecycles = {
-  bootstrap: (vue: VueConstructor, args?: ModuleRemoteConfig['args']) => void;
+  bootstrap: Bootstrap;
   // mount: () => void;
   // unmount: () => void;
 };
 
 const noop = () => {};
 
-function promisify(promise: any): Promise<any> {
+function promisify<R = any>(promise: any): Promise<R> {
   if (promise && promise instanceof Promise && typeof promise.then === 'function') {
     return promise;
   }
@@ -122,6 +123,7 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
   ): Promise<void> {
     const {
       sync,
+      register = noop,
       onLoading = noop,
       onLoaded = noop,
       onError = (name, error) => {
@@ -197,7 +199,18 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
           const scriptExports = await spa.execScript(entry, global);
           await promisify(onLoading(moduleName));
           const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-          await promisify(bootstrap.call(_self, Vue, args));
+          const bootstrapResult = await promisify<ReturnType<Bootstrap>>(bootstrap.call(_self, Vue, args));
+          if (bootstrapResult) {
+            let result = {};
+            if (isArray(bootstrapResult)) {
+              result = {
+                routes: bootstrapResult,
+              };
+            } else {
+              result = bootstrapResult;
+            }
+            register(result);
+          }
           await promisify(onLoaded(moduleName));
         } catch (err: any) {
           // 异常不阻止当前执行，error 中处理
