@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import ModuleLoader, { ModuleConfig } from '@vue-async/module-loader';
+import ModuleLoader, { ModuleConfig, hook } from '@vue-async/module-loader';
+import { isArray } from '@vue-async/utils';
 import { root, megreRoutes, lazyLoadView } from '../router/utils';
+import { store } from '../store';
 
 // Types
 import { Plugin } from '@nuxt/types';
@@ -118,6 +120,34 @@ const plugin: Plugin = async (cxt) => {
   await moduleLoader
     .load(modules, {
       sync: true,
+      register: ({ routes, hooks, storeModules }) => {
+        if (routes) {
+          addRoutes(routes);
+        }
+
+        if (storeModules) {
+          Object.keys(storeModules).forEach((path) => {
+            const module = storeModules[path];
+            if (isArray(module)) {
+              store.registerModule(path, ...module);
+            } else {
+              store.registerModule(path, module);
+            }
+          });
+        }
+
+        if (hooks) {
+          Object.keys(hooks).forEach((tag) => {
+            const funToAdd = hooks[tag];
+            if (isArray(funToAdd)) {
+              const { priority = 10, acceptedArgs = funToAdd[0].length } = funToAdd[1];
+              hook(tag, funToAdd[0], priority, acceptedArgs);
+            } else {
+              hook(tag, funToAdd, 10, funToAdd.length);
+            }
+          });
+        }
+      },
       onLoading: (name) => {
         console.log(`${name} loading`);
       },

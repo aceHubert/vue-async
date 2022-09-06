@@ -1,5 +1,6 @@
 import { VueConstructor, Component as VueComponent, PluginFunction } from 'vue';
 import { RouteConfig } from 'vue-router';
+import { Bootstrap } from './sub';
 
 export type ModuleRemoteConfig = {
   moduleName: string;
@@ -24,6 +25,10 @@ export type ModuleLoaderOptions = {
    * 模块是否按同步方式执行加载
    */
   sync?: true;
+  /**
+   * 处理子模块返回的配置注入到主程序中
+   */
+  register?: (args: Exclude<ReturnType<Bootstrap>, void | Array<any>>) => void;
   /**
    * 模块加载前
    */

@@ -6,7 +6,7 @@ module.exports = () => {
     plugins: [{ src: 'plugins/module-loader' }],
     buildModules: ['@nuxt/typescript-build'],
     build: {
-      transpile: ['@vue-async/utils', '@vue-async/module-loader'],
+      transpile: ['@vue-async/*'],
       extend(config, { isDev, isClient, isServer }) {
         if (isClient) {
           config.node = {

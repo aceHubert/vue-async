@@ -8,9 +8,6 @@ import './assets/index.css';
 export default function bootstrap(Vue, opts = {}) {
   console.log(1, 'dymanicRouter');
 
-  // 合并路由
-  opts.addRoutes(routes);
-
   // 添加导航
   // 此方法为主程序中的扩展
   opts.addMenus &&
@@ -35,4 +32,5 @@ export default function bootstrap(Vue, opts = {}) {
     ]);
 
   // 其他逻辑
+  return routes;
 }
