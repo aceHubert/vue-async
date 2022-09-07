@@ -6,14 +6,18 @@ import type { CatchErrorOptions } from '../types';
  * @param options catch error options
  * @param useOptions interceptor use options
  */
-export declare function registCatchError(axios: AxiosInstance, options?: CatchErrorOptions, runWhen?: (config: AxiosRequestConfig) => boolean): void;
+export declare function registCatchError(
+  axios: AxiosInstance,
+  options?: CatchErrorOptions,
+  runWhen?: (config: AxiosRequestConfig) => boolean,
+): void;
 declare module 'axios' {
-    interface AxiosRequestConfig {
-        catchError?: boolean;
-    }
+  interface AxiosRequestConfig {
+    catchError?: boolean;
+  }
 }
 declare module '@vue-async/fetch/types/types' {
-    interface RequestConfig {
-        catchError?: boolean;
-    }
+  interface RequestConfig {
+    catchError?: boolean;
+  }
 }

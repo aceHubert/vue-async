@@ -1,6 +1,11 @@
 import { Vue2 } from 'vue-demi';
 import { fetchSymbol, setActiveFetch } from './rootFetch';
 
+const toString = (x: any) => Object.prototype.toString.call(x);
+function isPlainObject(x: unknown): x is Record<any, any> {
+  return toString(x) === '[object Object]';
+}
+
 export function FetchVuePlugin(Vue: any) {
   // Used to avoid multiple mixins being setup
   // when in dev mode and hot module reload
@@ -14,7 +19,8 @@ export function FetchVuePlugin(Vue: any) {
   Vue.mixin({
     beforeCreate() {
       const options = this.$options;
-      if (options.fetch) {
+      // fetch 关键字与nuxtjs 冲突
+      if (options.fetch && isPlainObject(options.fetch)) {
         const fetch = options.fetch;
         // HACK: taken from provide(): https://github.com/vuejs/composition-api/blob/main/src/apis/inject.ts#L31
         if (!(this as any)._provided) {

@@ -3,7 +3,7 @@ import { fetchSymbol, setActiveFetch, Fetch, RegistApiPlugin } from './rootFetch
 import { FetchClient, RegistApi } from '../types';
 
 export function createFetch(client: FetchClient): Fetch {
-  let _p: Fetch['_p'] = [];
+  const _p: Fetch['_p'] = [];
   // plugins added before calling app.use(pinia)
   let toBeInstalled: RegistApiPlugin[] = [];
 

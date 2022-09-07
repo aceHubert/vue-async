@@ -8,14 +8,15 @@ import { CatchErrorOptions, PluginDefinition } from '../types';
  * register 'cacheError' only on regist apis (and custom condition)
  * @param options cache error options
  */
-export const createCatchErrorPlugin: PluginDefinition<CatchErrorOptions> =
-  ({ runWhen = () => true, ...catchErrorOptions } = {}) =>
-  ({ id, fetch }) => {
-    registCatchError(fetch.client as AxiosInstance, catchErrorOptions, (config) => {
-      return (
-        !!config._registId &&
-        id === config._registId && // 只对 regist api 生效
-        runWhen(config) // 自定义条件
-      );
-    });
-  };
+export const createCatchErrorPlugin: PluginDefinition<CatchErrorOptions> = ({
+  runWhen = () => true,
+  ...catchErrorOptions
+} = {}) => ({ id, fetch }) => {
+  registCatchError(fetch.client as AxiosInstance, catchErrorOptions, (config) => {
+    return (
+      !!config._registId &&
+      id === config._registId && // 只对 regist api 生效
+      runWhen(config) // 自定义条件
+    );
+  });
+};

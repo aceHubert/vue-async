@@ -15,5 +15,3 @@ export const useUserApi = defineRegistApi('user', {
   },
   prefix: 'http://localhost:7009',
 });
-
-

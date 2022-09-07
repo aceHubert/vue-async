@@ -1,11 +1,11 @@
-import { defineComponent, ref, unref,  onMounted } from 'vue-demi';
+import { defineComponent, ref, unref, onMounted } from 'vue-demi';
 import { getActiveFetch } from '@vue-async/fetch';
 import { useUserApi, User } from '../apis/useUserApi';
 
 export default defineComponent({
   name: 'Playground',
   setup() {
-    const fetch = getActiveFetch()
+    const fetch = getActiveFetch();
     const userApi = useUserApi();
 
     const userRef = ref<User | null>(null);
