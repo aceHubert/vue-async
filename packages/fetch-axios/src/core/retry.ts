@@ -1,4 +1,5 @@
 import warning from 'warning';
+import axios from 'axios';
 import { debug } from '../env';
 
 // types
@@ -18,6 +19,8 @@ const defaultOptions: RetryOptions = {
    */
   validateError: (error) => !error.response && !!error.request && error.message === 'Network Error',
 };
+
+const isAxiosError = axios.isAxiosError;
 
 function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: AxiosInstance) {
   const config = error.config;
@@ -66,17 +69,25 @@ export function registRetry(
   runWhen: (config: AxiosRequestConfig) => boolean = () => true,
 ) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(undefined, (error: AxiosError) => {
-    if (runWhen(error.config)) {
+  axios.interceptors.request.use(
+    undefined,
+    (error) => {
+      if (!isAxiosError(error)) {
+        warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+        return Promise.reject(error);
+      }
+
       return retryHandler(error, curOptions, axios);
+    },
+    { runWhen },
+  );
+  axios.interceptors.response.use(undefined, (error) => {
+    if (!isAxiosError(error)) {
+      warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  });
-  axios.interceptors.response.use(undefined, (error: AxiosError) => {
-    if (runWhen(error.config)) {
-      return retryHandler(error, curOptions, axios);
-    }
-    return Promise.reject(error);
+    // runWhen not works on response, https://github.com/axios/axios/issues/4792
+    return runWhen(error.config) ? retryHandler(error, curOptions, axios) : Promise.reject(error);
   });
 }
 
@@ -89,6 +100,9 @@ declare module 'axios' {
 
 declare module '@vue-async/fetch/types/types' {
   export interface RequestConfig {
+    /**
+     * 启用重试，或自定义重试条件
+     */
     retry?: boolean | RetryOptions;
   }
 }

@@ -5,8 +5,9 @@ import { AxiosInstance } from 'axios';
 import { RetryOptions, PluginDefinition } from '../types';
 
 /**
- * register 'retry' only on regist apis (and custom condition)
- * @param options cache error options
+ * 注册重试插件
+ * 只在regist apis上运行 (and 自定义条件下)
+ * @param options 插件配置
  */
 export const createRetryPlugin: PluginDefinition<RetryOptions> = ({ runWhen = () => true, ...retryOptions } = {}) => ({
   id,

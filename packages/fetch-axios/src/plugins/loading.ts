@@ -5,8 +5,9 @@ import { AxiosInstance } from 'axios';
 import { LoadingOptions, PluginDefinition } from '../types';
 
 /**
- * register 'loading' only on regist apis (and custom condition)
- * @param options cache error options
+ * 注入加载中插件
+ * 只在regist apis上运行 (and 自定义条件下)
+ * @param options 插件配置
  */
 export const createLoadingPlugin: PluginDefinition<LoadingOptions> = ({
   runWhen = () => true,

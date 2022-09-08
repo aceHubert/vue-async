@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch-axios",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Axios adapter for Ajax.",
   "main": "lib/index.js",

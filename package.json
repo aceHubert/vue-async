@@ -8,8 +8,8 @@
     "url": "https://github.com/aceHubert/vue-async.git"
   },
   "scripts": {
-    "serve:mock-data":"cd mock-data && yarn serve",
-    "serve:mock-sub-modules":"cd mock-sub-modules && yarn serve",
+    "serve:mock-data": "cd mock-data && yarn serve",
+    "serve:mock-sub-modules": "cd mock-sub-modules && yarn serve",
     "serve:mock": "concurrently --raw \"yarn serve:mock-data\" \"yarn serve:mock-sub-modules\" ",
     "build": "lerna run build --sort --stream --scope=@vue-async/*",
     "test": "jest --coverage",
@@ -100,12 +100,6 @@
     "packages": [
       "packages/*"
     ],
-    "nohoist": [
-      "**/vue",
-      "**/vue/**",
-      "**/nuxt",
-      "**/nuxt/**",
-      "**/@nuxt/types"
-    ]
+    "nohoist": []
   }
 }

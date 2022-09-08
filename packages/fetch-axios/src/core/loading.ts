@@ -1,3 +1,8 @@
+import warning from 'warning';
+import axios from 'axios';
+import { debug } from '../env';
+
+// Types
 import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 import type { LoadingHandler, LoadingOptions } from '../types';
 
@@ -8,6 +13,8 @@ const defaultOptions: LoadingOptions = {
   delay: 260,
   handler: undefined,
 };
+
+const isAxiosError = axios.isAxiosError;
 
 function startLoading(config: AxiosRequestConfig, handler: LoadingHandler, delay: number) {
   if (delay > 0) {
@@ -66,15 +73,27 @@ export function registLoading(
   );
   axios.interceptors.response.use(
     (response) => {
-      stopLoading(response.config);
+      if (!response?.config) {
+        warning(!debug, `loading needs "response" config, please do not chage format from interceptors return! `);
+        return response;
+      }
+      // runWhen not works on response, https://github.com/axios/axios/issues/4792
+      if (runWhen(response.config)) {
+        stopLoading(response.config);
+      }
       return response;
     },
     (error) => {
-      if (!error.config) return Promise.reject(error);
-      stopLoading(error.config);
+      if (!isAxiosError(error)) {
+        warning(!debug, `loading needs "AxiosError" config, please do not chage format from interceptors return! `);
+        return Promise.reject(error);
+      }
+      // runWhen not works on response, https://github.com/axios/axios/issues/4792
+      if (runWhen(error.config)) {
+        stopLoading(error.config);
+      }
       return Promise.reject(error);
     },
-    { runWhen },
   );
 }
 
@@ -87,6 +106,9 @@ declare module 'axios' {
 
 declare module '@vue-async/fetch/types/types' {
   export interface RequestConfig {
+    /**
+     * 启用加载，或自定义加载方法
+     */
     loading?: boolean | LoadingHandler | Required<LoadingOptions>;
   }
 }

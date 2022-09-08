@@ -98,6 +98,16 @@ export type RetryOptions = {
 };
 
 /**
+ * validate response data options
+ */
+export type ValidResponseOptions = {
+  /**
+   * 如果验证失败，返回 code/message
+   */
+  validate?: <T = any>(data: T) => true | { code: string; message: string };
+};
+
+/**
  * plugin options
  */
 type OptionsInPlugin<O extends Record<string, any>> = {
