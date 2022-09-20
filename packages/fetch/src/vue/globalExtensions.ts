@@ -10,7 +10,7 @@ declare module 'vue/types/vue' {
     /**
      * Currently installed fetch instance.
      */
-    $fetch: Fetch;
+    $afetch: Fetch;
   }
 }
 
@@ -21,7 +21,7 @@ declare module 'vue/types/options' {
      * Fetch instance to install in your application. Should be passed to the
      * root Vue.
      */
-    fetch?: Fetch;
+    afetch?: Fetch;
   }
 }
 
@@ -31,6 +31,6 @@ declare module '@vue/runtime-core' {
     /**
      * Access to the application's Fetch
      */
-    $fetch: Fetch;
+    $afetch: Fetch;
   }
 }

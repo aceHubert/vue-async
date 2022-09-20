@@ -20,51 +20,51 @@ export declare const setActiveFetch: (fetch: Fetch | undefined) => Fetch | undef
  */
 export declare const getActiveFetch: () => Fetch | undefined;
 export interface Fetch {
-  /**
-   * Install fetch plugin
-   */
-  install: (app: App) => void;
-  /**
-   * Current fetch client with `Vue.createFetch()`
-   */
-  client: FetchClient;
-  /**
-   * Add a plugin to use every regist api
-   */
-  use: (plugin: RegistApiPlugin) => Fetch;
+    /**
+     * Install fetch plugin
+     */
+    install: (app: App) => void;
+    /**
+     * Current fetch client with `Vue.createFetch()`
+     */
+    client: FetchClient;
+    /**
+     * Add a plugin to use every regist api
+     */
+    use: (plugin: RegistApiPlugin) => Fetch;
 }
 /**
  * Context argument passed to RegistApiPlugins.
  */
 export interface RegisterPluginContext<C extends Record<string, MethodUrl> = any> {
-  /**
-   * Register id
-   */
-  id: string;
-  /**
-   * Fetch
-   */
-  fetch: Fetch;
-  /**
-   * Current app created with `Vue.createApp()`.
-   */
-  app: App;
-  /**
-   * regist apis
-   */
-  registApis: RegistApi<C>;
-  /**
-   * regist api options
-   */
-  options: DefineRegistApiOptionsInPlugin<C>;
+    /**
+     * Register id
+     */
+    id: string;
+    /**
+     * Fetch
+     */
+    fetch: Fetch;
+    /**
+     * Current app created with `Vue.createApp()`.
+     */
+    app: App;
+    /**
+     * regist apis
+     */
+    registApis: RegistApi<C>;
+    /**
+     * regist api options
+     */
+    options: DefineRegistApiOptionsInPlugin<C>;
 }
 /**
  * Plugin to extend every store.
  */
 export interface RegistApiPlugin {
-  /**
-   * Plugin to extend every registApi.
-   * @param context - RegisterPluginContext
-   */
-  (context: RegisterPluginContext): Partial<RegistApiCustomProperties> | void;
+    /**
+     * Plugin to extend every registApi.
+     * @param context - RegisterPluginContext
+     */
+    (context: RegisterPluginContext): Partial<RegistApiCustomProperties> | void;
 }

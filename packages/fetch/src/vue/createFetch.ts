@@ -15,7 +15,7 @@ export function createFetch(client: FetchClient): Fetch {
       if (!isVue2) {
         fetch._a = app;
         app.provide(fetchSymbol, fetch);
-        app.config.globalProperties.$fetch = fetch;
+        app.config.globalProperties.$afetch = fetch;
 
         toBeInstalled.forEach((plugin) => _p.push(plugin));
         toBeInstalled = [];

@@ -4,6 +4,10 @@ import { useUserApi, User } from '../apis/useUserApi';
 
 export default defineComponent({
   name: 'Playground',
+  mounted(){
+    // fetch instance mount on current app instance
+    console.log(this.$afetch)
+  },
   setup() {
     const fetch = getActiveFetch();
     const userApi = useUserApi();

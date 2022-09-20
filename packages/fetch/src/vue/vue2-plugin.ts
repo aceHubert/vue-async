@@ -1,11 +1,6 @@
 import { Vue2 } from 'vue-demi';
 import { fetchSymbol, setActiveFetch } from './rootFetch';
 
-const toString = (x: any) => Object.prototype.toString.call(x);
-function isPlainObject(x: unknown): x is Record<any, any> {
-  return toString(x) === '[object Object]';
-}
-
 export function FetchVuePlugin(Vue: any) {
   // Used to avoid multiple mixins being setup
   // when in dev mode and hot module reload
@@ -19,9 +14,8 @@ export function FetchVuePlugin(Vue: any) {
   Vue.mixin({
     beforeCreate() {
       const options = this.$options;
-      // fetch 关键字与nuxtjs 冲突
-      if (options.fetch && isPlainObject(options.fetch)) {
-        const fetch = options.fetch;
+      if (options.afetch) {
+        const fetch = options.afetch;
         // HACK: taken from provide(): https://github.com/vuejs/composition-api/blob/main/src/apis/inject.ts#L31
         if (!(this as any)._provided) {
           const provideCache = {};
@@ -34,8 +28,8 @@ export function FetchVuePlugin(Vue: any) {
 
         // propagate the fetch instance in an SSR friendly way
         // avoid adding it to nuxt twice
-        if (!this.$fetch) {
-          this.$fetch = fetch;
+        if (!this.$afetch) {
+          this.$afetch = fetch;
         }
 
         // this allows calling useFetch() outside of a component setup after
@@ -43,7 +37,7 @@ export function FetchVuePlugin(Vue: any) {
 
         fetch._a = this as any;
       } else {
-        this.$fetch = (options.parent && options.parent.$fetch) || this;
+        this.$afetch = (options.parent && options.parent.$afetch) || this;
       }
     },
   });
