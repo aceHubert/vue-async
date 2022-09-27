@@ -14,4 +14,10 @@ module.exports = {
       message: `Error ${status}`,
     });
   },
+  '/body-error': (req, resp) => {
+    resp.send({
+      success: false,
+      message: `Error from response.body`,
+    });
+  },
 };

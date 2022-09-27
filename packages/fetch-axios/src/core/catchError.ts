@@ -3,7 +3,8 @@ import axios from 'axios';
 import { debug } from '../env';
 
 // Types
-import type { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
+import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { CatchErrorOptions } from '../types';
 
 const defaultOptions: CatchErrorOptions = {
@@ -17,51 +18,145 @@ const defaultOptions: CatchErrorOptions = {
 };
 
 const isAxiosError = axios.isAxiosError;
+const isCancelError = axios.isCancel;
 
-function catchErrorHandler(error: AxiosError, options: CatchErrorOptions) {
+function catchErrorHandler(error: AxiosError, handler: CatchErrorOptions['handler']) {
   const { config } = error;
   if (!config?.catchError) return Promise.reject(error);
-  return options.handler!(error);
+  return handler?.(error);
+}
+
+function promisify<T>(promise: T | PromiseLike<T>): Promise<T> {
+  if (promise && promise instanceof Promise && typeof promise.then === 'function') {
+    return promise;
+  }
+  return Promise.resolve(promise);
 }
 
 /**
- * register catch error handler
- * @param axios axios instance
+ * use axios.interceptors to catch errors.
+ * do not change the return type from interceptors
+ * with "AxiosResponse" ans "AxiosError", next handler functions need it
+ * @param axiosInstance axios instance
  * @param options catch error options
- * @param useOptions interceptor use options
  */
-export function registCatchError(
-  axios: AxiosInstance,
-  options: CatchErrorOptions = {},
-  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
-) {
+export function applyCatchError(axiosInstance: AxiosInstance, options: CatchErrorOptions = {}) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(
-    undefined,
-    (error) => {
-      if (!isAxiosError(error)) {
-        warning(!debug, `catchError needs "AxiosError" config, please do not chage format from interceptors return! `);
-        return Promise.reject(error);
-      }
-
-      return catchErrorHandler(error, curOptions);
-    },
-    { runWhen },
-  );
-  axios.interceptors.response.use(undefined, (error) => {
+  axiosInstance.interceptors.request.use(undefined, (error) => {
     if (!isAxiosError(error)) {
       warning(!debug, `catchError needs "AxiosError" config, please do not chage format from interceptors return! `);
       return Promise.reject(error);
     }
-    // runWhen not works on response, https://github.com/axios/axios/issues/4792
-    if (runWhen(error.config)) {
-      return catchErrorHandler(error, curOptions);
-    }
-    return Promise.reject(error);
+
+    return catchErrorHandler(error, curOptions.handler);
   });
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      if (!response?.config) {
+        warning(!debug, `loading needs "response" config, please do not chage format from interceptors return! `);
+        return response;
+      }
+
+      if (curOptions.serializerData) {
+        return promisify(curOptions.serializerData(response.data))
+          .then((data) => {
+            response.data = data;
+            return response;
+          })
+          .catch((error) => {
+            if (isAxiosError(error)) {
+              return Promise.reject(error);
+            } else {
+              return Promise.reject(
+                new axios.AxiosError(
+                  error instanceof Error ? error.message : error,
+                  error?.code || 'FROM_SERIALIZER_DATA_ERROR',
+                  response.config,
+                  response.request,
+                  response,
+                ),
+              );
+            }
+          });
+      }
+
+      return response;
+    },
+    (error) => {
+      if (!isAxiosError(error)) {
+        warning(!debug, `catchError needs "AxiosError" config, please do not chage format from interceptors return! `);
+        return Promise.reject(error);
+      } else if (isCancelError(error)) {
+        // cancel
+        return Promise.reject(error);
+      }
+      return catchErrorHandler(error, curOptions.handler);
+    },
+  );
+}
+
+/**
+ * regist catch error plugin on current promise request
+ * @param request request promise
+ * @param options catch error options
+ */
+export function registCatchError<T = any, R = T, C extends Partial<RequestConfig> = any>(
+  request: (config: C) => FetchPromise<T>,
+  options: CatchErrorOptions = {},
+): (config: C) => FetchPromise<R> {
+  const curOptions = { ...defaultOptions, ...options };
+  return (config) => {
+    return request(config)
+      .then((response) => {
+        if (curOptions.serializerData) {
+          return promisify(curOptions.serializerData(response.data)).then(
+            (data) => {
+              response.data = data as any;
+              return response;
+            },
+            (error) => {
+              if (isAxiosError(error)) {
+                return Promise.reject(error);
+              } else {
+                return Promise.reject(
+                  new axios.AxiosError(
+                    error instanceof Error ? error.message : error,
+                    error?.code || 'FROM_SERIALIZER_DATA_ERROR',
+                    response.config,
+                    response.request,
+                    response,
+                  ),
+                );
+              }
+            },
+          );
+        }
+        return response;
+      })
+      .catch((error) => {
+        // TIP: catch 参捕获到 then 中抛出的异常
+        if (!isAxiosError(error)) {
+          warning(
+            !debug,
+            `catchError needs "AxiosError" config, please do not chage format from interceptors return! `,
+          );
+          return Promise.reject(error);
+        } else if (isCancelError(error)) {
+          // cancel
+          return Promise.reject(error);
+        }
+        return catchErrorHandler(error, curOptions.handler);
+      });
+  };
 }
 
 declare module 'axios' {
+  /**
+   * @internal
+   */
+  export interface AxiosStatic {
+    AxiosError: typeof AxiosError;
+  }
   export interface AxiosRequestConfig {
     catchError?: boolean;
   }

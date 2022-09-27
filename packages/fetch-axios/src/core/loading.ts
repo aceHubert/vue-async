@@ -4,6 +4,7 @@ import { debug } from '../env';
 
 // Types
 import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { LoadingHandler, LoadingOptions } from '../types';
 
 export const StopLoadingFnSymbol = '__StopLoading__';
@@ -15,6 +16,7 @@ const defaultOptions: LoadingOptions = {
 };
 
 const isAxiosError = axios.isAxiosError;
+const isCancelError = axios.isCancel;
 
 function startLoading(config: AxiosRequestConfig, handler: LoadingHandler, delay: number) {
   if (delay > 0) {
@@ -36,65 +38,105 @@ function stopLoading(config: AxiosRequestConfig) {
 }
 
 /**
- * register loading handler
- * @param axios axios instance
+ * use axios.interceptors to register loading function.
+ * do not change the return type from interceptors 
+ * with "AxiosResponse" ans "AxiosError", next handler functions need it
+ * @param axiosInstance axios instance
  * @param options loading options
- * @param useOptions interceptor use options
  */
-export function registLoading(
-  axios: AxiosInstance,
-  options: LoadingOptions,
-  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
-) {
+export function applyLoading(axiosInstance: AxiosInstance, options: LoadingOptions) {
   const curOptions = { ...defaultOptions, ...options };
 
-  axios.interceptors.request.use(
-    (config) => {
-      const { loading } = config;
-      let delay = curOptions.delay || 0;
-      let loadingFn = curOptions.handler;
-      // 如果有本地设置
-      if (loading && typeof loading !== 'boolean') {
-        if (typeof loading === 'function') {
-          loadingFn = loading;
-        } else {
-          loading.delay !== void 0 && (delay = loading.delay);
-          loadingFn = loading.handler;
-        }
+  axiosInstance.interceptors.request.use((config) => {
+    const { loading } = config;
+    let delay = curOptions.delay || 0;
+    let loadingFn = curOptions.handler;
+    // 如果有本地设置
+    if (loading && typeof loading !== 'boolean') {
+      if (typeof loading === 'function') {
+        loadingFn = loading;
+      } else {
+        loading.delay !== void 0 && (delay = loading.delay);
+        loadingFn = loading.handler;
       }
-      // loading 设置为true 或本地定义时并且loading 函数被设置时启动
-      if (!!loading && loadingFn) {
-        startLoading(config, loadingFn, delay);
-      }
-      return config;
-    },
-    undefined,
-    { runWhen },
-  );
-  axios.interceptors.response.use(
+    }
+    // loading 设置为true 或本地定义时并且loading 函数被设置时启动
+    if (!!loading && loadingFn) {
+      startLoading(config, loadingFn, delay);
+    }
+    return config;
+  }, undefined);
+  axiosInstance.interceptors.response.use(
     (response) => {
       if (!response?.config) {
         warning(!debug, `loading needs "response" config, please do not chage format from interceptors return! `);
         return response;
       }
-      // runWhen not works on response, https://github.com/axios/axios/issues/4792
-      if (runWhen(response.config)) {
-        stopLoading(response.config);
-      }
+
+      stopLoading(response.config);
+
       return response;
     },
     (error) => {
       if (!isAxiosError(error)) {
         warning(!debug, `loading needs "AxiosError" config, please do not chage format from interceptors return! `);
         return Promise.reject(error);
+      } else if (isCancelError(error)) {
+        // cancel
+        return Promise.reject(error);
       }
-      // runWhen not works on response, https://github.com/axios/axios/issues/4792
-      if (runWhen(error.config)) {
-        stopLoading(error.config);
-      }
+
+      stopLoading(error.config);
+
       return Promise.reject(error);
     },
   );
+}
+
+/**
+ * regist loading plugin on current promise request
+ * @param request request promise
+ * @param options catch error options
+ */
+export function registLoading<T = any, C extends Partial<RequestConfig> = any>(
+  request: (config: C) => FetchPromise<T>,
+  options: LoadingOptions,
+): (config: C) => FetchPromise<T> {
+  const curOptions = { ...defaultOptions, ...options };
+  return (config) => {
+    const { loading } = config;
+    let delay = curOptions.delay || 0;
+    let showLoading = curOptions.handler;
+    // 如果有本地设置
+    if (loading && typeof loading !== 'boolean') {
+      if (typeof loading === 'function') {
+        showLoading = loading;
+      } else {
+        loading.delay !== void 0 && (delay = loading.delay);
+        showLoading = loading.handler;
+      }
+    }
+    const requestPromise = request(config);
+    const delaySymbol = typeof Symbol === 'function' && !!Symbol.for ? Symbol('__LOADING__') : '__LOADING__';
+    const delayPromise = new Promise((resolve) => setTimeout(() => resolve(delaySymbol), delay!));
+    let closeLoading: (() => void) | undefined;
+    // loading 设置为true 或本地定义时并且loading 函数被设置时启动
+    if (!!loading && showLoading) {
+      Promise.race([requestPromise, delayPromise]).then((result) => {
+        result === delaySymbol && (closeLoading = showLoading?.());
+      });
+    }
+    return requestPromise.then(
+      (response) => {
+        closeLoading?.();
+        return response;
+      },
+      (error) => {
+        closeLoading?.();
+        return Promise.reject(error);
+      },
+    );
+  };
 }
 
 declare module 'axios' {

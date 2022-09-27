@@ -3,7 +3,8 @@ import axios from 'axios';
 import { debug } from '../env';
 
 // types
-import type { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
+import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { RetryOptions } from '../types';
 
 // axios mergeConig does not support Symbol (Object.keys())
@@ -17,12 +18,13 @@ const defaultOptions: RetryOptions = {
    * `error.request` is an instance of XMLHttpRequest in the browser and an instance of
    * http.ClientRequest in node.js
    */
-  validateError: (error) => !error.response && !!error.request && error.message === 'Network Error',
+  validateError: (error) => !!error.request && error.message === 'Network Error',
 };
 
 const isAxiosError = axios.isAxiosError;
+const isCancelError = axios.isCancel;
 
-function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: AxiosInstance) {
+function retryHandler(error: AxiosError, options: RetryOptions, retryRequest: (config: any) => FetchPromise) {
   const config = error.config;
   if (!!config?.retry) {
     const curOptions = typeof config.retry === 'boolean' ? options : { ...options, ...config.retry };
@@ -49,7 +51,7 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
       // Return the promise in which recalls axios to retry the request
       return backoff.then(function () {
         warning(!debug, `${config.url}: retry ${config[RetryCountSymbol]} time(s)`);
-        return axiosInstance(config);
+        return retryRequest(config);
       });
     }
   }
@@ -58,37 +60,60 @@ function retryHandler(error: AxiosError, options: RetryOptions, axiosInstance: A
 }
 
 /**
- * register retry handler
- * @param axios axios instance
+ * use axios.interceptors to register retry function.
+ * do not change the return type from interceptors
+ * with "AxiosResponse" ans "AxiosError", next handler functions need it
+ * @param axiosInstance axios instance
  * @param options retry options
- * @param useOptions interceptor use options
  */
-export function registRetry(
-  axios: AxiosInstance,
-  options: RetryOptions,
-  runWhen: (config: AxiosRequestConfig) => boolean = () => true,
-) {
+export function applyRetry(axiosInstance: AxiosInstance, options: RetryOptions) {
   const curOptions = { ...defaultOptions, ...options };
-  axios.interceptors.request.use(
-    undefined,
-    (error) => {
-      if (!isAxiosError(error)) {
-        warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
-        return Promise.reject(error);
-      }
-
-      return retryHandler(error, curOptions, axios);
-    },
-    { runWhen },
-  );
-  axios.interceptors.response.use(undefined, (error) => {
+  axiosInstance.interceptors.request.use(undefined, (error) => {
     if (!isAxiosError(error)) {
       warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
       return Promise.reject(error);
     }
-    // runWhen not works on response, https://github.com/axios/axios/issues/4792
-    return runWhen(error.config) ? retryHandler(error, curOptions, axios) : Promise.reject(error);
+
+    return retryHandler(error, curOptions, axios);
   });
+  axiosInstance.interceptors.response.use(undefined, (error) => {
+    if (!isAxiosError(error)) {
+      warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+      return Promise.reject(error);
+    } else if (isCancelError(error)) {
+      // cancel
+      return Promise.reject(error);
+    }
+
+    return retryHandler(error, curOptions, axios);
+  });
+}
+
+/**
+ * regist retry plugin on current promise request
+ * @param request request promise
+ * @param options catch error options
+ */
+export function registRetry<T = any, C extends Partial<RequestConfig> = any>(
+  request: (config: C) => FetchPromise<T>,
+  options: RetryOptions,
+): (config: C) => FetchPromise<T> {
+  const retryRequest = (config: C) => {
+    const curOptions = { ...defaultOptions, ...options };
+    return request(config).catch((error) => {
+      if (!isAxiosError(error)) {
+        warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+        return Promise.reject(error);
+      } else if (isCancelError(error)) {
+        // cancel
+        return Promise.reject(error);
+      }
+
+      return retryHandler(error, curOptions, retryRequest);
+    });
+  };
+
+  return retryRequest;
 }
 
 declare module 'axios' {

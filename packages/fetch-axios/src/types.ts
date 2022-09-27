@@ -55,6 +55,11 @@ declare module '@vue-async/fetch/types/types' {
  */
 export type CatchErrorOptions = {
   /**
+   * Error 通过response.body 返回，
+   * 返回 Promise.reject() 让异常返回到handler 中处理
+   */
+  serializerData?: <T = any, R = T>(data: T) => R | Promise<R>;
+  /**
    * 全局 error catch 处理方法
    */
   handler?: (err: AxiosError) => Promise<any>;
@@ -95,16 +100,6 @@ export type RetryOptions = {
    * 自定义重试条件，默认值：没有response返回并且错误信息为`Network Error`
    */
   validateError?: (error: AxiosError) => boolean;
-};
-
-/**
- * validate response data options
- */
-export type ValidResponseOptions = {
-  /**
-   * 如果验证失败，返回 code/message
-   */
-  validate?: <T = any>(data: T) => true | { code: string; message: string };
 };
 
 /**

@@ -1,6 +1,6 @@
 import { defineComponent, ref } from 'vue-demi';
 import axios, { CancelTokenSource } from 'axios';
-import { fetch, loadingRef } from '../apis';
+import { fetch, loadingRef as globalLoadingRef } from '../apis';
 import { useUserApi } from '../apis/useUserApi';
 import { useLocalPluginApi } from '../apis/useLocalPluginApi';
 import { pluginFetch } from '../apis/pluginFetch';
@@ -109,6 +109,18 @@ export default defineComponent({
         });
     };
 
+    const sentLocalBodyErrorRequest = () => {
+      localPluginApi.bodyError({
+        catchError: true,
+      });
+    };
+
+    const setnBodyErrorRequest = () => {
+      userApi.bodyError({
+        catchError: true,
+      });
+    };
+
     // 全局注册loading
     const sendLoadingRequret = (loading = true) => {
       userApi
@@ -209,42 +221,51 @@ export default defineComponent({
             <input type="button" value="Timeout 3s" onClick={() => sendTimeoutRequest()}></input> &nbsp;
           </div>
           <div>
-            <h3>catchError（registCatchError 注册到全局）</h3>
-            <input type="button" value="Catch Error false" onClick={() => sendErrorRequest(false)}></input> &nbsp;
-            <input type="button" value="Catch Error true" onClick={() => sendErrorRequest(true)}></input> &nbsp;
-            <p>
-              <small>非 registApi 也会 catchError</small>
-            </p>
-            <input
-              type="button"
-              value="Catch Error true(not regist api request)"
-              onClick={() => sendErrorRequestWithClient()}
-            ></input>
-            <h3>plugin catchError（通过 plugin 注入 registCatchError）</h3>
-            <input
-              type="button"
-              value="Catch Error false"
-              onClick={() => sendPluginFetchErrorRequest(false)}
-            ></input>{' '}
-            &nbsp;
-            <input
-              type="button"
-              value="Catch Error true"
-              onClick={() => sendPluginFetchErrorRequest(true)}
-            ></input>{' '}
-            <p>
-              <small>非 registApi catchError无效</small>
-            </p>
-            <input
-              type="button"
-              value="Catch Error true(not regist api request)"
-              onClick={() => sendPluginFetchErrorRequestWithClient()}
-            ></input>
+            <h3>catchError（applyCatchError 到全局）</h3>
+            <div>
+              <small>禁用catchError，本地错误捕获提示：</small>
+              <input type="button" value="Catch Error false" onClick={() => sendErrorRequest(false)}></input>
+            </div>
+            <div>
+              <small>启用catchError, 全局错误捕获提示：</small>
+              <input type="button" value="Catch Error true" onClick={() => sendErrorRequest(true)}></input>
+            </div>
+            <div>
+              <small>client直接请求(应用在全局instance上catchError生效)：</small>
+              <input
+                type="button"
+                value="Catch Error true(not regist api request)"
+                onClick={() => sendErrorRequestWithClient()}
+              ></input>
+            </div>
+            <h3>catchError（registCatchError 到定义的registApis 上）</h3>
+            <div>
+              <small>禁用catchError，本地错误捕获提示：</small>
+              <input type="button" value="Catch Error false" onClick={() => sendPluginFetchErrorRequest(false)}></input>
+            </div>
+            <div>
+              <small>启用catchError, 全局错误捕获提示：</small>
+              <input type="button" value="Catch Error true" onClick={() => sendPluginFetchErrorRequest(true)}></input>
+            </div>
+            <div>
+              <small>client直接请求(全局instance上没有applyCatchError)：</small>
+              <input
+                type="button"
+                value="Catch Error true(not regist api request)"
+                onClick={() => sendPluginFetchErrorRequestWithClient()}
+              ></input>
+            </div>
+            <div>
+              <small>error 通过body返回(格式化错误信息)</small>
+              <input type="button" value="Global Error Catch" onClick={() => setnBodyErrorRequest()}></input> &nbsp;
+              <input type="button" value="Local Error Catch" onClick={() => sentLocalBodyErrorRequest()}></input>
+            </div>
           </div>
           <div>
             <h3>loading</h3>
             {localLoadingRef.value && <p>Local Loading...</p>}
-            {loadingRef.value && <p>Global Loading...</p>}
+            {globalLoadingRef.value && <p>Global Loading...</p>}
+            <input type="button" value="set true" onClick={() => (globalLoadingRef.value = true)}></input> &nbsp;
             <input type="button" value="Local Loading" onClick={() => sendLocalLoadingRequret()}></input> &nbsp;
             <input type="button" value="Global Loading" onClick={() => sendLoadingRequret(true)}></input> &nbsp;
             <input type="button" value="No Loading（5s）" onClick={() => sendLoadingRequret(false)}></input> &nbsp;
