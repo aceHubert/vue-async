@@ -3,7 +3,7 @@ import axios from 'axios';
 import { debug } from '../env';
 
 // Types
-import type { AxiosInstance, AxiosRequestConfig } from 'axios';
+import type { AxiosInstance } from 'axios';
 import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { LoadingHandler, LoadingOptions } from '../types';
 
@@ -15,10 +15,7 @@ const defaultOptions: LoadingOptions = {
   handler: undefined,
 };
 
-const isAxiosError = axios.isAxiosError;
-const isCancelError = axios.isCancel;
-
-function startLoading(config: AxiosRequestConfig, handler: LoadingHandler, delay: number) {
+function startLoading(config: RequestConfig, handler: LoadingHandler, delay: number) {
   if (delay > 0) {
     // delay
     setTimeout(() => {
@@ -30,16 +27,19 @@ function startLoading(config: AxiosRequestConfig, handler: LoadingHandler, delay
   }
 }
 
-function stopLoading(config: AxiosRequestConfig) {
+function stopLoading(config: RequestConfig) {
   const { [StopLoadingFnSymbol]: stopLoadingFnOrSymbol } = config;
   // 设置 response 已结束， delay 将不再执行 handler
   config[StopLoadingFnSymbol] = ResponseFinishedSymbol;
   stopLoadingFnOrSymbol && stopLoadingFnOrSymbol !== ResponseFinishedSymbol && stopLoadingFnOrSymbol();
 }
 
+const isAxiosError = axios.isAxiosError;
+const isCancelError = axios.isCancel;
+
 /**
  * use axios.interceptors to register loading function.
- * do not change the return type from interceptors 
+ * do not change the return type from interceptors
  * with "AxiosResponse" ans "AxiosError", next handler functions need it
  * @param axiosInstance axios instance
  * @param options loading options
@@ -48,7 +48,7 @@ export function applyLoading(axiosInstance: AxiosInstance, options: LoadingOptio
   const curOptions = { ...defaultOptions, ...options };
 
   axiosInstance.interceptors.request.use((config) => {
-    const { loading } = config;
+    const { loading } = config as RequestConfig;
     let delay = curOptions.delay || 0;
     let loadingFn = curOptions.handler;
     // 如果有本地设置
@@ -69,7 +69,7 @@ export function applyLoading(axiosInstance: AxiosInstance, options: LoadingOptio
   axiosInstance.interceptors.response.use(
     (response) => {
       if (!response?.config) {
-        warning(!debug, `loading needs "response" config, please do not chage format from interceptors return! `);
+        warning(!debug, `loading needs "response.config", please do not chage format from interceptors return! `);
         return response;
       }
 
@@ -79,12 +79,19 @@ export function applyLoading(axiosInstance: AxiosInstance, options: LoadingOptio
     },
     (error) => {
       if (!isAxiosError(error)) {
-        warning(!debug, `loading needs "AxiosError" config, please do not chage format from interceptors return! `);
+        warning(!debug, `loading needs "AxiosError.config", please do not chage format from interceptors return!`);
         return Promise.reject(error);
       } else if (isCancelError(error)) {
-        // cancel
+        warning(!debug, `loading won't handle axios cancel error!`);
         return Promise.reject(error);
       }
+
+      debug &&
+        warning(
+          !!error.config,
+          `loading needs "AxiosError.config", it will throw error in production!
+        `,
+        );
 
       stopLoading(error.config);
 
@@ -126,24 +133,16 @@ export function registLoading<T = any, C extends Partial<RequestConfig> = any>(
         result === delaySymbol && (closeLoading = showLoading?.());
       });
     }
-    return requestPromise.then(
-      (response) => {
+    return requestPromise
+      .then((response) => {
         closeLoading?.();
         return response;
-      },
-      (error) => {
+      })
+      .catch((error) => {
         closeLoading?.();
         return Promise.reject(error);
-      },
-    );
+      });
   };
-}
-
-declare module 'axios' {
-  export interface AxiosRequestConfig {
-    loading?: boolean | LoadingHandler | Required<LoadingOptions>;
-    [StopLoadingFnSymbol]?: typeof ResponseFinishedSymbol | ReturnType<LoadingHandler>;
-  }
 }
 
 declare module '@vue-async/fetch/types/types' {
@@ -152,5 +151,9 @@ declare module '@vue-async/fetch/types/types' {
      * 启用加载，或自定义加载方法
      */
     loading?: boolean | LoadingHandler | Required<LoadingOptions>;
+    /**
+     * @internal
+     */
+    [StopLoadingFnSymbol]?: typeof ResponseFinishedSymbol | ReturnType<LoadingHandler>;
   }
 }

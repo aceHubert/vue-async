@@ -140,11 +140,11 @@ export default defineComponent({
 
     // 使用本地loading handler
     const localLoadingRef = ref(false);
-    const sendLocalLoadingRequret = () => {
+    const sendLocalLoadingRequret = (countdown = 5) => {
       userApi
         .timeout({
           params: {
-            countdown: 5,
+            countdown,
           },
           loading: () => {
             localLoadingRef.value = true;
@@ -212,13 +212,20 @@ export default defineComponent({
       return (
         <div>
           <div>
-            <p>click cancel button within time: {cancelTimeoutRef.value}s</p>
+            <small>取消请求：</small>
             <input type="button" value="Submit" onClick={() => sendRequest()}></input> &nbsp;
-            {cancelTimeoutRef.value > 0 && <input type="button" value="Cancel" onClick={() => cancelRequest()}></input>}
+            {cancelTimeoutRef.value > 0 && (
+              <div style="display:inline-block">
+                <small>click </small>
+                <input type="button" value="Cancel" onClick={() => cancelRequest()}></input>
+                <small> within time {cancelTimeoutRef.value}s</small>
+              </div>
+            )}
           </div>
           <div>
-            <p>request will be timeout in: {timeoutRef.value}s</p>
+            <small>超时请求：</small>
             <input type="button" value="Timeout 3s" onClick={() => sendTimeoutRequest()}></input> &nbsp;
+            {timeoutRef.value > 0 && <small>request will be timeout in {timeoutRef.value}s</small>}
           </div>
           <div>
             <h3>catchError（applyCatchError 到全局）</h3>
@@ -265,33 +272,60 @@ export default defineComponent({
             <h3>loading</h3>
             {localLoadingRef.value && <p>Local Loading...</p>}
             {globalLoadingRef.value && <p>Global Loading...</p>}
-            <input type="button" value="set true" onClick={() => (globalLoadingRef.value = true)}></input> &nbsp;
-            <input type="button" value="Local Loading" onClick={() => sendLocalLoadingRequret()}></input> &nbsp;
-            <input type="button" value="Global Loading" onClick={() => sendLoadingRequret(true)}></input> &nbsp;
-            <input type="button" value="No Loading（5s）" onClick={() => sendLoadingRequret(false)}></input> &nbsp;
+            <div>
+              <small>本地设置loading状态：</small>
+              <input type="button" value="Local Loading" onClick={() => sendLocalLoadingRequret()}></input>
+            </div>
+            <div>
+              <small>全局设置loading状态：</small>
+              <input type="button" value="Global Loading" onClick={() => sendLoadingRequret(true)}></input>
+            </div>
+            <div>
+              <small>delay内返回不显示loading状态：</small>
+              <input type="button" value="No Loading" onClick={() => sendLocalLoadingRequret(0)}></input>
+            </div>
+            <div>
+              <small>loading设置false：</small>
+              <input type="button" value="No Loading（5s）" onClick={() => sendLoadingRequret(false)}></input>
+            </div>
           </div>
           <div>
-            <h3>retry</h3>
-            <p>trun off network in the devtools</p>
-            <input type="button" value="Local Retry(1 times)" onClick={() => sendLocalRetryRequest()}></input> &nbsp;
-            <input type="button" value="Global Retry(5 times)" onClick={() => sendRetryRequest(true)}></input> &nbsp;
-            <input type="button" value="No Retry" onClick={() => sendRetryRequest(false)}></input> &nbsp;
-            <input type="button" value="No Delay Retry(3 times)" onClick={() => sendNoDelayRetryRequest()}></input>{' '}
-            &nbsp;
+            <h3>retry(在 devtools 中关闭网络后测试)</h3>
+            <div>
+              <small>本地设置retry：</small>
+              <input type="button" value="Local Retry(1 times)" onClick={() => sendLocalRetryRequest()}></input>
+            </div>
+            <div>
+              <small>全局设置retry：</small>
+              <input type="button" value="Global Retry(5 times)" onClick={() => sendRetryRequest(true)}></input>
+            </div>
+            <div>
+              <small>retry设置false：</small>
+              <input type="button" value="No Retry" onClick={() => sendRetryRequest(false)}></input>
+            </div>
+            <div>
+              <small>retry.delay设置false：</small>
+              <input type="button" value="No Delay Retry(3 times)" onClick={() => sendNoDelayRetryRequest()}></input>
+            </div>
           </div>
           <div>
             <h3>plugins</h3>
-            <input
-              type="button"
-              value="Global plugin applied to all registApis"
-              onClick={() => userApi.error400({ catchError: true })}
-            ></input>{' '}
-            &nbsp;
-            <input
-              type="button"
-              value="Plugin applied to current registApis"
-              onClick={() => localPluginApi.error400({ catchError: true })}
-            ></input>
+            <div>
+              <small>通过 interceptors 应用在全局的 instance 上：</small>
+              <input
+                type="button"
+                value="Global plugin applied to all registApis"
+                onClick={() => userApi.error400({ catchError: true })}
+              ></input>
+            </div>
+            <div>
+              <small>通过插件应用在 registApis 上：</small>
+              <input
+                type="button"
+                value="Plugin applied to current registApis"
+                onClick={() => localPluginApi.error400({ catchError: true })}
+              ></input>
+            </div>
           </div>
         </div>
       );

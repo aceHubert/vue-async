@@ -3,7 +3,7 @@ import axios from 'axios';
 import { debug } from '../env';
 
 // types
-import type { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance } from 'axios';
 import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { RetryOptions } from '../types';
 
@@ -18,14 +18,18 @@ const defaultOptions: RetryOptions = {
    * `error.request` is an instance of XMLHttpRequest in the browser and an instance of
    * http.ClientRequest in node.js
    */
-  validateError: (error) => !!error.request && error.message === 'Network Error',
+  validateError: (error) => error.message === 'Network Error',
 };
 
 const isAxiosError = axios.isAxiosError;
 const isCancelError = axios.isCancel;
 
-function retryHandler(error: AxiosError, options: RetryOptions, retryRequest: (config: any) => FetchPromise) {
-  const config = error.config;
+function retryHandler(
+  error: Error,
+  config: RequestConfig,
+  options: RetryOptions,
+  retryRequest: (config: any) => FetchPromise,
+) {
   if (!!config?.retry) {
     const curOptions = typeof config.retry === 'boolean' ? options : { ...options, ...config.retry };
     if (!curOptions.validateError!(error)) return Promise.reject(error);
@@ -70,22 +74,38 @@ export function applyRetry(axiosInstance: AxiosInstance, options: RetryOptions) 
   const curOptions = { ...defaultOptions, ...options };
   axiosInstance.interceptors.request.use(undefined, (error) => {
     if (!isAxiosError(error)) {
-      warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+      warning(!debug, `retry needs "AxiosError.config", please do not chage format from interceptors return!`);
+      return Promise.reject(error);
+    } else if (isCancelError(error)) {
+      warning(!debug, `retry won't handle axios cancel error!`);
       return Promise.reject(error);
     }
 
-    return retryHandler(error, curOptions, axios);
+    warning(
+      !debug && !!error.config,
+      `retry needs "AxiosError.config", it will throw error in production!
+      `,
+    );
+
+    return retryHandler(error, error.config, curOptions, axios);
   });
   axiosInstance.interceptors.response.use(undefined, (error) => {
     if (!isAxiosError(error)) {
-      warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
+      warning(!debug, `retry needs "AxiosError.config", please do not chage format from interceptors return!`);
       return Promise.reject(error);
     } else if (isCancelError(error)) {
-      // cancel
+      warning(!debug, `retry won't handle axios cancel error!`);
       return Promise.reject(error);
     }
 
-    return retryHandler(error, curOptions, axios);
+    debug &&
+      warning(
+        !!error.config,
+        `retry needs "AxiosError.config", it will throw error in production!
+      `,
+      );
+
+    return retryHandler(error, error.config, curOptions, axios);
   });
 }
 
@@ -101,26 +121,11 @@ export function registRetry<T = any, C extends Partial<RequestConfig> = any>(
   const retryRequest = (config: C) => {
     const curOptions = { ...defaultOptions, ...options };
     return request(config).catch((error) => {
-      if (!isAxiosError(error)) {
-        warning(!debug, `retry needs "AxiosError" config, please do not chage format from interceptors return! `);
-        return Promise.reject(error);
-      } else if (isCancelError(error)) {
-        // cancel
-        return Promise.reject(error);
-      }
-
-      return retryHandler(error, curOptions, retryRequest);
+      return retryHandler(error, config, curOptions, retryRequest);
     });
   };
 
   return retryRequest;
-}
-
-declare module 'axios' {
-  export interface AxiosRequestConfig {
-    retry?: boolean | RetryOptions;
-    [RetryCountSymbol]?: number;
-  }
 }
 
 declare module '@vue-async/fetch/types/types' {
@@ -129,5 +134,9 @@ declare module '@vue-async/fetch/types/types' {
      * 启用重试，或自定义重试条件
      */
     retry?: boolean | RetryOptions;
+    /**
+     * @internal
+     */
+    [RetryCountSymbol]?: number;
   }
 }

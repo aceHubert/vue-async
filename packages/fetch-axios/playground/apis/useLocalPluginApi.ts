@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { defineRegistApi, typedUrl } from '@vue-async/fetch';
 import { createCatchErrorPlugin } from '@vue-async/fetch-axios';
 
@@ -21,6 +22,7 @@ export const useLocalPluginApi = defineRegistApi('plugin', {
       },
       handler(error) {
         if (
+          axios.isAxiosError(error) &&
           Object.prototype.toString.call(error.response?.data) === '[object Object]' &&
           (error.response?.data as any).code === '400'
         ) {

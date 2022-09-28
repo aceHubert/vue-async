@@ -3,7 +3,7 @@ import axios from 'axios';
 import { debug } from '../env';
 
 // Types
-import type { AxiosInstance, AxiosError } from 'axios';
+import type { AxiosInstance } from 'axios';
 import type { RequestConfig, FetchPromise } from '@vue-async/fetch';
 import type { CatchErrorOptions } from '../types';
 
@@ -20,10 +20,12 @@ const defaultOptions: CatchErrorOptions = {
 const isAxiosError = axios.isAxiosError;
 const isCancelError = axios.isCancel;
 
-function catchErrorHandler(error: AxiosError, handler: CatchErrorOptions['handler']) {
-  const { config } = error;
-  if (!config?.catchError) return Promise.reject(error);
-  return handler?.(error);
+function catchErrorHandler(error: Error, config: RequestConfig, handler: CatchErrorOptions['handler']) {
+  if (!!config?.catchError) {
+    return handler?.(error);
+  }
+
+  return Promise.reject(error);
 }
 
 function promisify<T>(promise: T | PromiseLike<T>): Promise<T> {
@@ -44,16 +46,25 @@ export function applyCatchError(axiosInstance: AxiosInstance, options: CatchErro
   const curOptions = { ...defaultOptions, ...options };
   axiosInstance.interceptors.request.use(undefined, (error) => {
     if (!isAxiosError(error)) {
-      warning(!debug, `catchError needs "AxiosError" config, please do not chage format from interceptors return! `);
+      warning(!debug, `catchError needs "AxiosError.config", please do not chage format from interceptors return!`);
+      return Promise.reject(error);
+    } else if (isCancelError(error)) {
+      warning(!debug, `catchError won't handle axios cancel error!`);
       return Promise.reject(error);
     }
 
-    return catchErrorHandler(error, curOptions.handler);
+    warning(
+      !debug && !!error.config,
+      `catchError needs "AxiosError.config", it will throw error in production!
+      `,
+    );
+
+    return catchErrorHandler(error, error.config, curOptions.handler);
   });
   axiosInstance.interceptors.response.use(
     (response) => {
       if (!response?.config) {
-        warning(!debug, `loading needs "response" config, please do not chage format from interceptors return! `);
+        warning(!debug, `catchError needs "response.config", please do not chage format from interceptors return! `);
         return response;
       }
 
@@ -67,6 +78,7 @@ export function applyCatchError(axiosInstance: AxiosInstance, options: CatchErro
             if (isAxiosError(error)) {
               return Promise.reject(error);
             } else {
+              // error 中 需要 config 依赖
               return Promise.reject(
                 new axios.AxiosError(
                   error instanceof Error ? error.message : error,
@@ -84,13 +96,21 @@ export function applyCatchError(axiosInstance: AxiosInstance, options: CatchErro
     },
     (error) => {
       if (!isAxiosError(error)) {
-        warning(!debug, `catchError needs "AxiosError" config, please do not chage format from interceptors return! `);
+        warning(!debug, `catchError needs "AxiosError.config", please do not chage format from interceptors return!`);
         return Promise.reject(error);
       } else if (isCancelError(error)) {
-        // cancel
+        warning(!debug, `catchError won't handle axios cancel error!`);
         return Promise.reject(error);
       }
-      return catchErrorHandler(error, curOptions.handler);
+
+      debug &&
+        warning(
+          !!error.config,
+          `catchError needs "AxiosError.config", it will throw error in production!
+        `,
+        );
+
+      return catchErrorHandler(error, error.config, curOptions.handler);
     },
   );
 }
@@ -107,58 +127,26 @@ export function registCatchError<T = any, R = T, C extends Partial<RequestConfig
   const curOptions = { ...defaultOptions, ...options };
   return (config) => {
     return request(config)
-      .then((response) => {
+      .then(async (response) => {
         if (curOptions.serializerData) {
-          return promisify(curOptions.serializerData(response.data)).then(
-            (data) => {
-              response.data = data as any;
-              return response;
-            },
-            (error) => {
-              if (isAxiosError(error)) {
-                return Promise.reject(error);
-              } else {
-                return Promise.reject(
-                  new axios.AxiosError(
-                    error instanceof Error ? error.message : error,
-                    error?.code || 'FROM_SERIALIZER_DATA_ERROR',
-                    response.config,
-                    response.request,
-                    response,
-                  ),
-                );
-              }
-            },
-          );
+          const data = promisify(curOptions.serializerData(response.data));
+          response.data = data as any;
         }
         return response;
       })
       .catch((error) => {
         // TIP: catch 参捕获到 then 中抛出的异常
-        if (!isAxiosError(error)) {
-          warning(
-            !debug,
-            `catchError needs "AxiosError" config, please do not chage format from interceptors return! `,
-          );
-          return Promise.reject(error);
-        } else if (isCancelError(error)) {
-          // cancel
-          return Promise.reject(error);
-        }
-        return catchErrorHandler(error, curOptions.handler);
+        return catchErrorHandler(error, config, curOptions.handler);
       });
   };
 }
 
+/**
+ * @internal
+ */
 declare module 'axios' {
-  /**
-   * @internal
-   */
   export interface AxiosStatic {
     AxiosError: typeof AxiosError;
-  }
-  export interface AxiosRequestConfig {
-    catchError?: boolean;
   }
 }
 

@@ -7,7 +7,6 @@ import {
   AxiosProxyConfig,
   CancelToken,
   TransitionalOptions,
-  AxiosError,
 } from 'axios';
 import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
 
@@ -62,7 +61,7 @@ export type CatchErrorOptions = {
   /**
    * 全局 error catch 处理方法
    */
-  handler?: (err: AxiosError) => Promise<any>;
+  handler?: (error: Error) => Promise<any>;
 };
 
 /**
@@ -97,9 +96,9 @@ export type RetryOptions = {
    */
   delay?: boolean;
   /**
-   * 自定义重试条件，默认值：没有response返回并且错误信息为`Network Error`
+   * 自定义重试条件，默认值：error.message 是 `Network Error`
    */
-  validateError?: (error: AxiosError) => boolean;
+  validateError?: (error: Error) => boolean;
 };
 
 /**

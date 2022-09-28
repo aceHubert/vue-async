@@ -22,6 +22,7 @@ pluginFetch.use(
     },
     handler: (error) => {
       if (
+        axios.isAxiosError(error) &&
         Object.prototype.toString.call(error.response?.data) === '[object Object]' &&
         (error.response?.data as any).code === '400'
       ) {
@@ -40,6 +41,7 @@ pluginFetch.use(
   createLoadingPlugin({
     handler: () => {
       loadingRef.value = true;
+      console.log('plugin', loadingRef.value);
       return () => {
         loadingRef.value = false;
       };
