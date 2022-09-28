@@ -13,15 +13,17 @@ import { DEFAULT_EXTENSIONS } from '@babel/core';
 
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
-const presets = () => {
-  const externals = {
+const presets = (filename, targetName, externals) => {
+  const _externals = {
     vue: 'Vue',
+    'vue-demi': 'VueDemi',
     '@vue/composition-api': 'VueCompositionAPI',
     '@vue-async/components': 'VueAsync.Components',
     '@vue-async/fetch': 'VueAsync.Fetch',
     '@vue-async/module-loader': 'VueAsync.ModuleLoader',
     '@vue-async/resource-manager': 'VueAsync.ResourceManager',
     // '@vue-async/utils': 'VueAsync.Utils', // 打包到dist, 并 tree shakeing
+    ...externals,
   };
   return [
     resolve({
@@ -50,7 +52,7 @@ const presets = () => {
       extensions,
     }),
     json(),
-    externalGlobals(externals, {
+    externalGlobals(_externals, {
       exclude: ['**/*.{less,sass,scss}'],
     }),
   ];
@@ -98,7 +100,7 @@ export const removeImportStyleFromInputFilePlugin = () => ({
 /**
  * base rollup config
  */
-export default (filename, targetName) => {
+export default (filename, targetName, externals = {}) => {
   function onwarn(warning, warn) {
     // ignoer 'this' rewrite with 'undefined' warn
     if (warning.code === 'THIS_IS_UNDEFINED') return;
@@ -117,8 +119,10 @@ export default (filename, targetName) => {
         amd: {
           id: filename,
         },
+        intro: 'var global = this || self; global.globalThis = global;',
       },
-      plugins: [...presets(filename, targetName), createEnvPlugin('development'), createLisencePlugin()],
+      external: ['vue'],
+      plugins: [...presets(filename, targetName, externals), createEnvPlugin('development'), createLisencePlugin()],
       onwarn,
     },
     {
@@ -132,8 +136,15 @@ export default (filename, targetName) => {
         amd: {
           id: filename,
         },
+        intro: 'var global = this || self; global.globalThis = global',
       },
-      plugins: [...presets(filename, targetName), terser(), createEnvPlugin('production'), createLisencePlugin()],
+      external: ['vue'],
+      plugins: [
+        ...presets(filename, targetName, externals),
+        terser(),
+        createEnvPlugin('production'),
+        createLisencePlugin(),
+      ],
       onwarn,
     },
   ];
