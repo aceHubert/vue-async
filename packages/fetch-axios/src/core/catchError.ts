@@ -129,7 +129,7 @@ export function registCatchError<T = any, R = T, C extends Partial<RequestConfig
     return request(config)
       .then(async (response) => {
         if (curOptions.serializerData) {
-          const data = promisify(curOptions.serializerData(response.data));
+          const data = await promisify(curOptions.serializerData(response.data));
           response.data = data as any;
         }
         return response;

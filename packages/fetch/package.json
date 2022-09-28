@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch",
-  "version": "0.1.0-alpha.7",
+  "version": "0.1.0-alpha.9",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Fetch.",
   "main": "lib/index.js",

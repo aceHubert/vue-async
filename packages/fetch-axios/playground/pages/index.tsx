@@ -1,16 +1,16 @@
 import { defineComponent, ref } from 'vue-demi';
 import axios, { CancelTokenSource } from 'axios';
 import { fetch, loadingRef as globalLoadingRef } from '../apis';
+import { pluginFetch } from '../apis/pluginFetch';
 import { useUserApi } from '../apis/useUserApi';
 import { useLocalPluginApi } from '../apis/useLocalPluginApi';
-import { pluginFetch } from '../apis/pluginFetch';
 
 export default defineComponent({
   name: 'Playground',
   setup() {
     const userApi = useUserApi();
-    const userPluginApi = useUserApi(pluginFetch);
     const localPluginApi = useLocalPluginApi();
+    const userPluginApi = useUserApi(pluginFetch);
     const timeoutRef = ref(0);
     const cancelTimeoutRef = ref(0);
     const cancelTokenRef = ref<CancelTokenSource | null>(null);
@@ -116,7 +116,7 @@ export default defineComponent({
     };
 
     const setnBodyErrorRequest = () => {
-      userApi.bodyError({
+      userPluginApi.bodyError({
         catchError: true,
       });
     };
@@ -247,11 +247,11 @@ export default defineComponent({
             </div>
             <h3>catchError（registCatchError 到定义的registApis 上）</h3>
             <div>
-              <small>禁用catchError，本地错误捕获提示：</small>
+              <small>禁用catchError本地错误捕获提示：</small>
               <input type="button" value="Catch Error false" onClick={() => sendPluginFetchErrorRequest(false)}></input>
             </div>
             <div>
-              <small>启用catchError, 全局错误捕获提示：</small>
+              <small>启用catchError全局错误捕获提示：</small>
               <input type="button" value="Catch Error true" onClick={() => sendPluginFetchErrorRequest(true)}></input>
             </div>
             <div>
