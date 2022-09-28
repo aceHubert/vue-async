@@ -26,7 +26,7 @@ type Lifecycles = {
 
 const noop = () => {};
 
-function promisify<R = any>(promise: any): Promise<R> {
+function promisify<T = any>(promise: T | PromiseLike<T>): Promise<T> {
   if (promise && promise instanceof Promise && typeof promise.then === 'function') {
     return promise;
   }
@@ -158,11 +158,18 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
     async function exec(module: FormatModuleData) {
       // local module
       if (isFunction(module)) {
-        const result = module.call(_self, Vue);
-        if (result && result instanceof Promise) {
-          return result;
+        const bootstrapResult = await promisify(module.call(_self, Vue));
+        if (bootstrapResult) {
+          let result = {};
+          if (isArray(bootstrapResult)) {
+            result = {
+              routes: bootstrapResult,
+            };
+          } else {
+            result = bootstrapResult;
+          }
+          register(result);
         }
-        return Promise.resolve();
       }
       // remote module
       else {
@@ -199,7 +206,7 @@ export default (Vue: VueConstructor, status: MutableRefObject<boolean>) => {
           const scriptExports = await spa.execScript(entry, global);
           await promisify(onLoading(moduleName));
           const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-          const bootstrapResult = await promisify<ReturnType<Bootstrap>>(bootstrap.call(_self, Vue, args));
+          const bootstrapResult = await promisify(bootstrap.call(_self, Vue, args));
           if (bootstrapResult) {
             let result = {};
             if (isArray(bootstrapResult)) {

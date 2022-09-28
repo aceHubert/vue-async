@@ -18,7 +18,7 @@ export type ModuleRemoteConfig = {
 export type ModuleConfig =
   | ModuleRemoteConfig
   | Record<string, string | Omit<ModuleRemoteConfig, 'moduleName'>>
-  | ((Vue: VueConstructor) => Promise<void> | void);
+  | ((Vue: VueConstructor) => Promise<ReturnType<Bootstrap>> | ReturnType<Bootstrap>);
 
 export type ModuleLoaderOptions = {
   /**
