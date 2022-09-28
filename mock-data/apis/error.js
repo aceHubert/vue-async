@@ -1,9 +1,13 @@
 module.exports = {
   '/timeout': (req, resp) => {
-    const { countdown = 10 } = req.query;
+    const { countdown = 10, error } = req.query;
     const second = isNaN(countdown) ? 10 : Number(countdown);
     setTimeout(() => {
-      resp.send('success');
+      resp.status(400);
+      resp.send({
+        code: '400',
+        message: `Error timeout`,
+      });
     }, second * 1000);
   },
   '/error': (req, resp) => {

@@ -8,6 +8,27 @@ const axiosInstance = axios.create({
 });
 
 const pluginFetch = createFetch(axiosInstance);
+
+export const loadingRef = ref(false);
+
+pluginFetch.use(
+  createLoadingPlugin({
+    handler: () => {
+      loadingRef.value = true;
+      return () => {
+        loadingRef.value = false;
+      };
+    },
+  }),
+);
+
+pluginFetch.use(
+  createRetryPlugin({
+    maxCount: 5,
+  }),
+);
+
+// catchError 放在最后注册，handler 中阻止了Promise继续执行
 pluginFetch.use(
   createCatchErrorPlugin({
     serializerData: (data: any) => {
@@ -36,23 +57,6 @@ pluginFetch.use(
   }),
 );
 
-export const loadingRef = ref(false);
-pluginFetch.use(
-  createLoadingPlugin({
-    handler: () => {
-      loadingRef.value = true;
-      console.log('plugin', loadingRef.value);
-      return () => {
-        loadingRef.value = false;
-      };
-    },
-  }),
-);
 
-pluginFetch.use(
-  createRetryPlugin({
-    maxCount: 5,
-  }),
-);
 
 export { pluginFetch };

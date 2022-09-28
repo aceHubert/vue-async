@@ -4,11 +4,13 @@ import { createCatchErrorPlugin } from '@vue-async/fetch-axios';
 
 export const useLocalPluginApi = defineRegistApi('plugin', {
   apis: {
+    timeout: typedUrl<string>`/timeout`,
     error400: typedUrl<string>`/error`,
     bodyError: typedUrl<string>`/body-error`,
   },
   prefix: 'http://localhost:7009',
   plugins: [
+    // catchError 放在最后注册，handler 中阻止了Promise继续执行
     createCatchErrorPlugin({
       serializerData: (data: any) => {
         if (data.success !== void 0) {
@@ -31,7 +33,7 @@ export const useLocalPluginApi = defineRegistApi('plugin', {
         } else {
           alert(`local error handler from local plugin, ${error?.message || ''}`);
         }
-        return new Promise(() => {});
+        return new Promise(() => {}); // 这里阻止继续执行会造成使用 use 注册的插件无法正常执行
       },
     }),
   ],
