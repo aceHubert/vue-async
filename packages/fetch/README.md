@@ -15,8 +15,9 @@ npm i -S @vue-async/fetch
 
 ## 使用
 
+### 直接使用
 ```javascript
-// 直接使用
+// 使用 axios 作为示例
 import axios from 'axios';
 import { regisApi } from '@vue-async/fetch';
 
@@ -28,7 +29,10 @@ const prefix = 'http://api/base_url'
 const userApi = registApi(axiosInstance, {
   getUsers: typedUrl<User[]>`get /users`,
   // get 可以省略
+  // 通过取对象字符串
   getUser: typedUrl<User, { id: string | number }>`/user/${'id'}`,
+  // 或者通过函数拼接url
+  getUser: typedUrl<User, { id: string | number }>`/user/${(params)=> params.id}`,
   addUser: typedUrl<User, any, Partial<Omit<User, 'id'>>>`post /user`,
 }, prefix);
 
@@ -47,10 +51,10 @@ import { createFetch, defineRegistApi, setActiveFetch, FetchVuePlugin } from '@v
 
 Vue.use(FetchVuePlugin);
 
-const fetch = createFetch(axiosInstance)
+const afetch = createFetch(axiosInstance)
 
 // 注册 registApi 插件
-fetch.use(plugin)
+afetch.use(plugin)
 
 // 定义 regsitApi
 const useUserApi = defineRegistApi('user',{
@@ -61,30 +65,30 @@ const useUserApi = defineRegistApi('user',{
 
 new Vue({
   ...
-  fetch,
+  afetch,
 }).$mount('#app')
 
 // 组件内使用
 {
   created(){
-    this.$fetch.client // => axiosInstance from createFetch
+    this.$afetch.client // => axiosInstance from createFetch
 
     //激活当前使用的fetch对象
-    setActiveFetch(fetch)
+    setActiveFetch(afetch)
     // 使用user api
     const userApi = useUserApi();
     // 或使用其它的fetch对象注册regist api
-    const userApi = useUserApi(fetch);
+    const userApi = useUserApi(afetch);
     userApi.getUsers()
   }
 }
 // 或者
 {
   inject:{
-    'fetch':{from: fetchSymbol}
+    'afetch':{from: fetchSymbol}
   },
   created(){
-    this.fetch
+    this.afetch
   }
 }
 
@@ -105,16 +109,16 @@ defineComponent({
 import { createApp, defineComponent } from 'vue'
 import { createFetch, defineRegistApi } from '@vue-async/fetch';
 
-const fetch = createFetch(axiosInstance)
+const afetch = createFetch(axiosInstance)
 
 const app = createApp({
   ...
 })
 // install fetch
-app.use(fetch)
+app.use(afetch)
 
 // 注册 registApi 插件
-fetch.use(plugin)
+afetch.use(plugin)
 
 // 定义 regsitApi
 const useUserApi = defineRegistApi('user',{
