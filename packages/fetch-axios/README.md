@@ -75,6 +75,7 @@ axiosInstance.request({
 > 1、`regist` 系列方法使用 [Promise chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises#chaining) 处理, 先注册先执行；如果中途chaining 被阻止，后续方法将不会执行。    
 > 2、通过 `use` 方法注册的插件应用到所有通过 `defineRegistApi` 定义的方法上。  
 > 3、通过 `defineRegistApi` 的 `plugins` 注册的插件只应用在当前定义的方法上。  
+> 4、通过 `defineRegistApi` 的 `plugins` 注册的插件比通过 `use` 方法注册的插件先执行。  
 > <font color="red">注：catchError 与其它方法同时使用时建议把catchError放在最后注册，catchError handler 如果阻止Promise执行会使后面方法不生效。</font>  
 > <font color="red">问题：catchError 在 fetch.use 和 defineRegistApi.plugins同时使用时，本地plugins中hanlder阻止Promise继续执行会导致use插件中的代码无法正常执行。</font>
 

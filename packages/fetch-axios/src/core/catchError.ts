@@ -11,9 +11,9 @@ const defaultOptions: CatchErrorOptions = {
   handler: (error: Error) => {
     warning(
       !debug,
-      `Error is catched by default handler and stop propagation error out, Error message: ${error.message}`,
+      `Error is catched by default handler, Error message: ${error.message}`,
     );
-    return new Promise(() => {});
+    return Promise.reject(error);
   },
 };
 

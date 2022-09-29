@@ -1,6 +1,7 @@
 import { defineComponent, ref } from 'vue-demi';
 import axios, { CancelTokenSource } from 'axios';
 import { fetch, loadingRef as globalLoadingRef } from '../apis';
+import { loadingRef as pluginGlobalLoadingRef } from '../apis/pluginFetch';
 import { pluginFetch } from '../apis/pluginFetch';
 import { useUserApi } from '../apis/useUserApi';
 import { useLocalPluginApi } from '../apis/useLocalPluginApi';
@@ -129,6 +130,40 @@ export default defineComponent({
             countdown: 5,
           },
           loading,
+        })
+        .then(({ data }) => {
+          alert(data);
+        })
+        .catch((err: Error) => {
+          alert(err.message);
+        });
+    };
+
+    const sendLocalLoadingWithErrorRequret = () => {
+      localPluginApi
+        .timeout({
+          params: {
+            countdown: 3,
+          },
+          catchError: true,
+          loading: true,
+        })
+        .then(({ data }) => {
+          alert(data);
+        })
+        .catch((err: Error) => {
+          alert(err.message);
+        });
+    };
+
+    const sendLoadingWithErrorRequret = () => {
+      userPluginApi
+        .timeout({
+          params: {
+            countdown: 3,
+          },
+          catchError: true,
+          loading: true,
         })
         .then(({ data }) => {
           alert(data);
@@ -272,6 +307,7 @@ export default defineComponent({
             <h3>loading</h3>
             {localLoadingRef.value && <p>Local Loading...</p>}
             {globalLoadingRef.value && <p>Global Loading...</p>}
+            {pluginGlobalLoadingRef.value && <p>Global Loading...</p>}
             <div>
               <small>本地设置loading状态：</small>
               <input type="button" value="Local Loading" onClick={() => sendLocalLoadingRequret()}></input>
@@ -287,6 +323,18 @@ export default defineComponent({
             <div>
               <small>loading设置false：</small>
               <input type="button" value="No Loading（5s）" onClick={() => sendLoadingRequret(false)}></input>
+            </div>
+            <div>
+              <small>loading与catchError混用(全局插件)：</small>
+              <input type="button" value="Error loading (3s)" onClick={() => sendLoadingWithErrorRequret()}></input>
+            </div>
+            <div>
+              <small>loading与catchError混用(本地插件)：</small>
+              <input
+                type="button"
+                value="Error loading (3s)"
+                onClick={() => sendLocalLoadingWithErrorRequret()}
+              ></input>
             </div>
           </div>
           <div>
