@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import CreateResource from '../components/CreateResource';
 
-const LazyLoad1 = Vue.lazy(() => import('../components/Load1'));
-const LazyLoad2 = Vue.lazy(() => import('../components/Load2'), { message: String });
+const LazyLoad1 = Vue.lazy(() => import('../components/Load1'), { message: { type: String, required: true } });
+const LazyLoad2 = Vue.lazy(() => import('../components/Load2'), { message: { type: String, required: true } });
 
 export default Vue.extend({
   data() {
@@ -22,7 +22,8 @@ export default Vue.extend({
       <div id="app">
         <div>
           <h2>createResource:</h2>
-          <CreateResource />
+          {/* @ts-ignore */}
+          <CreateResource message="CreateResource" />
         </div>
         <div>
           <h2>lazy:</h2>

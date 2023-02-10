@@ -15,8 +15,8 @@ export interface ResourceManager {
 
 export type SuspenseComponent = VueComponent & { __esModule?: any; default?: VueComponent };
 
-export interface AsyncFactory<I = any, R = any> {
-  (input?: I): Promise<R>;
+export interface AsyncFactory<I extends any[] = any[], R = any> {
+  (...input: I): Promise<R>;
   suspenseInstance?: Vue;
   resolved?: VueComponent | boolean;
   $$waiter?: Promise<R>;
@@ -29,13 +29,19 @@ export const Suspense: SuspenseComponent;
 // Lazy
 export const lazy: Lazy;
 
-export interface Lazy<PropsDef = PropsDefinition<DefaultProps>> {
-  (asyncFactory: AsyncFactory, props?: PropsDef): ExtendedVue<Vue, {}, {}, {}, PropsDef>;
+export interface Lazy {
+  <PropsDef = PropsDefinition<DefaultProps>>(asyncFactory: AsyncFactory, props?: PropsDef): ExtendedVue<
+    Vue,
+    {},
+    {},
+    {},
+    PropsDef
+  >;
 }
 
 // CreateResource
-export interface ResourceResult<I = any, R = any, E = Error> {
-  read(input?: I): Promise<R>;
+export interface ResourceResult<I extends any[] = any[], R = any, E = Error> {
+  read(...input: I): Promise<R>;
   $result: R;
   $error: E;
   $loading: boolean;
@@ -43,7 +49,7 @@ export interface ResourceResult<I = any, R = any, E = Error> {
   fork(): ResourceResult<I, R, E>;
 }
 
-export interface ResourceOptions<I, R, E> {
+export interface ResourceOptions<I extends any[], R, E> {
   prevent?: boolean;
   onSuccess(result: R): R; // works on the datas need to concat
   onError(err: E): E;
@@ -51,6 +57,10 @@ export interface ResourceOptions<I, R, E> {
 
 export declare const createResource: CreateResource;
 
-export interface CreateResource<I = any, R = any, E = any> {
-  (fetchFactory: AsyncFactory<I, R>, options?: ResourceOptions<I, R, E>): ResourceResult<I, R, E>;
+export interface CreateResource {
+  <I extends any[], R, E = any>(fetchFactory: AsyncFactory<I, R>, options?: ResourceOptions<I, R, E>): ResourceResult<
+    I,
+    R,
+    E
+  >;
 }

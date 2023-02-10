@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "jsx": "preserve",
     "lib": ["ESNext", "DOM"]
   },
   "include": ["./src/**/*.ts", "types"],
