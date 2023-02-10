@@ -1,4 +1,6 @@
-# React Suspense in Vue
+# @vue-async/resource-manager
+
+> React Suspense in Vue
 
 ## 安装
 

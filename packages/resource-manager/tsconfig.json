@@ -2,8 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "skipLibCheck": true,
+    "paths": {
+      "@vue-async/*": ["../../packages/*"]
+    },
     "lib": ["ESNext", "DOM"]
   },
-  "include": ["./src/**/*.ts", "types"],
+  "include": ["./src/**/*.ts"],
   "exclude": ["./test/*", "./esm/*", "./lib/*"]
 }

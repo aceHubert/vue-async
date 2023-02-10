@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": false,
     "lib": ["ESNext", "DOM"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["./test/*", "./esm/*", "./lib/*"]
 }

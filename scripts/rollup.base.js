@@ -119,7 +119,10 @@ export default (filename, targetName, externals = {}) => {
         amd: {
           id: filename,
         },
-        intro: 'var global = this || self; global.globalThis = global;',
+        intro: `(function(){
+          var global = this || self; 
+          global.globalThis = global;
+        })();`,
       },
       external: ['vue'],
       plugins: [...presets(filename, targetName, externals), createEnvPlugin('development'), createLisencePlugin()],
@@ -136,7 +139,10 @@ export default (filename, targetName, externals = {}) => {
         amd: {
           id: filename,
         },
-        intro: 'var global = this || self; global.globalThis = global',
+        intro: `(function(){
+          var global = this || self; 
+          global.globalThis = global;
+        })();`,
       },
       external: ['vue'],
       plugins: [

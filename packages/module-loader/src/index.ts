@@ -1,17 +1,15 @@
-import ModuleLoader from './framework';
-import hook from './ability/hooks';
+import { createInject, globalInject } from './inject';
 
-const install = ModuleLoader.install;
+// inject 重命名(与 vue hook 意义冲突)， 兼容历史版本。
+const hook = globalInject;
 
-ModuleLoader.install = (Vue) => {
-  install.call(ModuleLoader, Vue);
-};
-
-export { hook };
-export default ModuleLoader;
-
-// Auto install if it is not done yet and `window` has `Vue`.
-// To allow users to avoid auto-installation in some cases,
-if (typeof window !== 'undefined' && window.Vue) {
-  window.Vue.use(ModuleLoader);
-}
+export * from './shared';
+export * from './hooks';
+export * from './createLoader';
+export * from './vue2-plugin';
+export * from './version';
+export * from './types';
+export * from './globalExtensions';
+export { setDebug } from './env';
+export { registerSubModules, setModuleLoaderOptions, addErrorHandler, removeErrorHandler } from './register';
+export { createInject, globalInject, hook };

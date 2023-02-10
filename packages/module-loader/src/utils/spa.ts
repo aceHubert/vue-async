@@ -3,6 +3,7 @@
  * fork from https://github.com/kuitos/import-html-entry/blob/master/src/utils.js
  */
 import warning from 'warning';
+import { debug } from '../env';
 
 const isIE11 = typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Trident') !== -1;
 
@@ -66,7 +67,10 @@ function noteGlobalProps(global: WindowProxy) {
 }
 
 /** 加载 entry 脚本 */
+const entryScriptCatch: Record<string, any> = {};
 export function execScript(entry: string, proxy: WindowProxy = window) {
+  if (entryScriptCatch[entry]) return Promise.resolve(entryScriptCatch[entry]); // 从 catch 中获取
+
   return new Promise((resolve, reject) => {
     noteGlobalProps(proxy);
 
@@ -75,10 +79,12 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
     script.onload = () => {
       const propName = getGlobalProp(proxy);
       const exports = propName ? proxy[propName] || {} : {};
+      entryScriptCatch[entry] = exports; // add to catch
       resolve(exports);
     };
     script.onerror = (err) => {
-      warning(process.env.NODE_ENV === 'production', `[moduleLoader] script had a problem to create, entry：${entry}`);
+      warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
+      proxy.document.body.removeChild(script); // remove script
       reject(new Error(`script load error, error: ${err}`));
     };
     proxy.document.body.appendChild(script);
@@ -86,7 +92,7 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
 }
 
 /** 加载 styles */
-export function execStyles(styles: string[], styleFor?: string) {
+export function addStyles(styles: string[], styleFor?: string) {
   if (styles.length) {
     return Promise.all(
       styles.map((href) => {
@@ -104,4 +110,11 @@ export function execStyles(styles: string[], styleFor?: string) {
     );
   }
   return Promise.resolve();
+}
+
+/** 移除 styles */
+export function removeStyles(styleFor: string) {
+  document.querySelectorAll(`link[data-style-for='${styleFor}']`).forEach((style) => {
+    document.getElementsByTagName('head')[0].removeChild(style);
+  });
 }

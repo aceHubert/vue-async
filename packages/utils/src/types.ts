@@ -6,7 +6,7 @@ export function isUndef(v: any): boolean {
   return v === void 0;
 }
 
-export function isArray<T>(x: unknown): x is T[] {
+export function isArray(x: unknown): x is any[] {
   return Array.isArray(x);
 }
 

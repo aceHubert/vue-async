@@ -1,4 +1,5 @@
 import warning from 'warning';
+import { debug } from '../env';
 
 // Types
 import { Context as vmContext } from 'vm';
@@ -50,8 +51,8 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
 
       if (statusCode !== 200) {
         warning(
-          process.env.NODE_ENV === 'production',
-          `[moduleLoader] script had a problem to create, entry：${entry}`,
+          !debug,
+          `[@vue-async/module-loader] script had a problem to create, entry：${entry}`,
         );
         reject(new Error(`script load error, statusCode: ${statusCode}`));
       }
@@ -90,8 +91,8 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
           resolve(exports);
         } catch (err: any) {
           warning(
-            process.env.NODE_ENV === 'production',
-            `[moduleLoader] script had a problem to create, entry：${entry}`,
+            !debug,
+            `[@vue-async/module-loader] script had a problem to create, entry：${entry}`,
           );
           reject(new Error(`script load error, error: ${err.message}`));
         }
@@ -99,7 +100,7 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
     });
 
     request.on('error', (err) => {
-      warning(process.env.NODE_ENV === 'production', `[moduleLoader] http.request error, entry：${entry}`);
+      warning(!debug, `[@vue-async/module-loader] http.request error, entry：${entry}`);
       reject(new Error(`script load error, error: ${err.message}`));
     });
   });
