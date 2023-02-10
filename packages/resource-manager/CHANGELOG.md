@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.15](https://github.com/aceHubert/vue-async/compare/@vue-async/resource-manager@1.0.14...@vue-async/resource-manager@1.0.15) (2023-02-10)
+
+
+### Performance Improvements
+
+* **resources-manager:** ts type update ([76ec862](https://github.com/aceHubert/vue-async/commit/76ec862e3249ff0b6f200b3ef2db5911c153f846))
+
+
+
+
+
 ## [1.0.14](https://github.com/aceHubert/vue-async/compare/@vue-async/resource-manager@1.0.13...@vue-async/resource-manager@1.0.14) (2022-09-06)
 
 
