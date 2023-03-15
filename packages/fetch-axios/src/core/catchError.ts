@@ -9,10 +9,7 @@ import type { CatchErrorOptions } from '../types';
 
 const defaultOptions: CatchErrorOptions = {
   handler: (error: Error) => {
-    warning(
-      !debug,
-      `Error is catched by default handler, Error message: ${error.message}`,
-    );
+    warning(!debug, `Error is catched by default handler, Error message: ${error.message}`);
     return Promise.reject(error);
   },
 };
@@ -20,7 +17,7 @@ const defaultOptions: CatchErrorOptions = {
 const isAxiosError = axios.isAxiosError;
 const isCancelError = axios.isCancel;
 
-function catchErrorHandler(error: Error, config: RequestConfig, handler: CatchErrorOptions['handler']) {
+function catchErrorHandler(error: Error, config: RequestConfig | undefined, handler: CatchErrorOptions['handler']) {
   if (!!config?.catchError) {
     return handler?.(error);
   }
@@ -120,13 +117,13 @@ export function applyCatchError(axiosInstance: AxiosInstance, options: CatchErro
  * @param request request promise
  * @param options catch error options
  */
-export function registCatchError<T = any, R = T, C extends Partial<RequestConfig> = any>(
-  request: (config: C) => FetchPromise<T>,
+export function registCatchError<Request extends (config: any) => FetchPromise<any>>(
+  request: Request,
   options: CatchErrorOptions = {},
-): (config: C) => FetchPromise<R> {
+): (config?: Partial<RequestConfig>) => FetchPromise<any> {
   const curOptions = { ...defaultOptions, ...options };
-  return (config) => {
-    return request(config)
+  return (config) =>
+    request(config)
       .then(async (response) => {
         if (curOptions.serializerData) {
           const data = await promisify(curOptions.serializerData(response.data));
@@ -138,7 +135,6 @@ export function registCatchError<T = any, R = T, C extends Partial<RequestConfig
         // TIP: catch 参捕获到 then 中抛出的异常
         return catchErrorHandler(error, config, curOptions.handler);
       });
-  };
 }
 
 /**

@@ -105,13 +105,13 @@ export function applyLoading(axiosInstance: AxiosInstance, options: LoadingOptio
  * @param request request promise
  * @param options catch error options
  */
-export function registLoading<T = any, C extends Partial<RequestConfig> = any>(
-  request: (config: C) => FetchPromise<T>,
+export function registLoading<Request extends (config: any) => FetchPromise<any>>(
+  request: Request,
   options: LoadingOptions,
-): (config: C) => FetchPromise<T> {
+): (config?: Partial<RequestConfig>) => FetchPromise<any> {
   const curOptions = { ...defaultOptions, ...options };
   return (config) => {
-    const { loading } = config;
+    const loading = config?.loading;
     let delay = curOptions.delay || 0;
     let showLoading = curOptions.handler;
     // 如果有本地设置

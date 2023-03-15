@@ -26,7 +26,7 @@ const isCancelError = axios.isCancel;
 
 function retryHandler(
   error: Error,
-  config: RequestConfig,
+  config: RequestConfig | undefined,
   options: RetryOptions,
   retryRequest: (config: any) => FetchPromise,
 ) {
@@ -114,11 +114,11 @@ export function applyRetry(axiosInstance: AxiosInstance, options: RetryOptions) 
  * @param request request promise
  * @param options catch error options
  */
-export function registRetry<T = any, C extends Partial<RequestConfig> = any>(
-  request: (config: C) => FetchPromise<T>,
+export function registRetry<Request extends (config: any) => FetchPromise<any>>(
+  request: Request,
   options: RetryOptions,
-): (config: C) => FetchPromise<T> {
-  const retryRequest = (config: C) => {
+): (config?: Partial<RequestConfig>) => FetchPromise<any> {
+  const retryRequest = (config?: Partial<RequestConfig>) => {
     const curOptions = { ...defaultOptions, ...options };
     return request(config).catch((error) => {
       return retryHandler(error, config, curOptions, retryRequest);
