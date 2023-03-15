@@ -2,9 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./type-artefacts",
-    "paths": {
-      "@vue-async/*": ["packages/*"]
-    },
     "declaration": true,
     "emitDeclarationOnly": true,
     "sourceMap": false,

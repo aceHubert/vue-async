@@ -3,9 +3,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "skipLibCheck": true,
-    "paths": {
-      "@vue-async/*": ["../../packages/*"]
-    },
     "lib": ["ESNext", "DOM"]
   },
   "include": ["./src/**/*.ts"],
