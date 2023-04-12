@@ -29,6 +29,7 @@ function formatRequestPath(
   keys: Array<string | Function>,
 ): string {
   var result = [strings[0]];
+  // TODO: used params properties should remove form params
   keys.forEach(function (key, i) {
     var value = typeof key === 'function' ? key(params) : params[key];
     result.push(value, strings[i + 1]);
