@@ -7,7 +7,10 @@
     "importHelpers": true,
     "noImplicitAny": false,
     "types": ["webpack-env", "@vue-async/module-loader-typing"],
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "paths": {
+      "@vue-async/module-loader": ["../packages/module-loader/src"]
+    }
   },
   "include": ["src", "types"]
 }

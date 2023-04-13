@@ -34,8 +34,8 @@ export const createResource = <I = any, R = any, E = Error>(
 
   const hasSuspenseInstance = !!fetchFactory.suspenseInstance;
 
-  const resourceResult: ResourceResult<I, R, E> = {
-    read(input?: I) {
+  const resourceResult = {
+    read(...input: any[]) {
       // prevent
       if (options && options.prevent && $res.$$loading) {
         return $res.$$promiser;
@@ -44,7 +44,7 @@ export const createResource = <I = any, R = any, E = Error>(
       $res.$$loading = true;
       // Because we don't need caching, this is just a unique identifier,
       // and each call to .read() is a completely new request.
-      const uniqueWrapFactory = (i?: I) => fetchFactory(i);
+      const uniqueWrapFactory = (...i: any[]) => fetchFactory(...i);
 
       if (hasSuspenseInstance) {
         // Establish a relationship between the fetchFactory and the current component instance
@@ -53,7 +53,7 @@ export const createResource = <I = any, R = any, E = Error>(
       }
 
       // Start fetching asynchronous data
-      const promise = ($res.$$promiser = uniqueWrapFactory(input));
+      const promise = ($res.$$promiser = uniqueWrapFactory(...input));
 
       promise
         .then((res) => {
@@ -100,7 +100,7 @@ export const createResource = <I = any, R = any, E = Error>(
       return $res.$$loaded;
     },
     fork() {
-      return CreateResource((i?: I) => fetchFactory(i), options);
+      return CreateResource((...i: any[]) => fetchFactory(...i), options);
     },
   };
 

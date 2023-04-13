@@ -11,7 +11,7 @@ export default Vue.extend({
     createDataRes() {
       return this.createResource(
         () =>
-          new Promise((resolve) => {
+          new Promise<string>((resolve) => {
             setTimeout(() => {
               resolve('data shows after 3s');
             }, 3000);
@@ -28,7 +28,6 @@ export default Vue.extend({
   render() {
     return (
       <p>
-        {' '}
         {this.dataStr} {this.message ? `(${this.message})` : ''}
       </p>
     );

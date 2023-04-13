@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.1.4...@vue-async/module-loader@3.2.0) (2022-09-06)
+
+
+### Features
+
+* **module-loader:** 子模块通过返回值来注入主程序达到解耦目的 ([b51cf52](https://github.com/aceHubert/vue-async/commit/b51cf52985d3d01787b19410726c0dc9a87f204a))
+
+
+
+
+
 ## [3.1.4](https://github.com/aceHubert/vue-async/compare/@vue-async/module-loader@3.1.3...@vue-async/module-loader@3.1.4) (2022-07-18)
 
 **Note:** Version bump only for package @vue-async/module-loader
