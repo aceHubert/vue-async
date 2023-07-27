@@ -35,6 +35,7 @@ export interface RequestConfig<D = any> {
   headers?: any;
   params?: any;
   data?: D;
+  signal?: AbortSignal;
   // 请求的的数据类型 json / form(x-www-form-urlencoded)
   requestType?: RequestType;
   responseType?: ResponseType;

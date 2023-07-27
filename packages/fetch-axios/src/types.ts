@@ -1,12 +1,5 @@
 import {
   AxiosRequestConfig,
-  AxiosRequestTransformer,
-  AxiosResponseTransformer,
-  AxiosAdapter,
-  AxiosBasicCredentials,
-  AxiosProxyConfig,
-  CancelToken,
-  TransitionalOptions,
 } from 'axios';
 import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
 
@@ -23,29 +16,7 @@ declare module 'axios' {
 }
 
 declare module '@vue-async/fetch/types/types' {
-  export interface RequestConfig {
-    transformRequest?: AxiosRequestTransformer | AxiosRequestTransformer[];
-    transformResponse?: AxiosResponseTransformer | AxiosResponseTransformer[];
-    timeout?: number;
-    timeoutErrorMessage?: string;
-    withCredentials?: boolean;
-    paramsSerializer?: (params: any) => string;
-    adapter?: AxiosAdapter;
-    auth?: AxiosBasicCredentials;
-    xsrfCookieName?: string;
-    xsrfHeaderName?: string;
-    onUploadProgress?: (progressEvent: any) => void;
-    onDownloadProgress?: (progressEvent: any) => void;
-    maxContentLength?: number;
-    maxBodyLength?: number;
-    maxRedirects?: number;
-    socketPath?: string | null;
-    httpAgent?: any;
-    httpsAgent?: any;
-    proxy?: AxiosProxyConfig | false;
-    cancelToken?: CancelToken;
-    decompress?: boolean;
-    transitional?: TransitionalOptions;
+  export interface RequestConfig<D = any> extends AxiosRequestConfig<D> {
   }
 }
 

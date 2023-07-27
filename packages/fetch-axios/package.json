@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/fetch-axios",
-  "version": "0.1.0-alpha.12",
+  "version": "0.1.0",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Axios adapter for Ajax.",
   "main": "lib/index.js",
@@ -32,6 +32,11 @@
     "build:umd": "rollup --config",
     "build:types": "tsc --project tsconfig.types.json",
     "build:copy-dts": "copyfiles -u 1 src/**/*.d.ts types",
+    "release:major": "npm version $(semver $npm_package_version -i major) && yarn build && npm publish --tag latest",
+    "release:minor": "npm version $(semver $npm_package_version -i minor) && yarn build && npm publish --tag latest",
+    "release:patch": "npm version $(semver $npm_package_version -i patch) && yarn build && npm publish --tag latest",
+    "release:alpha": "npm version $(semver $npm_package_version -i prerelease --preid alpha ) && yarn build && npm publish --tag alpha",
+    "release:beta": "npm version $(semver $npm_package_version -i prerelease --preid beta ) && yarn build && npm publish --tag beta",
     "lint": "eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "eslint . --cache --fix --ignore-path=../../.eslintignore"
   },
