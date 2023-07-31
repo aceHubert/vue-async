@@ -3,7 +3,7 @@
  */
 import Vue from 'vue';
 import warning from 'warning';
-import { isPlainObject, isFunction, hasOwn } from '@vue-async/utils';
+import { isPlainObject, isFunction, hasOwn } from '@ace-util/core';
 import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';
 
