@@ -12,14 +12,7 @@ import { DEFAULT_EXTENSIONS } from '@babel/core';
 
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
-const presets = () => {
-  const externals = {
-    vue: 'Vue',
-    '@vue-async/components': 'VueAsync.Components',
-    '@vue-async/module-loader': 'VueAsync.ModuleLoader',
-    '@vue-async/resource-manager': 'VueAsync.ResourceManager',
-    // '@vue-async/utils': 'VueAsync.Utils', // 打包到dist, 并 tree shakeing
-  };
+const presets = (filename, targetName, externals) => {
   return [
     resolve({
       browser: true,
@@ -46,9 +39,19 @@ const presets = () => {
       babelHelpers: 'bundled',
       extensions,
     }),
-    externalGlobals(externals, {
-      exclude: ['**/*.{less,sass,scss}'],
-    }),
+    externalGlobals(
+      {
+        vue: 'Vue',
+        '@vue-async/components': 'VueAsync.Components',
+        '@vue-async/module-loader': 'VueAsync.ModuleLoader',
+        '@vue-async/resource-manager': 'VueAsync.ResourceManager',
+        // '@ace-util/core': 'AceUitl.Core', // 打包到dist, 并 tree shakeing
+        ...externals,
+      },
+      {
+        exclude: ['**/*.{less,sass,scss}'],
+      },
+    ),
   ];
 };
 
@@ -94,7 +97,7 @@ export const removeImportStyleFromInputFilePlugin = () => ({
 /**
  * base rollup config
  */
-export default (filename, targetName) => {
+export default (filename, targetName, externals = {}, sourcemap = true) => {
   function onwarn(warning, warn) {
     // ignoer 'this' rewrite with 'undefined' warn
     if (warning.code === 'THIS_IS_UNDEFINED') return;
@@ -108,13 +111,13 @@ export default (filename, targetName) => {
         format: 'umd',
         file: `dist/${filename}.umd.development.js`,
         name: targetName,
-        sourcemap: true,
+        sourcemap,
         exports: 'named',
         amd: {
           id: filename,
         },
       },
-      plugins: [...presets(), createEnvPlugin('development'), createLisencePlugin()],
+      plugins: [...presets(filename, targetName, externals), createEnvPlugin('development'), createLisencePlugin()],
       onwarn,
     },
     {
@@ -123,13 +126,18 @@ export default (filename, targetName) => {
         format: 'umd',
         file: `dist/${filename}.umd.production.js`,
         name: targetName,
-        sourcemap: true,
+        sourcemap,
         exports: 'named',
         amd: {
           id: filename,
         },
       },
-      plugins: [...presets(), terser(), createEnvPlugin('production'), createLisencePlugin()],
+      plugins: [
+        ...presets(filename, targetName, externals),
+        terser(),
+        createEnvPlugin('production'),
+        createLisencePlugin(),
+      ],
       onwarn,
     },
   ];

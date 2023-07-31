@@ -2,7 +2,7 @@
  * moduleLoader
  */
 import warning from 'warning';
-import { isPlainObject, isArray, isFunction } from '@vue-async/utils';
+import { isPlainObject, isArray, isFunction } from '@ace-util/core';
 import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';
 

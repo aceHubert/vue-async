@@ -1,5 +1,5 @@
 import warning from 'warning';
-import { hasOwn, isObject } from '@vue-async/utils';
+import { hasOwn, isObject } from '@ace-util/core';
 
 // Types
 import { Callback } from 'types/hook';

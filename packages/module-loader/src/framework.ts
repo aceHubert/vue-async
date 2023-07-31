@@ -1,6 +1,6 @@
 import warning from 'warning';
 import { RouteConfig } from 'vue-router';
-import { hasOwn } from '@vue-async/utils';
+import { hasOwn } from '@ace-util/core';
 import { version } from './version';
 import install from './install';
 

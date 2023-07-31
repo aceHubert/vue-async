@@ -44,7 +44,7 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.3.2",
+    "@ace-util/core": "^0.1.0",
     "warning": "^4.0.3"
   },
   "devDependencies": {

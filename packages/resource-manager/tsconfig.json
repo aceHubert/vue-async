@@ -6,5 +6,4 @@
     "lib": ["ESNext", "DOM"]
   },
   "include": ["./src/**/*.ts", "types"],
-  "exclude": ["./test/*", "./esm/*", "./lib/*"]
 }

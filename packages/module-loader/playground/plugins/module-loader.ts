@@ -2,7 +2,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import ModuleLoader, { ModuleConfig, hook } from '@vue-async/module-loader';
-import { isArray } from '@vue-async/utils';
+import { isArray } from '@ace-util/core';
 import { root, megreRoutes, lazyLoadView } from '../router/utils';
 import { store } from '../store';
 
