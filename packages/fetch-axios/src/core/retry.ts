@@ -128,15 +128,11 @@ export function registRetry<Request extends (config: any) => FetchPromise<any>>(
   return retryRequest;
 }
 
-declare module '@vue-async/fetch/types/types' {
+/**
+ * @internal
+ */
+declare module '@vue-async/fetch' {
   export interface RequestConfig {
-    /**
-     * 启用重试，或自定义重试条件
-     */
-    retry?: boolean | RetryOptions;
-    /**
-     * @internal
-     */
     [RetryCountSymbol]?: number;
   }
 }

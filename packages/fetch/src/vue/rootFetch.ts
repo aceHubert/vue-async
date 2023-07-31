@@ -1,6 +1,8 @@
-import { App, getCurrentInstance, InjectionKey, inject } from 'vue-demi';
+import { getCurrentInstance, InjectionKey, inject } from 'vue-demi';
 import { debug } from '../env';
-import { MethodUrl, FetchClient, RegistApi, RegistApiCustomProperties, DefineRegistApiOptionsInPlugin } from '../types';
+
+// Types
+import type { Fetch } from '../types';
 
 /**
  * activeFetch must be called to handle SSR at the top of functions like
@@ -24,71 +26,3 @@ export const setActiveFetch = (fetch: Fetch | undefined) => (activeFetch = fetch
  * Get the currently active fetch if there is any.
  */
 export const getActiveFetch = () => (getCurrentInstance() && inject(fetchSymbol)) || activeFetch;
-
-export interface Fetch {
-  /**
-   * Install fetch plugin
-   */
-  install: (app: App) => void;
-  /**
-   * Current fetch client with `Vue.createFetch()`
-   */
-  client: FetchClient;
-  /**
-   * Add a plugin to use every regist api
-   */
-  use: (plugin: RegistApiPlugin) => Fetch;
-  /**
-   * App linked to this Fetch instance
-   * @internal
-   */
-  _a: App;
-  /**
-   * Installed regist api plugins
-   *
-   * @internal
-   */
-  _p: RegistApiPlugin[];
-  /**
-   * stored regist apis
-   * @internal
-   */
-  _r: Map<string, RegistApi<any>>;
-}
-
-/**
- * Context argument passed to RegistApiPlugins.
- */
-export interface RegisterPluginContext<C extends Record<string, MethodUrl> = any> {
-  /**
-   * Register id
-   */
-  id: string;
-  /**
-   * Fetch
-   */
-  fetch: Fetch;
-  /**
-   * Current app created with `Vue.createApp()`.
-   */
-  app: App;
-  /**
-   * regist apis
-   */
-  registApis: RegistApi<C>;
-  /**
-   * regist api options
-   */
-  options: DefineRegistApiOptionsInPlugin<C>;
-}
-
-/**
- * Plugin to extend every store.
- */
-export interface RegistApiPlugin {
-  /**
-   * Plugin to extend every registApi.
-   * @param context - RegisterPluginContext
-   */
-  (context: RegisterPluginContext): Partial<RegistApiCustomProperties> | void;
-}

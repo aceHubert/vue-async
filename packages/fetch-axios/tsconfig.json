@@ -5,6 +5,5 @@
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"]
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": ["./test/*", "./esm/*", "./lib/*"]
+  "include": ["./src/**/*.ts"]
 }

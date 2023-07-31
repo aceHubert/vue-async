@@ -145,13 +145,3 @@ declare module 'axios' {
     AxiosError: typeof AxiosError;
   }
 }
-
-declare module '@vue-async/fetch/types/types' {
-  export interface RequestConfig {
-    /**
-     * 启用异常全局处理，
-     * 或通过Promise.catch捕获异常
-     */
-    catchError?: boolean;
-  }
-}

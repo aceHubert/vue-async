@@ -13,9 +13,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@vue-async/*": ["../../../packages/*/src"]
     },
-    "types": ["@types/node", "@nuxt/types"]
+    "types": ["@types/node"]
   },
   "exclude": ["node_modules"]
 }

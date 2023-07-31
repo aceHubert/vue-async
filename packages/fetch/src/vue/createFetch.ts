@@ -1,6 +1,8 @@
 import { isVue2, markRaw } from 'vue-demi';
-import { fetchSymbol, setActiveFetch, Fetch, RegistApiPlugin } from './rootFetch';
-import { FetchClient, RegistApi } from '../types';
+import { fetchSymbol, setActiveFetch } from './rootFetch';
+
+// Types
+import { FetchClient, RegistApi, RegistApiPlugin, Fetch } from '../types';
 
 export function createFetch(client: FetchClient): Fetch {
   const _p: Fetch['_p'] = [];

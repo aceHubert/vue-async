@@ -1,4 +1,4 @@
-import { Fetch, RegistApiPlugin } from './vue/rootFetch';
+import type { App } from 'vue-demi';
 
 export type Method =
   | 'get'
@@ -121,6 +121,74 @@ export type TransApiResult<MethodUrl> = MethodUrl extends MethodUrlFn<infer Resu
 export type RegistApi<C extends Record<string, MethodUrl>> = {
   [P in keyof C]: TransApiResult<C[P]>;
 };
+
+export interface Fetch {
+  /**
+   * Install fetch plugin
+   */
+  install: (app: App) => void;
+  /**
+   * Current fetch client with `Vue.createFetch()`
+   */
+  client: FetchClient;
+  /**
+   * Add a plugin to use every regist api
+   */
+  use: (plugin: RegistApiPlugin) => Fetch;
+  /**
+   * App linked to this Fetch instance
+   * @internal
+   */
+  _a: App;
+  /**
+   * Installed regist api plugins
+   *
+   * @internal
+   */
+  _p: RegistApiPlugin[];
+  /**
+   * stored regist apis
+   * @internal
+   */
+  _r: Map<string, RegistApi<any>>;
+}
+
+/**
+ * Context argument passed to RegistApiPlugins.
+ */
+export interface RegisterPluginContext<C extends Record<string, MethodUrl> = any> {
+  /**
+   * Register id
+   */
+  id: string;
+  /**
+   * Fetch
+   */
+  fetch: Fetch;
+  /**
+   * Current app created with `Vue.createApp()`.
+   */
+  app: App;
+  /**
+   * regist apis
+   */
+  registApis: RegistApi<C>;
+  /**
+   * regist api options
+   */
+  options: DefineRegistApiOptionsInPlugin<C>;
+}
+
+/**
+ * Plugin to extend every store.
+ */
+export interface RegistApiPlugin {
+  /**
+   * Plugin to extend every registApi.
+   * @param context - RegisterPluginContext
+   */
+  (context: RegisterPluginContext): Partial<RegistApiCustomProperties> | void;
+}
 
 /**
  *  'defineRegistApi' options

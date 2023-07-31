@@ -1,22 +1,21 @@
-import {
-  AxiosRequestConfig,
-} from 'axios';
-import { RegistApiPlugin } from '@vue-async/fetch/types/vue/rootFetch';
+import { AxiosRequestConfig } from 'axios';
+import { RegistApiPlugin } from '@vue-async/fetch';
 
-/**
- * @internal
- */
-declare module 'axios' {
-  export interface AxiosRequestConfig {
-    /**
-     * From 'registApi' unique id
-     */
-    _registId?: string;
-  }
-}
-
-declare module '@vue-async/fetch/types/types' {
+declare module '@vue-async/fetch' {
   export interface RequestConfig<D = any> extends AxiosRequestConfig<D> {
+    /**
+     * 启用异常全局处理，
+     * 或通过Promise.catch捕获异常
+     */
+    catchError?: boolean;
+    /**
+     * 启用加载，或自定义加载方法
+     */
+    loading?: boolean | LoadingHandler | Required<LoadingOptions>;
+    /**
+     * 启用重试，或自定义重试条件
+     */
+    retry?: boolean | RetryOptions;
   }
 }
 

@@ -81,7 +81,7 @@ export default defineComponent({
         .get('http://localhost:7009/error', {
           catchError: true,
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           alert(`local error handler: ${err.message}`);
         });
     };
@@ -105,7 +105,7 @@ export default defineComponent({
         .get('http://localhost:7009/error', {
           catchError: true,
         })
-        .catch((err) => {
+        .catch((err: Error) => {
           alert(`local error handler: ${err.message}`);
         });
     };

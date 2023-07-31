@@ -1,13 +1,14 @@
 import { getCurrentInstance, inject } from 'vue-demi';
 import { debug } from '../env';
 import { registApi } from '../core';
-import { Fetch, fetchSymbol, setActiveFetch, activeFetch } from './rootFetch';
+import { fetchSymbol, setActiveFetch, activeFetch } from './rootFetch';
 import {
   MethodUrl,
   DefineRegistApiOptions,
   DefineRegistApiOptionsInPlugin,
   RegistApiDefinition,
   RegistApi,
+  Fetch,
 } from '../types';
 
 /**

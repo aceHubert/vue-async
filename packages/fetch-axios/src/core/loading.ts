@@ -145,15 +145,11 @@ export function registLoading<Request extends (config: any) => FetchPromise<any>
   };
 }
 
-declare module '@vue-async/fetch/types/types' {
+/**
+ * @internal
+ */
+declare module '@vue-async/fetch' {
   export interface RequestConfig {
-    /**
-     * 启用加载，或自定义加载方法
-     */
-    loading?: boolean | LoadingHandler | Required<LoadingOptions>;
-    /**
-     * @internal
-     */
     [StopLoadingFnSymbol]?: typeof ResponseFinishedSymbol | ReturnType<LoadingHandler>;
   }
 }
