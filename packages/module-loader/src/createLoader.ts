@@ -1,7 +1,7 @@
 import { isVue2, App, markRaw } from 'vue-demi';
+import { createEventBus } from '@ace-util/core';
 // import { createModuleLoader } from './core/moduleLoader';
 import { createComponentLoader } from './core/componentLoader';
-import { createEventBus } from './core/eventBus';
 import { createInject } from './inject';
 import { InjectSymbol, ComponentLoaderSymbole, EventBusSymbole } from './shared/context';
 import { ModuleLoader } from './types';

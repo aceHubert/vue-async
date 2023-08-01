@@ -14,17 +14,6 @@ import { DEFAULT_EXTENSIONS } from '@babel/core';
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
 
 const presets = (filename, targetName, externals) => {
-  const _externals = {
-    vue: 'Vue',
-    'vue-demi': 'VueDemi',
-    '@vue/composition-api': 'VueCompositionAPI',
-    '@vue-async/components': 'VueAsync.Components',
-    '@vue-async/fetch': 'VueAsync.Fetch',
-    '@vue-async/module-loader': 'VueAsync.ModuleLoader',
-    '@vue-async/resource-manager': 'VueAsync.ResourceManager',
-    // '@vue-async/utils': 'VueAsync.Utils', // 打包到dist, 并 tree shakeing
-    ...externals,
-  };
   return [
     resolve({
       browser: true,
@@ -51,10 +40,19 @@ const presets = (filename, targetName, externals) => {
       babelHelpers: 'bundled',
       extensions,
     }),
-    json(),
-    externalGlobals(_externals, {
-      exclude: ['**/*.{less,sass,scss}'],
-    }),
+    externalGlobals(
+      {
+        vue: 'Vue',
+        '@vue-async/components': 'VueAsync.Components',
+        '@vue-async/module-loader': 'VueAsync.ModuleLoader',
+        '@vue-async/resource-manager': 'VueAsync.ResourceManager',
+        // '@ace-util/core': 'AceUitl.Core', // 打包到dist, 并 tree shakeing
+        ...externals,
+      },
+      {
+        exclude: ['**/*.{less,sass,scss}'],
+      },
+    ),
   ];
 };
 
@@ -100,7 +98,7 @@ export const removeImportStyleFromInputFilePlugin = () => ({
 /**
  * base rollup config
  */
-export default (filename, targetName, externals = {}) => {
+export default (filename, targetName, externals = {}, sourcemap = true) => {
   function onwarn(warning, warn) {
     // ignoer 'this' rewrite with 'undefined' warn
     if (warning.code === 'THIS_IS_UNDEFINED') return;
@@ -114,17 +112,16 @@ export default (filename, targetName, externals = {}) => {
         format: 'umd',
         file: `dist/${filename}.umd.development.js`,
         name: targetName,
-        sourcemap: true,
+        sourcemap,
         exports: 'named',
         amd: {
           id: filename,
         },
         intro: `(function(){
-          var global = this || self; 
+          var global = this || self;
           global.globalThis = global;
         })();`,
       },
-      external: ['vue'],
       plugins: [...presets(filename, targetName, externals), createEnvPlugin('development'), createLisencePlugin()],
       onwarn,
     },
@@ -134,17 +131,16 @@ export default (filename, targetName, externals = {}) => {
         format: 'umd',
         file: `dist/${filename}.umd.production.js`,
         name: targetName,
-        sourcemap: true,
+        sourcemap,
         exports: 'named',
         amd: {
           id: filename,
         },
         intro: `(function(){
-          var global = this || self; 
+          var global = this || self;
           global.globalThis = global;
         })();`,
       },
-      external: ['vue'],
       plugins: [
         ...presets(filename, targetName, externals),
         terser(),

@@ -53,7 +53,7 @@
     "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
     "paths": {
       /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@vue-async/*": ["packages/*/src", "../../packages/*/src"]
     },
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
@@ -75,17 +75,16 @@
   },
   "exclude": [
     "node_modules",
+    "docs",
     "**/*.spec.ts",
     "**/*.spec.js",
-    "**/dist/",
-    "**/__test__",
-    "dist",
-    "lib",
-    "es",
-    "esm",
-    "typings",
-    "test",
-    "docs",
-    "tests"
+    "**/dist",
+    "**/lib",
+    "**/es",
+    "**/esm",
+    "**/typings",
+    "**/test",
+    "**/tests",
+    "**/__test__"
   ]
 }

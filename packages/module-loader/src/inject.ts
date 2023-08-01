@@ -1,4 +1,4 @@
-import { hasOwn } from '@vue-async/utils';
+import { hasOwn } from '@ace-util/core';
 import { Inject } from './core/Inject';
 
 // Types

@@ -1,4 +1,4 @@
-import { isArray, isPlainObject, isFunction, isUndef } from '@vue-async/utils';
+import { isArray, isPlainObject, isFunction, isUndef } from '@ace-util/core';
 import { getLocation, compilePathRegex } from './utils/path';
 
 // Types

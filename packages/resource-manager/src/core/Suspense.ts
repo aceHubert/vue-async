@@ -11,7 +11,7 @@ import {
   PropType,
   VNode,
 } from 'vue-demi';
-import { createEventBus } from '@vue-async/utils';
+import { createEventBus } from '@ace-util/core';
 import { debug } from '../env';
 import { suspenseOptions } from '../register';
 import { COMPONENT_NAME, RESOLVED, REJECTED } from '../shared/context';

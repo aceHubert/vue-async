@@ -1,8 +1,5 @@
-/**
- * componentLoader
- */
 import warning from 'warning';
-import { isPlainObject, hasOwn } from '@vue-async/utils';
+import { isPlainObject, hasOwn } from '@ace-util/core';
 import { debug } from '../env';
 import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';

@@ -1,8 +1,8 @@
 import warning from 'warning';
 import { Vue2 } from 'vue-demi';
+import { createEventBus } from '@ace-util/core';
 import { createModuleLoader } from './core/moduleLoader';
 import { createComponentLoader } from './core/componentLoader';
-import { createEventBus } from './core/eventBus';
 import { debug } from './env';
 import {
   moduleLoaderOptions,

@@ -14,8 +14,8 @@ interface Result<R, E> {
   $$loaded: boolean;
 }
 
-export const createResource = <I = any, R = any, E = Error>(
-  fetchFactory: AsyncFactory<I, R>,
+export default function CreateResource<I extends any[], R, E>(
+  fetchFactory: AsyncFactory,
   options?: ResourceOptions<I, R, E>,
 ): ResourceResult<I, R, E> => {
   const $res = reactive<Result<R, E>>({

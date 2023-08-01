@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue-demi';
+import { createEventBus } from '@ace-util/core';
 import { createComponentLoader } from '../core/componentLoader';
-import { createEventBus } from '../core/eventBus';
 import { debug } from '../env';
 
 // Types

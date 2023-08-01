@@ -1,6 +1,6 @@
 {
   "name": "@vue-async/module-loader",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "author": "Hubert<yi.xiang@live.com>",
   "description": "Module Loader Core.",
   "main": "lib/index.js",
@@ -27,9 +27,8 @@
     "type-sub"
   ],
   "scripts": {
-    "postinstall": "node ./scripts/postinstall.js",
-    "serve:playground": "nuxi dev playground --port 7003",
-    "serve": "concurrently --raw \"tsc --project tsconfig.build.json --module es2015 --declaration --declarationDir types --outDir esm -watch\" \"yarn serve:playground\"",
+    "serve:playground": "nuxt dev playground -p 7001",
+    "serve": "concurrently --raw \"tsc --project tsconfig.build.json --module es2015 --outDir esm -watch\" \"yarn serve:playground\"",
     "prebuild": "node -p \"'export const version: string = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "rimraf -rf lib esm dist type-artefacts && yarn build:cjs && yarn build:esm && yarn build:umd && yarn build:types",
     "build:cjs": "tsc --project tsconfig.build.json",
@@ -55,16 +54,13 @@
     "url": "https://github.com/aceHubert/vus-async/issues"
   },
   "dependencies": {
-    "@vue-async/utils": "^1.3.1",
-    "fs-extra": "^10.0.0",
-    "path-to-regexp": "^6.2.1",
-    "vue-demi": "^*",
-    "vue-frag": "^1.4.0",
+    "@ace-util/core": "^0.1.0",
     "warning": "^4.0.3"
   },
   "devDependencies": {
     "@types/warning": "^3.0.0",
-    "nuxt": "~3.0.0-rc.0"
+    "nuxt": "~3.0.0-rc.0",
+    "vuex": "^3.6.0"
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0",
