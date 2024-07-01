@@ -5,9 +5,7 @@ import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';
 
 // Types
-import { isVue2, Vue2, App } from 'vue-demi';
-// @ts-ignore
-import { Component } from 'vue';
+import { isVue2, Vue2, App, Component } from 'vue-demi';
 import { Context as vmContext } from 'vm';
 
 /** 验证组件导出是否正确 */
@@ -52,7 +50,11 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
  * @param App instance from 'createApp' in Vue3, Vue constructor in Vue2
  */
 export function createComponentLoader(App: App | typeof Vue2) {
-  return function loader<T>(componentName: string, src: string, styles?: string | string[]): Promise<Component> {
+  return function loader<T = any>(
+    componentName: string,
+    src: string,
+    styles?: string | string[],
+  ): Promise<Component<T>> {
     // server render
     // if (Vue.prototype.$isServer) {
     //   const global = ssr.createSandbox();

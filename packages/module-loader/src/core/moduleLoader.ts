@@ -1,19 +1,17 @@
 import warning from 'warning';
-import { isArray, isPlainObject, isFunction } from '@ace-util/core';
+import { isArray, isFunction } from '@ace-util/core';
 import { debug } from '../env';
 import * as spa from '../utils/spa';
 // import * as ssr from '../utils/ssr';
 
 // Types
 import { isVue2, Vue2, App } from 'vue-demi';
-import { Module, ModuleOptions } from 'vuex';
 import { Context as vmContext } from 'vm';
-import { RegisterSubModule } from '../register';
-import { ErrorHandler, FixedRegistrableModule, Lifecycle, Lifecycles, RegisterOptions } from '../types';
-import { Bootstrap, Mount, Unmount } from 'type-sub';
+import { ErrorHandler, InnerRegistrableModule, InnerRegisterSubModule, Lifecycle, RegisterProperties } from '../types';
+import { Bootstrap, Mount, Unmount } from '../sub/types';
 
 type SubModuleExportLifecycles = {
-  bootstrap: Bootstrap;
+  bootstrap?: Bootstrap;
   mount?: Mount;
   unmount?: Unmount;
 };
@@ -34,7 +32,7 @@ function validateExportLifecycle(exports: any) {
   } else {
     // 生命周期
     const { bootstrap, mount, unmount } = exports ?? {};
-    return isFunction(bootstrap) && (!mount || isFunction(mount)) && (!unmount || isFunction(unmount));
+    return (!bootstrap || isFunction(bootstrap)) && (!mount || isFunction(mount)) && (!unmount || isFunction(unmount));
   }
 }
 
@@ -66,7 +64,7 @@ function getLifecyclesFromExports(
 }
 
 /** 执行生命周期函数 */
-function execLifecycle(lifecycles: Lifecycle | Lifecycle[], module: FixedRegistrableModule) {
+function execLifecycle(lifecycles: Lifecycle | Lifecycle[], module: InnerRegistrableModule) {
   if (lifecycles) {
     if (isArray(lifecycles)) {
       return Promise.all(lifecycles.map((lifecycle) => promisify(lifecycle(module))));
@@ -87,17 +85,15 @@ export function createModuleLoader(App: App | typeof Vue2) {
      * @internal
      */
     this: unknown,
-    subModules: RegisterSubModule[],
+    subModules: InnerRegisterSubModule[],
     {
       sync = false,
-      lifecycles = {},
-      errorHanlders = [],
-      register = () => {},
+      errorHandlers = [],
+      register,
     }: {
       sync?: boolean;
-      lifecycles?: Lifecycles;
-      errorHanlders?: ErrorHandler[];
-      register?: (options: RegisterOptions) => void | (() => void);
+      errorHandlers?: ErrorHandler[];
+      register?: (options: RegisterProperties) => void | (() => void);
     },
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -112,46 +108,56 @@ export function createModuleLoader(App: App | typeof Vue2) {
       }
     });
 
-    async function exec(module: RegisterSubModule) {
+    async function exec(module: InnerRegisterSubModule) {
+      const lifecycles = module.lifecycles;
       // functional module
       if (isFunction(module.config)) {
-        // before load lifycycle
-        await execLifecycle(lifecycles.beforeLoad!, module.config);
-        // local module
-        const unmount = await promisify(module.config.call(_self, App));
+        try {
+          // before load lifycycle
+          await execLifecycle(lifecycles.beforeLoad!, module.config);
+          // local functional module
+          const registerProperties = await promisify(module.config.call(_self, App));
+          // exec in unmount
+          let unregister: void | (() => void);
+          // build mount function
+          const execMount = async () => {
+            // before mount lifecycle
+            await execLifecycle(lifecycles.beforeMount!, module.config);
+            // no mount lifecycle
+            warning(!debug, 'functional module has no mount lifecycle and only execute once until app unmount!');
+            // works on exectued functional module result
+            if (registerProperties) {
+              unregister = register?.(registerProperties);
+            }
+            // after mount lifecyle
+            await execLifecycle(lifecycles.afterMount!, module.config);
+          };
 
-        // build mount function
-        const execMount = async () => {
-          // before mount lifecycle
-          await execLifecycle(lifecycles.beforeMount!, module.config);
-          // no mount lifecycle
-          warning(!debug, 'functional module has no mount lifecycle and only execute once until app unmount!');
-          // set activated
-          module.activated = true;
-          // after mount lifecyle
-          await execLifecycle(lifecycles.afterMount!, module.config);
-        };
+          // exec mount
+          await execMount();
 
-        // exec mount
-        await execMount();
+          // build unmount function
+          const execUnmount = async () => {
+            // before unmount lifecycle
+            await execLifecycle(lifecycles.beforeUnmount!, module.config);
+            // no unmount lifecycle
+            warning(!debug, 'functional module has no unmount lifecycle and only execute once until app unmount!');
+            // unregister function result
+            unregister?.();
+            // after unmount lifecycle
+            await execLifecycle(lifecycles.afterUnmount!, module.config);
+          };
 
-        // set warn "unmount" unsupport
-        warning(!unmount, 'Vue2 is not support functional module "unmount" lifecycle');
-
-        // build unmount function
-        const execUnmount = async () => {
-          // before unmount lifecycle
-          await execLifecycle(lifecycles.beforeUnmount!, module.config);
-          // exec unmount
-          await promisify(unmount?.call(_self));
-          // set unactivated
-          module.activated = false;
-          // after unmount lifecycle
-          await execLifecycle(lifecycles.afterUnmount!, module.config);
-        };
-
-        module.mount = execMount;
-        module.unmount = execUnmount;
+          module.mount = execMount;
+          module.unmount = execUnmount;
+        } catch (err: any) {
+          errorHandlers.forEach((handler) => {
+            // 异常不阻止当前执行，error 中处理
+            try {
+              handler(err, module.config);
+            } catch {}
+          });
+        }
       } else {
         // remote module
         const {
@@ -196,9 +202,9 @@ export function createModuleLoader(App: App | typeof Vue2) {
             unmount: exportUnmount,
           } = getLifecyclesFromExports(scriptExports, name, global);
           // bootstrap only exec in the first time
-          await promisify(bootstrap.call(_self, App));
-          // unmount functions
-          let unregister: ReturnType<typeof register>;
+          await promisify(bootstrap?.call(_self, App));
+          // exec in unmount
+          let unregister: void | (() => void);
           // build mount function
           const execMount = async () => {
             // before mount lifecycle
@@ -206,60 +212,10 @@ export function createModuleLoader(App: App | typeof Vue2) {
             // add named styles
             await spa.addStyles(styles, name);
             // exec mount
-            const mountResult = await promisify(exportMount?.call(_self, App, props));
+            const registerProperties = await promisify(exportMount?.call(_self, App, props));
             // works on exectued mount function result
-            if (isArray(mountResult)) {
-              // 注册 routes
-              unregister = register({ routes: mountResult });
-            } else if (isPlainObject(mountResult)) {
-              unregister = register(mountResult);
-              const { routes, stores, injects } = mountResult;
-              // 注册 routes
-              routes?.length && (removeRoutes = addRoutes(routes));
-
-              // 注册 store
-              let storeModulePaths: string[];
-              if ((storeModulePaths = Object.keys(stores || {})) && storeModulePaths.length) {
-                const unregisterStoreMap = storeModulePaths.map((path) => {
-                  const args = stores![path];
-                  return registerStore.apply(null, [path, ...(isArray(args) ? args : [args])] as [
-                    string,
-                    Module<any, any>,
-                    ModuleOptions | undefined,
-                  ]);
-                });
-
-                unregisterStore = () => {
-                  unregisterStoreMap.forEach((fn) => {
-                    isFunction(fn) && fn();
-                  });
-                };
-              }
-
-              // 注册 injects
-              let injectTags: string[];
-              if ((injectTags = Object.keys(injects || {})) && injectTags.length) {
-                const unregisterInjectMap = injectTags.map((tag) => {
-                  const args = injects![tag];
-                  return registerInject.apply(null, [tag, ...(isArray(args) ? args : [args])] as [
-                    string,
-                    Function,
-                    (
-                      | {
-                          priority?: number;
-                          acceptedArgs?: number;
-                        }
-                      | undefined
-                    ),
-                  ]);
-                });
-
-                unregisterInject = () => {
-                  unregisterInjectMap.forEach((fn) => {
-                    isFunction(fn) && fn();
-                  });
-                };
-              }
+            if (registerProperties) {
+              unregister = register?.(registerProperties);
             }
             // set activated
             module.activated = true;
@@ -268,6 +224,10 @@ export function createModuleLoader(App: App | typeof Vue2) {
           };
           // exec mount
           await execMount();
+
+          // set warn "unmount" unsupport
+          warning(!exportUnmount, 'Vue2 is not support "unmount" lifecycle');
+
           // build unmount function
           const execUnmount = async () => {
             // before unmount lifecycle
@@ -276,12 +236,8 @@ export function createModuleLoader(App: App | typeof Vue2) {
             spa.removeStyles(name);
             // exec unmount
             await promisify(exportUnmount?.call(_self, App, props));
-            // 卸载 routes
-            isFunction(removeRoutes) && removeRoutes();
-            // 卸载 store
-            isFunction(unregisterStore) && unregisterStore();
-            // 卸载 inject 注入
-            isFunction(unregisterInject) && unregisterInject();
+            // unregister function result
+            unregister?.();
             // set unactivated
             module.activated = false;
             // after unmount lifecycle
@@ -291,7 +247,7 @@ export function createModuleLoader(App: App | typeof Vue2) {
           module.mount = execMount;
           module.unmount = execUnmount;
         } catch (err: any) {
-          errorHanlders.forEach((handler) => {
+          errorHandlers.forEach((handler) => {
             // 异常不阻止当前执行，error 中处理
             try {
               handler(err, module.config);

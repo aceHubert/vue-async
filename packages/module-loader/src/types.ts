@@ -1,209 +1,199 @@
-import * as VueDemi from 'vue-demi';
-import { RouteRecordRaw } from 'vue-router';
-import { Module, ModuleOptions } from 'vuex';
+import { App, Vue2, Component } from 'vue-demi';
 
-class Helper<Props> {
-  Return = VueDemi.defineComponent({} as { props: Record<keyof Props, any> });
+export interface ModuleLoader {
+  /**
+   * Install ModuleLoader plugin
+   */
+  install: (app: App) => void;
+  /**
+   * Alias of export setModuleLoaderOptions
+   */
+  setOptions: (options: ModuleLoaderOptions) => ModuleLoader;
+  /**
+   * Alias of export addErrorHandler
+   */
+  addErrorHandler: (handler: ErrorHandler) => ModuleLoader;
+  /**
+   * Alias of export removeErrorHandler
+   */
+  removeErrorHandler: (handler: ErrorHandler) => ModuleLoader;
+  /**
+   * App linked to this ModuleLoader instance
+   * @internal
+   */
+  _a: App;
+  /**
+   * ModuleLoader method
+   * @internal
+   */
+  _moduleLoader: (
+    subModules: InnerRegisterSubModule[],
+    options: {
+      sync?: boolean;
+      register?: (options: RegisterProperties) => void | (() => void);
+      errorHandlers?: ErrorHandler[];
+    },
+  ) => void;
+  /**
+   * ComponentLoader method
+   * @internal
+   */
+  _componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
 }
 
-export type DefineComponent<Props> = Helper<Props>['Return'];
-
 /**
- * Inject result
+ * Register options from submodule bootstrap return
  */
-export type InjectResult = {
-  has(functionToCheck?: Function | boolean): Function | boolean;
-  remove(functionToRemove: Function, priority?: number): boolean;
-  removeAll(priority: boolean | number): void;
-  filter<T = unknown, R = T>(value: T, ...args: unknown[]): Promise<R>;
-  exec(...args: unknown[]): Promise<void>;
-};
-
-/**
- * Inject
- */
-export interface InjectFunction {
-  /**
-   * 执行 inject 方法
-   */
-  (tag: string): InjectResult;
-  /**
-   * 注入 inject 方法
-   */
-  (tag: string, functionToAdd: Function, priority?: number, acceptedArgs?: number): void;
-}
-
-export interface RegisterOptions {
-  routes?: RouteRecordRaw[];
-  stores?: Record<string, Module<any, any> | [Module<any, any>, ModuleOptions]>;
-  injects?: Record<
-    string,
-    | Function
-    | [
-        Function,
-        {
-          priority?: number;
-          acceptedArgs?: number;
-        },
-      ]
-  >;
+export interface RegisterProperties {
   [key: string]: any;
 }
 
 /**
  * Main module loader typings
  */
-
 export type ModuleLoaderOptions = {
   /**
-   * 是否同步加载子模块，默认为false
-   * @internal 不使用同步方法了
+   * Use sync mode to load submodules
+   * @default false
    */
   sync?: boolean;
   /**
-   * 模块加载时显示加载中
-   * 返回如果是函数则在执行完成时调用
+   * Loading shown,
+   * return a function to hide loading
    */
   loading?: (lifecycle: 'mount' | 'unmount') => void | (() => void);
   /**
-   * 子应用返回的配置需要注册到主应用上
-   * 返回如果是函数则卸载前调用
+   * Register properties from sub module mount(functional module) return,
+   * unregister in unmount if return a function
    */
-  register?: (options: RegisterOptions) => void | (() => void);
+  register?: (properties: RegisterProperties) => void | (() => void);
 };
 
 /**
- * @deprecated 使用 'ModuleLoaderOptions'
- */
-export type DeprecatedModuleLoaderOptions = {
-  /**
-   * 模块是否按同步方式执行加载
-   */
-  sync?: true;
-  /**
-   * 模块加载前
-   */
-  onLoading?: (name: string) => void | Promise<void>;
-  /**
-   * 模块加载成功
-   */
-  onLoaded?: (name: string) => void | Promise<void>;
-  /**
-   * 模块加载失败
-   */
-  onError?: (name: string, error: Error) => void | Promise<void>;
-  /**
-   * @deprecated 所有模块加载成功时
-   */
-  success?: () => void;
-  /**
-   *  @deprecated 模块加载失败时
-   */
-  error?: (msg: string, module?: any) => void; // every single module loaded error with message, module: formated module config
-};
-
-/**
- * 远程模块配置
+ * Remote module
  */
 export type ModuleRemoteConfig = {
   /**
-   * @deprecated 使用 `name` 字段
-   */
-  moduleName?: string;
-  /**
-   * 模块名（子模块打包时挂载到 global 上的名字）
+   * Module name（Then name of submodule export to global）
    */
   name: string;
   /**
-   * 入口 script 地址
+   * Entry script src
    */
   entry: string;
   /**
-   * 样式文件（例如使用 ExtractTextPlugin 插件将css文件独立找包时）
+   * Style(s)（using ExtractTextPlugin to compile a css file）
    */
   styles?: string | string[];
   /**
-   * 激活子模块条件
+   * Conditions for activating submodules
+   * - string: prefix to match then location.pathname
+   * - function: custom match function
+   * - array: multiple match conditions
+   * - default: will always load in app start
    */
   activeRule?: string | ((location: Location) => boolean) | Array<string | ((location: Location) => boolean)>;
   /**
-   * @deprecated 使用 `props` 字段
-   */
-  args?: Record<string, any>;
-  /**
-   * 参数，用于传递给 mount 和 unmount 生命周期的第2个参数
+   * Props，pass to submodule "mount" and "unmount" lifecycle
    */
   props?: Record<string, any>;
 };
 
 /**
- * 函数模块
- * 方法体相当于 remote module -> bootstrap 生命周期
- * 方法返回相当于 remote module -> unmount 生命周期, 仅在Vue3中生效效
+ * Functional module,
+ * executes when after "beforeLoad" and before "beforeMount" lifecycle
+ * return properties to register same as Mount
  */
 export type FunctionalModule = (
-  App: VueDemi.App | typeof VueDemi.Vue2,
-) => void | (() => void | Promise<void>) | Promise<void | (() => void | Promise<void>)>;
+  App: App | typeof Vue2,
+) => void | RegisterProperties | Promise<void | RegisterProperties>;
 
 /**
- * 注册模块配置
+ * Router Guard
+ */
+export interface Router {
+  beforeEach(guard: (to: any, from: any, next: () => void) => any): unknown;
+  afterEach(guard: (to: any, from: any) => any): unknown;
+}
+
+/**
+ * Registrable module
  */
 export type RegistrableModule =
   | ModuleRemoteConfig
-  | Record<string, string | Omit<ModuleRemoteConfig, 'moduleName' | 'name'>>
+  | Record<string, string | Omit<ModuleRemoteConfig, 'name'>>
   | FunctionalModule;
 
 /**
- * 格式化后的模块配置
+ * Formated config from user registers
  */
-export type FixedRegistrableModule =
-  | (Omit<ModuleRemoteConfig, 'moduleName' | 'args' | 'styles'> & { styles?: string[] })
-  | FunctionalModule;
+export type InnerRegistrableModule = (Omit<ModuleRemoteConfig, 'styles'> & { styles?: string[] }) | FunctionalModule;
 
-export type Lifecycle = (module: FixedRegistrableModule) => void;
+/**
+ * Inner register submodule
+ * @internal
+ */
+export type InnerRegisterSubModule = {
+  /**
+   * 模块原始被格式化后的配置
+   */
+  config: InnerRegistrableModule;
+  /**
+   * 生命周期
+   */
+  lifecycles: {
+    [key in keyof Lifecycles]?: Array<Lifecycle>;
+  };
+  /**
+   * 激活条件
+   */
+  activeRule?: Extract<ModuleRemoteConfig['activeRule'], Function>[];
+  /**
+   * 是否已激活
+   */
+  activated: boolean;
+  /**
+   * 加载script 缓存 mount 函数
+   */
+  mount?: () => Promise<void>;
+  /**
+   * 加载script 缓存 unmount 函数
+   */
+  unmount?: () => Promise<void>;
+};
 
+/**
+ * Lifecycle function
+ */
+export type Lifecycle = (module: InnerRegistrableModule) => void;
+
+/**
+ * Lifecycles
+ */
 export type Lifecycles = {
   /**
-   * 执行子模块 bootstrap 生命周期之前
+   * before bootstrap lifecycle
    */
   beforeLoad?: Lifecycle | Array<Lifecycle>;
   /**
-   * 执行子模块 mount 生命周期之前
+   * before mount lifecycle
    */
   beforeMount?: Lifecycle | Array<Lifecycle>;
   /**
-   * 执行子模块 mount 生命周期之后
+   * after mount lifecycle
    */
   afterMount?: Lifecycle | Array<Lifecycle>;
   /**
-   * 执行子模块 unmount 生命周期之前
+   * before unmount lifecycle
    */
   beforeUnmount?: Lifecycle | Array<Lifecycle>;
   /**
-   * 执行子模块 unmount 生命周期之后
+   * after unmount lifecycle
    */
   afterUnmount?: Lifecycle | Array<Lifecycle>;
 };
 
 /**
- * 异常处理函数
+ * Error handler
  */
-export type ErrorHandler = (error: Error, module: FixedRegistrableModule) => void;
-
-/**
- * Event bus
- */
-export type EventBus = {
-  emit(eventName: string, playload: any): void;
-  on(eventName: string, handler: (playload: any) => void): void;
-  off(eventName: string, handler: (playload: any) => void): void;
-  clear(): void;
-  getEvents(): Record<string, any>;
-};
-
-export interface ModuleLoader {
-  /**
-   * Install fetch plugin
-   */
-  install: (app: VueDemi.App) => void;
-}
+export type ErrorHandler = (error: Error, module: InnerRegistrableModule) => void;

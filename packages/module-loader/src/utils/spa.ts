@@ -76,6 +76,7 @@ export function execScript(entry: string, proxy: WindowProxy = window) {
 
     const script = proxy.document.createElement('script');
     script.src = entry;
+    script.setAttribute;
     script.onload = () => {
       const propName = getGlobalProp(proxy);
       const exports = propName ? proxy[propName] || {} : {};

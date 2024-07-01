@@ -1,81 +1,107 @@
+import { getCurrentInstance, inject, isVue2 } from 'vue-demi';
 import { isArray, isPlainObject, isFunction, isUndef } from '@ace-util/core';
 import { getLocation, compilePathRegex } from './utils/path';
+import { ModuleLoaderVuePlugin } from './vue2-plugin';
+import { debug } from './env';
 
 // Types
-import {
+import type { App, InjectionKey } from 'vue-demi';
+import type {
+  ModuleLoader,
   ModuleLoaderOptions,
   RegistrableModule,
-  FixedRegistrableModule,
+  InnerRegisterSubModule,
+  InnerRegistrableModule,
   ModuleRemoteConfig,
-  Lifecycle,
   Lifecycles,
+  Router,
   ErrorHandler,
 } from './types';
 
-export type RegisterSubModule = {
-  /**
-   * 模块原始被格式化后的配置
-   */
-  config: FixedRegistrableModule;
-  /**
-   * 格式化后的激活条件
-   */
-  activeRule: ((location: Location, base: string) => boolean)[]; // formated active rule
-  /**
-   * 当前激活状态
-   */
-  activated: boolean;
-  /**
-   * 加载script 缓存 mount 函数
-   */
-  mount?: () => Promise<void>;
-  /**
-   * 加载script 缓存 unmount 函数
-   */
-  unmount?: () => Promise<void>;
-};
+/**
+ * activeLoader must be called to handle SSR at the top of functions like
+ * `fetch`, `setup`, `serverPrefetch` and others
+ */
+let activeLoader: ModuleLoader | undefined;
 
+/**
+ * inject key
+ */
+export const ModuleLoaderSymbol: InjectionKey<ModuleLoader> = debug
+  ? Symbol.for('__VUE_ASYNC_MODULE_LOADER__')
+  : Symbol();
+
+/**
+ * Set or unset active fetch, Used in SSR and internally when calling
+ * actions and getters
+ * @param loader ModuleLoader instance
+ */
+export const setActiveLoader = (loader: ModuleLoader | undefined) => (activeLoader = loader);
+
+/**
+ * Get the currently active fetch if there is any.
+ */
+export const getActiveLoader = () => (getCurrentInstance() && inject(ModuleLoaderSymbol)) || activeLoader;
+
+/**
+ * ModuleLoader options
+ */
 export const moduleLoaderOptions: ModuleLoaderOptions = {
   sync: false,
 };
 
+/**
+ * Set ModuleLoader options
+ * @param options Options
+ */
 export function setModuleLoaderOptions(options: ModuleLoaderOptions) {
   Object.assign(moduleLoaderOptions, options);
 }
 
-/** 子模块配置注入 */
-export const subModuleConfigs: RegisterSubModule[] = []; // registered modules
+/**
+ * Error handlers
+ */
+export const errorHandlers: ErrorHandler[] = [];
 
-export const loaderLifecycles: {
-  beforeLoad: Array<Lifecycle>;
-  beforeMount: Array<Lifecycle>;
-  afterMount: Array<Lifecycle>;
-  beforeUnmount: Array<Lifecycle>;
-  afterUnmount: Array<Lifecycle>;
-} = {
-  beforeLoad: [],
-  beforeMount: [],
-  afterMount: [],
-  beforeUnmount: [],
-  afterUnmount: [],
-}; // lifecycles
+/**
+ * Add error handler
+ * @param handler Error handler
+ */
+export function addErrorHandler(handler: ErrorHandler): void {
+  errorHandlers.push(handler);
+}
 
-// 格式化模块配置
-function formatModules(config: RegistrableModule | RegistrableModule[]): FixedRegistrableModule[] {
+/**
+ * Remove error handler
+ * @param handler Error handler
+ */
+export function removeErrorHandler(handler: ErrorHandler): void {
+  let index = -1;
+  if ((index = errorHandlers.findIndex((h) => h === handler)) >= 0) {
+    errorHandlers.splice(index, 1);
+  }
+}
+
+/**
+ * Format module config from user input
+ * @param config user input module config
+ * @returns start loader
+ */
+function formatModules(config: RegistrableModule | RegistrableModule[]): InnerRegistrableModule[] {
   if (isArray(config)) {
-    return config.reduce((prev, curr) => [...prev, ...formatModules(curr)], [] as FixedRegistrableModule[]);
+    return config.reduce((prev, curr) => [...prev, ...formatModules(curr)], [] as InnerRegistrableModule[]);
   } else if (isPlainObject(config)) {
     let configObj = config as Exclude<RegistrableModule, Function>;
     // no lib name, { name: 'module name', entry: 'entry script'}
     if (configObj.entry && typeof configObj.entry === 'string') {
-      const { styles, moduleName, name, args, props, ...rest } = configObj as ModuleRemoteConfig;
+      const { styles, name, props, ...rest } = configObj as ModuleRemoteConfig;
       return [
         {
           ...rest,
-          name: name || moduleName,
+          name,
           styles: styles ? (!Array.isArray(styles) ? [styles] : styles) : [],
-          props: props || args,
-        } as FixedRegistrableModule,
+          props,
+        } as InnerRegistrableModule,
       ];
     } else {
       //{ 'module name': 'entry script' | {entry: 'entry script'}}
@@ -87,12 +113,12 @@ function formatModules(config: RegistrableModule | RegistrableModule[]): FixedRe
             entry: value,
           };
         } else {
-          const { styles, args, props, ...rest } = value;
+          const { styles, props, ...rest } = value;
           return {
             ...rest,
             name,
             styles: styles ? (!Array.isArray(styles) ? [styles] : styles) : [],
-            props: props || args,
+            props,
           };
         }
       });
@@ -102,7 +128,7 @@ function formatModules(config: RegistrableModule | RegistrableModule[]): FixedRe
   } else {
     const err = new Error(`not support "${typeof config}" type module`);
     try {
-      errorHanlders.forEach((hander) => {
+      errorHandlers.forEach((hander) => {
         hander(err, config);
       });
     } catch {}
@@ -110,52 +136,165 @@ function formatModules(config: RegistrableModule | RegistrableModule[]): FixedRe
   }
 }
 
-// 合并lifecycles
-function mergeLifecycles(lifecycles: Lifecycles) {
-  Object.keys(lifecycles).forEach((name) => {
-    const lifecycleFns = lifecycles[name as keyof Lifecycles];
-    let existedLifecycleFns: Lifecycle[];
-    if (lifecycleFns && (existedLifecycleFns = loaderLifecycles[name as keyof Lifecycles])) {
-      existedLifecycleFns.push(...(isArray(lifecycleFns) ? lifecycleFns : [lifecycleFns]));
-    }
-  });
-}
-
 export function registerSubModules(modules: RegistrableModule | RegistrableModule[], lifecycles?: Lifecycles) {
+  const subModuleConfigs: InnerRegisterSubModule[] = [],
+    innerLifecycles: InnerRegisterSubModule['lifecycles'] = {};
+
+  if (lifecycles) {
+    const keys = Object.keys(lifecycles) as (keyof Lifecycles)[];
+    keys.forEach((name) => {
+      name = name as keyof Lifecycles;
+      const lifecycleFns = lifecycles[name];
+      if (lifecycleFns) {
+        if (!innerLifecycles[name]) {
+          innerLifecycles[name] = [];
+        }
+        innerLifecycles[name]!.push(...(isArray(lifecycleFns) ? lifecycleFns : [lifecycleFns]));
+      }
+    });
+  }
+
   formatModules(modules).map((config) => {
-    let activeRule: RegisterSubModule['activeRule'];
-    if (isFunction(config) || isUndef(config.activeRule)) {
-      activeRule = [() => true];
-    } else {
+    let activeRule: InnerRegisterSubModule['activeRule'] = undefined;
+    if (!isFunction(config) && !isUndef(config.activeRule)) {
       const activeRules = isArray(config.activeRule) ? config.activeRule : [config.activeRule!];
       activeRule = activeRules.map((rule) => {
         if (isFunction(rule)) {
           return rule;
         } else {
-          return (location: Location, base = '/') => {
-            const path = getLocation(location, base);
+          return (location: Location) => {
+            const path = getLocation(location);
             const regex = compilePathRegex(rule, {});
             return !!path.match(regex);
           };
         }
       });
     }
-    subModuleConfigs.push({ config, activeRule, activated: false });
+    subModuleConfigs.push({ config, lifecycles: innerLifecycles, activeRule, activated: false });
   });
 
-  lifecycles && mergeLifecycles(lifecycles);
+  // @ts-ignore: works on Vue 3, fails in Vue 2
+  /**
+   * start loader
+   * @param router use vue-router to handle activeRule
+   */
+  return (router?: Router) => {
+    let moduleLoader, app;
+    if (!isVue2) {
+      const activeLoader = getActiveLoader()!;
+      moduleLoader = activeLoader._moduleLoader;
+      app = activeLoader._a;
+    } else {
+      moduleLoader = ModuleLoaderVuePlugin._moduleLoader;
+    }
+    return registerLoader(moduleLoader, subModuleConfigs, router, app);
+  };
 }
 
-/** 异常方法注入 */
-export const errorHanlders: ErrorHandler[] = [];
+export const componentLoader = (componentName: string, path: string, styles?: string | string[]) => {
+  let componentLoader;
+  if (!isVue2) {
+    componentLoader = getActiveLoader()!._componentLoader;
+  } else {
+    componentLoader = ModuleLoaderVuePlugin._componentLoader;
+  }
+  return componentLoader(componentName, path, styles);
+};
 
-export function addErrorHandler(handler: ErrorHandler): void {
-  errorHanlders.push(handler);
-}
+async function registerLoader(
+  moduleLoader: ModuleLoader['_moduleLoader'],
+  subModuleConfigs: InnerRegisterSubModule[],
+  router?: Router,
+  app?: App,
+) {
+  // 加载模块
+  const loader = async (needAcivateSubModules: InnerRegisterSubModule[]) => {
+    // show loading
+    const stopLoading = moduleLoaderOptions.loading?.('mount');
+    // 执行已经加载的模块 mount
+    await Promise.all(needAcivateSubModules.map((module) => module.mount?.()));
+    // 执行未加载的模块
+    await moduleLoader(
+      needAcivateSubModules.filter((module) => !module.mount),
+      {
+        sync: moduleLoaderOptions.sync,
+        register: moduleLoaderOptions.register,
+        errorHandlers,
+      },
+    );
+    // hide loading
+    stopLoading && stopLoading();
+  };
 
-export function removeErrorHandler(handler: ErrorHandler): void {
-  let index = -1;
-  if ((index = errorHanlders.findIndex((h) => h === handler)) >= 0) {
-    errorHanlders.splice(index, 1);
+  // 卸载模块
+  const unloader = async (needUnactivateSubModules: InnerRegisterSubModule[]) => {
+    // show loading
+    const stopLoading = moduleLoaderOptions.loading?.('unmount');
+    // 执行模块 unmount
+    await Promise.all(needUnactivateSubModules.map((module) => module.unmount?.()));
+    // hide loading
+    stopLoading && stopLoading();
+  };
+
+  // 加载未设置 activeRule 的模块
+  await loader(subModuleConfigs.filter(({ activeRule }) => !activeRule));
+
+  // only working in Vue 3
+  if (app) {
+    const originalUnmount = app.unmount;
+    // 注销未设置 activeRule 的模块
+    app.unmount = async function () {
+      await unloader(subModuleConfigs.filter(({ activeRule }) => !activeRule));
+      originalUnmount();
+    };
+  }
+
+  // 按 activeRule 规则加载模块
+  if (router) {
+    // 使用 vue-router
+
+    router.beforeEach(async (to, from, next) => {
+      const needAcivateSubModules = subModuleConfigs.filter(
+        ({ activeRule, activated }) =>
+          activated !== true && activeRule && activeRule.some((rule) => rule(window.location)),
+      );
+
+      if (!needAcivateSubModules.length) return next();
+
+      await loader(needAcivateSubModules);
+
+      next();
+    });
+
+    router.afterEach(async (to, from) => {
+      const needUnactivateSubModules = subModuleConfigs.filter(
+        ({ activeRule, activated, unmount }) =>
+          activated === true && !!unmount && activeRule && !activeRule.some((rule) => rule(window.location)),
+      );
+      if (!needUnactivateSubModules.length) return;
+
+      await unloader(needUnactivateSubModules);
+    });
+  } else if (window.addEventListener) {
+    // 使用 window.location
+    const popStateHandler = async () => {
+      const needAcivateSubModules = subModuleConfigs.filter(
+        ({ activeRule, activated }) =>
+          activated !== true && activeRule && activeRule.some((rule) => rule(window.location)),
+      );
+
+      await loader(needAcivateSubModules);
+    };
+
+    const beforeUnloadListener = async () => {
+      const needUnactivateSubModules = subModuleConfigs.filter(
+        ({ activeRule, activated, unmount }) =>
+          activated === true && !!unmount && activeRule && !activeRule.some((rule) => rule(window.location)),
+      );
+      await unloader(needUnactivateSubModules);
+    };
+
+    window.addEventListener('popstate', popStateHandler);
+    window.addEventListener('beforeunload', beforeUnloadListener);
   }
 }

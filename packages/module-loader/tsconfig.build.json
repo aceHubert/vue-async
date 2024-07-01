@@ -2,6 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./lib",
-    "declaration": false
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "declaration": true,
+    "sourceMap": false,
+    "inlineSources": false,
+    "stripInternal": true
   }
 }

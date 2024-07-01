@@ -1,6 +1,5 @@
-// @ts-ignore: works on Vue 2, fails in Vue 3
-import { Component } from 'vue';
-import { RegistrableModule, DeprecatedModuleLoaderOptions, EventBus } from './types';
+// Types
+import type { Component } from 'vue-demi';
 
 // Extensions of Vue types to be appended manually
 // https://github.com/microsoft/rushstack/issues/2090
@@ -10,23 +9,18 @@ import { RegistrableModule, DeprecatedModuleLoaderOptions, EventBus } from './ty
 declare module 'vue/types/vue' {
   interface Vue {
     /**
-     * @deprecated does not work from now on!
+     * component loader
      */
-    $moduleLoadManager: Record<string, any>;
+    $componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
+  }
+}
+
+// @ts-ignore: works on Vue 3, fails in Vue 2
+declare module '@vue/runtime-core' {
+  export interface ComponentCustomProperties {
     /**
-     * @deprecated does not work from now on!
+     * component loader
      */
-    $moduleLoader: (
-      subModules: RegistrableModule | RegistrableModule[],
-      options: DeprecatedModuleLoaderOptions,
-    ) => void;
-    /**
-     * 动态加载远程组件
-     */
-    $componentLoader: (componentName: string, path: string, styles?: string | string[]) => Promise<Component>;
-    /**
-     * event bus
-     */
-    $eventBus: EventBus;
+    $componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
   }
 }

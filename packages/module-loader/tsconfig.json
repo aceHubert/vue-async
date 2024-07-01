@@ -5,5 +5,5 @@
     "skipLibCheck": true,
     "lib": ["ESNext", "DOM"]
   },
-  "include": ["./src/**/*.ts", "types"]
+  "include": ["./src/**/*.ts"]
 }
