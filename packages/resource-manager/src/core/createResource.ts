@@ -17,7 +17,7 @@ interface Result<R, E> {
 export default function CreateResource<I extends any[], R, E>(
   fetchFactory: AsyncFactory,
   options?: ResourceOptions<I, R, E>,
-): ResourceResult<I, R, E> => {
+): ResourceResult<I, R, E> {
   const $res = reactive<Result<R, E>>({
     // @ts-expect-error will set it later
     $$result: null,
@@ -105,4 +105,4 @@ export default function CreateResource<I extends any[], R, E>(
   };
 
   return resourceResult;
-};
+}
