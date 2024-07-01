@@ -1,4 +1,4 @@
-import { isVue2, defineComponent , DefineComponent} from 'vue-demi';
+import { isVue2, defineComponent, DefineComponent } from 'vue-demi';
 import { Fragment as FragmentV2 } from 'vue-frag';
 
 export const Fragment = '#fragment';
@@ -6,10 +6,10 @@ export const Fragment = '#fragment';
 let FragmentComponent: DefineComponent<{}>;
 
 if (isVue2) {
-  FragmentComponent = ({
+  FragmentComponent = {
     name: 'Fragment',
     ...FragmentV2,
-  } as unknown) as DefineComponent<{}>;
+  } as unknown as DefineComponent<{}>;
 } else {
   /* istanbul ignore next */
   FragmentComponent = defineComponent({

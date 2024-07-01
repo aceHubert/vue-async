@@ -50,10 +50,7 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
       const { statusCode } = res;
 
       if (statusCode !== 200) {
-        warning(
-          !debug,
-          `[@vue-async/module-loader] script had a problem to create, entry：${entry}`,
-        );
+        warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
         reject(new Error(`script load error, statusCode: ${statusCode}`));
       }
       res.setEncoding('utf8');
@@ -90,10 +87,7 @@ export function execScript(entry: string, _proxy: vmContext = { exports: {} }) {
 
           resolve(exports);
         } catch (err: any) {
-          warning(
-            !debug,
-            `[@vue-async/module-loader] script had a problem to create, entry：${entry}`,
-          );
+          warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
           reject(new Error(`script load error, error: ${err.message}`));
         }
       });
