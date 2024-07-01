@@ -2,7 +2,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 const execa = require('execa');
+const childProcess = require('child_process');
+
+const execFileAsync = util.promisify(childProcess.execFile);
 
 async function genNewRelease() {
   const nextVersion = require('../lerna.json').version;
@@ -24,9 +28,18 @@ const gen = (module.exports = async () => {
 });
 
 if (require.main === module) {
-  gen().catch(err => {
-    // eslint-disable-next-line no-console
-    console.error(err);
-    process.exit(1);
-  });
+  gen()
+    .then(() =>
+      execFileAsync('git', ['add', '--', path.resolve(__dirname, '../CHANGELOG.md')], {
+        cwd: process.cwd(),
+        env: process.env,
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      }),
+    )
+    .catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      process.exit(1);
+    });
 }
