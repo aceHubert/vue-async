@@ -43,7 +43,7 @@ const presets = (filename, targetName, externals) => {
     externalGlobals(
       {
         vue: 'Vue',
-        '@vue-async/components': 'VueAsync.Components',
+        'vue-demi': 'VueDemi',
         '@vue-async/module-loader': 'VueAsync.ModuleLoader',
         '@vue-async/resource-manager': 'VueAsync.ResourceManager',
         // '@ace-util/core': 'AceUitl.Core', // 打包到dist, 并 tree shakeing
