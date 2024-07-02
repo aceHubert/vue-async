@@ -8,7 +8,6 @@
     "url": "https://github.com/aceHubert/vue-async.git"
   },
   "scripts": {
-    "postinstall": "vue-demi-fix",
     "serve:mock-data": "nodemon --delay 1 --watch mock-data/apis mock-data/server.js",
     "serve:mock-sub-modules": "cd mock-sub-modules && yarn serve",
     "serve:mock": "concurrently --raw \"yarn serve:mock-data\" \"yarn serve:mock-sub-modules\" ",
@@ -26,7 +25,6 @@
     "changelog": "node ./scripts/genChangelog.js",
     "commit": "git-cz"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.9.0",
     "@babel/core": "^7.9.0",
