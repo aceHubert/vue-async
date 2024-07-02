@@ -8,26 +8,6 @@
   "module": "esm/index.js",
   "unpkg": "dist/index.umd.production.js",
   "jsdelivr": "dist/index.umd.production.js",
-  "exports": {
-    ".": {
-      "import": "./esm/index.js",
-      "require": "./lib/index.js"
-    },
-    "./*": {
-      "import": [
-        "./*",
-        "./esm/*"
-      ],
-      "require": [
-        "./*",
-        "./lib/*"
-      ],
-      "default": {
-        "import": "./esm/*/index.js",
-        "require": "./lib/*/index.js"
-      }
-    }
-  },
   "keywords": [
     "vue",
     "vue-async",
