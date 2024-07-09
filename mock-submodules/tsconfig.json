@@ -1,16 +1,17 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "src",
+    "target": "esnext",
+    "module": "esnext",
+    "baseUrl": ".",
     "outDir": "dist",
     "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
     "importHelpers": true,
     "noImplicitAny": false,
-    "types": ["webpack-env", "@vue-async/module-loader-typing"],
     "jsx": "preserve",
     "paths": {
-      "@vue-async/module-loader": ["../packages/module-loader/src"]
+      "@vue-async/module-loader/esm/*": ["../packages/module-loader/src/*"]
     }
   },
-  "include": ["src", "types"]
+  "include": ["src"]
 }

@@ -1,0 +1,39 @@
+{
+  "name": "@test/sub-modules",
+  "version": "0.1.3",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "serve": "concurrently --raw \"node src/server.js\"  \"yarn build\"",
+    "build": "rimraf dist && concurrently --raw \"yarn build:dymanicRouter\" \"yarn build:componentA\" \"yarn build:componentB\" \"yarn build:sortTest\"",
+    "build:dymanicRouter": "LIB_NAME=dymanicRouter vite build --watch",
+    "build:componentA": "LIB_NAME=componentA vite build --watch",
+    "build:componentB": "LIB_NAME=componentB vite build --watch",
+    "build:sortTest": "LIB_NAME=sortTest vite build --watch"
+  },
+  "dependencies": {
+    "core-js": "^3.6.4",
+    "vue": "^3.0.0",
+    "vue-demi": "*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^5.0.2",
+    "concurrently": "^8.2.2",
+    "eslint-plugin-vue": "^5.0.0",
+    "less": "^3.11.1",
+    "less-loader": "^5.0.0",
+    "lodash.merge": "^4.6.2",
+    "rimraf": "^5.0.7",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
+    "vite": "^5.1.6"
+  },
+  "workspaces": {
+    "nohoist": [
+      "**"
+    ]
+  }
+}

@@ -1,5 +1,5 @@
-import PageA from '../pages/pageA.vue';
-import PageB from '../pages/pageB.vue';
+import PageA from '../pages/pageA';
+import PageB from '../pages/pageB';
 
 export default [
   {
