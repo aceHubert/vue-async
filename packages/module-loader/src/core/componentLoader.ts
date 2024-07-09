@@ -1,12 +1,12 @@
 import warning from 'warning';
 import { isPlainObject, hasOwn } from '@ace-util/core';
 import { debug } from '../env';
-import * as spa from '../utils/spa';
-// import * as ssr from '../utils/ssr';
+import { promisify } from '../utils/promisify';
 
 // Types
 import { isVue2, Vue2, App, Component } from 'vue-demi';
 import { Context as vmContext } from 'vm';
+import { Resolver } from '../types';
 
 /** 验证组件导出是否正确 */
 function validateExportComponent(exports: any) {
@@ -48,18 +48,27 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
 /**
  * create module loader
  * @param App instance from 'createApp' in Vue3, Vue constructor in Vue2
+ * @param resolver resolver
  */
-export function createComponentLoader(App: App | typeof Vue2) {
-  return function loader<T = any>(
+export function createComponentLoader(
+  App: App | typeof Vue2,
+  resolver: {
+    isServer: boolean;
+    browser: (src: string) => Resolver<WindowProxy>;
+    server: (src: string) => Resolver<vmContext>;
+  },
+) {
+  return async function loader<T = any>(
     componentName: string,
     src: string,
     styles?: string | string[],
   ): Promise<Component<T>> {
     // server render
-    // if (Vue.prototype.$isServer) {
+    // if (resolver.isServer) {
     //   const global = ssr.createSandbox();
 
-    //   return ssr.execScript(src, global).then((scriptExports) => {
+    //   const serverResolver = resolver.server(src);
+    //   return resolver.resolver.execScript(src, global).then((scriptExports) => {
     //     return getComponentFromExport(scriptExports, componentName, global);
     //   });
     // } else {
@@ -73,18 +82,18 @@ export function createComponentLoader(App: App | typeof Vue2) {
       global.Vue = App;
     }
 
+    const browserResolver = resolver.browser(src);
     // load styles
     if (styles) {
       if (typeof styles === 'string') {
         styles = [styles];
       }
-      spa.addStyles(styles, componentName);
+      await promisify(browserResolver.addStyles(styles, global));
     }
 
     // exec script
-    return spa.execScript(src, global).then((scriptExports) => {
-      return getComponentFromExport(scriptExports, componentName, global);
-    });
+    const scriptExports = await promisify(browserResolver.execScript<object>(src, global));
+    return getComponentFromExport(scriptExports, componentName, global);
     // }
   };
 }

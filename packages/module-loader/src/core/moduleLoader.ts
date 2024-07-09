@@ -1,13 +1,19 @@
 import warning from 'warning';
 import { isArray, isFunction } from '@ace-util/core';
 import { debug } from '../env';
-import * as spa from '../utils/spa';
-// import * as ssr from '../utils/ssr';
+import { promisify } from '../utils/promisify';
 
 // Types
 import { isVue2, Vue2, App } from 'vue-demi';
 import { Context as vmContext } from 'vm';
-import { ErrorHandler, InnerRegistrableModule, InnerRegisterSubModule, Lifecycle, RegisterProperties } from '../types';
+import {
+  ErrorHandler,
+  InnerRegistrableModule,
+  InnerRegisterSubModule,
+  Lifecycle,
+  RegisterProperties,
+  Resolver,
+} from '../types';
 import { Bootstrap, Mount, Unmount } from '../sub/types';
 
 type SubModuleExportLifecycles = {
@@ -15,13 +21,6 @@ type SubModuleExportLifecycles = {
   mount?: Mount;
   unmount?: Unmount;
 };
-
-function promisify<T>(promise: T | PromiseLike<T>): Promise<T> {
-  if (promise && promise instanceof Promise && typeof promise.then === 'function') {
-    return promise;
-  }
-  return Promise.resolve(promise);
-}
 
 /** 校验子应用导出的 生命周期 对象是否正确 */
 function validateExportLifecycle(exports: any) {
@@ -78,8 +77,16 @@ function execLifecycle(lifecycles: Lifecycle | Lifecycle[], module: InnerRegistr
 /**
  * create module loader
  * @param App instance from 'createApp' in Vue3, Vue constructor in Vue2
+ * @param resolver resolver
  */
-export function createModuleLoader(App: App | typeof Vue2) {
+export function createModuleLoader(
+  App: App | typeof Vue2,
+  resolver: {
+    isServer: boolean;
+    browser: (src: string) => Resolver<WindowProxy>;
+    server: (src: string) => Resolver<vmContext>;
+  },
+) {
   return function loader(
     /**
      * @internal
@@ -164,10 +171,11 @@ export function createModuleLoader(App: App | typeof Vue2) {
           config: { name, entry, styles = [], props = {} },
         } = module;
         // server render
-        // if (Vue.prototype.$isServer) {
+        // if (resolver.isServer) {
         //   const global = ssr.createSandbox();
 
-        //   return ssr
+        //   const serverResolver = resolver.server(entry);
+        //   return resolver.ssr
         //     .execScript(entry, global)
         //     .then((scriptExports: any) => {
         //       const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
@@ -190,11 +198,13 @@ export function createModuleLoader(App: App | typeof Vue2) {
           global.Vue = App;
         }
 
+        const browserResolver = resolver.browser(entry);
+
         try {
           // before load lifycycle
           await execLifecycle(lifecycles.beforeLoad!, module.config);
           // exec script
-          const scriptExports = await spa.execScript(entry, global);
+          const scriptExports = await promisify(browserResolver.execScript(entry, global));
           // get sub module lifecycle functions
           const {
             bootstrap,
@@ -210,7 +220,7 @@ export function createModuleLoader(App: App | typeof Vue2) {
             // before mount lifecycle
             await execLifecycle(lifecycles.beforeMount!, module.config);
             // add named styles
-            await spa.addStyles(styles, name);
+            await promisify(browserResolver.addStyles(styles, global));
             // exec mount
             const registerProperties = await promisify(exportMount?.call(_self, App, props));
             // works on exectued mount function result
@@ -233,7 +243,7 @@ export function createModuleLoader(App: App | typeof Vue2) {
             // before unmount lifecycle
             await execLifecycle(lifecycles.beforeUnmount!, module.config);
             // remove named styles
-            spa.removeStyles(name);
+            await promisify(browserResolver.removeStyles(styles, global));
             // exec unmount
             await promisify(exportUnmount?.call(_self, App, props));
             // unregister function result

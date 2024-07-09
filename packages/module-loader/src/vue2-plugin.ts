@@ -1,21 +1,12 @@
 import { createModuleLoader } from './core/moduleLoader';
 import { createComponentLoader } from './core/componentLoader';
+import { ModuleLoaderSymbol, setActiveLoader } from './register';
 
 // Types
 import type { Vue2 } from 'vue-demi';
+import type { ModuleLoader } from './types';
 
 export class ModuleLoaderVuePlugin {
-  /**
-   * ModuleLoader method
-   * @internal
-   */
-  static _moduleLoader: ReturnType<typeof createModuleLoader>;
-  /**
-   * ComponentLoader method
-   * @internal
-   */
-  static _componentLoader: ReturnType<typeof createComponentLoader>;
-
   static install(Vue: typeof Vue2) {
     // Used to avoid multiple mixins being setup
     // when in dev mode and hot module reload
@@ -24,18 +15,41 @@ export class ModuleLoaderVuePlugin {
     // eslint-disable-next-line @typescript-eslint/camelcase
     Vue.$__module_loader_installed__ = true;
 
-    this._moduleLoader = createModuleLoader(Vue);
-    const componentLoader = (this._componentLoader = createComponentLoader(Vue));
+    // Equivalent of
+    // app.config.globalProperties.$moduleLoader = moduleLoader
+    Vue.mixin({
+      beforeCreate() {
+        const options = this.$options;
+        if (options.moduleLoader) {
+          const loader = options.moduleLoader as ModuleLoader;
+          // HACK: taken from provide(): https://github.com/vuejs/composition-api/blob/main/src/apis/inject.ts#L31
+          if (!(this as any)._provided) {
+            const provideCache = {};
+            Object.defineProperty(this, '_provided', {
+              get: () => provideCache,
+              set: (v) => Object.assign(provideCache, v),
+            });
+          }
+          (this as any)._provided[ModuleLoaderSymbol as any] = loader;
 
-    /**
-     * 注入到 Vue 实例
-     */
-    Object.defineProperties(Vue.prototype, {
-      $componentLoader: {
-        value: componentLoader,
-        writable: false,
-        enumerable: true,
-        configurable: true,
+          // propagate the loader instance in an SSR friendly way
+          // avoid adding it to nuxt twice
+          if (!this.$moduleLoader) {
+            this.$moduleLoader = loader;
+          }
+
+          // this allows calling registerSubModules() outside of a component setup after
+          setActiveLoader(loader);
+
+          const moduleLoader = createModuleLoader(Vue, loader.resolver);
+          const componentLoader = createComponentLoader(Vue, loader.resolver);
+
+          loader._a = this as any;
+          loader._moduleLoader = moduleLoader;
+          loader._componentLoader = componentLoader;
+        } else {
+          this.$moduleLoader = (options.parent && options.parent.$moduleLoader) || this;
+        }
       },
     });
   }
