@@ -1,5 +1,5 @@
 // Types
-import type { Component } from 'vue-demi';
+import type { ModuleLoader } from './types';
 
 // Extensions of Vue types to be appended manually
 // https://github.com/microsoft/rushstack/issues/2090
@@ -9,9 +9,9 @@ import type { Component } from 'vue-demi';
 declare module 'vue/types/vue' {
   interface Vue {
     /**
-     * component loader
+     * module loader instance
      */
-    $componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
+    $moduleLoader: ModuleLoader;
   }
 }
 
@@ -19,8 +19,8 @@ declare module 'vue/types/vue' {
 declare module '@vue/runtime-core' {
   export interface ComponentCustomProperties {
     /**
-     * component loader
+     * module loader instance
      */
-    $componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
+    $moduleLoader: ModuleLoader;
   }
 }

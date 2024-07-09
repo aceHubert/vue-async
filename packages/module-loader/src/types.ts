@@ -1,10 +1,7 @@
-import { App, Vue2, Component } from 'vue-demi';
+import type { App, Vue2, Component } from 'vue-demi';
+import type { Context as vmContext } from 'vm';
 
 export interface ModuleLoader {
-  /**
-   * Install ModuleLoader plugin
-   */
-  install: (app: App) => void;
   /**
    * Alias of export setModuleLoaderOptions
    */
@@ -18,12 +15,20 @@ export interface ModuleLoader {
    */
   removeErrorHandler: (handler: ErrorHandler) => ModuleLoader;
   /**
+   * Resolver
+   */
+  resolver: Readonly<{
+    isServer: boolean;
+    browser: (src: string) => Resolver<WindowProxy>;
+    server: (src: string) => Resolver<vmContext>;
+  }>;
+  /**
    * App linked to this ModuleLoader instance
    * @internal
    */
   _a: App;
   /**
-   * ModuleLoader method
+   * Module loader executor
    * @internal
    */
   _moduleLoader: (
@@ -35,10 +40,14 @@ export interface ModuleLoader {
     },
   ) => void;
   /**
-   * ComponentLoader method
+   * Component loader executor
    * @internal
    */
-  _componentLoader: (componentName: string, src: string, styles?: string | string[]) => Promise<Component>;
+  _componentLoader: <T>(componentName: string, src: string, styles?: string | string[]) => Promise<Component<T>>;
+  /**
+   * Install ModuleLoader plugin
+   */
+  install: (app: App) => void;
 }
 
 /**
@@ -197,3 +206,38 @@ export type Lifecycles = {
  * Error handler
  */
 export type ErrorHandler = (error: Error, module: InnerRegistrableModule) => void;
+
+/**
+ * Loader resolver
+ */
+export interface Resolver<Context = any> {
+  /**
+   * execute script
+   * @param entry remote script src
+   * @param proxy proxy context
+   * @param container container to append script, default is append to body
+   */
+  execScript<R = unknown>(
+    entry: string,
+    proxy: Context,
+    container?: string | ((proxy: Context) => Element),
+  ): R | Promise<R>;
+  /**
+   * add styles
+   * @param styles style href
+   * @param proxy proxy context
+   * @param container container to append script, default is append to body
+   */
+  addStyles(styles: string[], proxy: Context, container?: string | ((proxy: Context) => Element)): void | Promise<void>;
+  /**
+   * remove styles
+   * @param styles style href
+   * @param proxy proxy context
+   * @param container container to append script, default is append to body
+   */
+  removeStyles(
+    styles: string[],
+    proxy: Context,
+    container?: string | ((proxy: Context) => Element),
+  ): void | Promise<void>;
+}

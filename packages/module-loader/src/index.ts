@@ -4,10 +4,5 @@ export * from './version';
 export * from './types';
 export * from './globalExtensions';
 export { setDebug } from './env';
-export {
-  registerSubModules,
-  componentLoader,
-  setModuleLoaderOptions,
-  addErrorHandler,
-  removeErrorHandler,
-} from './register';
+export { registerSubModules, registerComponents } from './register';
+export { defineResolver } from './resolver';
