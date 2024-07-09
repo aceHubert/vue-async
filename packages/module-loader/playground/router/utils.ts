@@ -1,8 +1,8 @@
-import { Component as VueComponent } from 'vue';
-import { RouteConfig } from 'vue-router';
+import { defineComponent, defineAsyncComponent, h, AsyncComponentOptions, Component } from 'vue-demi';
+import { RouteRecordRaw } from 'vue-router';
 
 // 模块中路由配置没有根前缀，用于主程序自定义
-export function root(routes: RouteConfig[]) {
+export function root(routes: RouteRecordRaw[]) {
   return routes.map((route) => {
     route.path = '/' + route.path;
     return route;
@@ -10,10 +10,10 @@ export function root(routes: RouteConfig[]) {
 }
 
 // 合并路由（将新路由配置合并到老路由配置中）
-export const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) => {
-  newRoutes.forEach((current: RouteConfig) => {
+export const megreRoutes = (oldRoutes: RouteRecordRaw[], newRoutes: RouteRecordRaw[]) => {
+  newRoutes.forEach((current: RouteRecordRaw) => {
     const matchRoute = oldRoutes.find(
-      (route: RouteConfig) => (current.name && route.name === current.name) || route.path === current.path,
+      (route: RouteRecordRaw) => (current.name && route.name === current.name) || route.path === current.path,
     );
     if (matchRoute) {
       // 如果找到已在在的
@@ -27,54 +27,57 @@ export const megreRoutes = (oldRoutes: RouteConfig[], newRoutes: RouteConfig[]) 
       }
     } else {
       // 插入到 path:'*'之前
-      const insertIndex = oldRoutes.findIndex((route: RouteConfig) => route.path === '*');
+      const insertIndex = oldRoutes.findIndex((route: RouteRecordRaw) => route.path === '*');
       // 如果没找到
       oldRoutes.splice(insertIndex < 0 ? 0 : insertIndex, 0, current);
     }
   });
 };
 
+const LoadingComponent = defineComponent({
+  render() {
+    return h('h1', {}, 'Loading...');
+  },
+});
+
+const ErrorComponent = defineComponent({
+  render() {
+    return h('h1', { style: 'color:red' }, 'Load component error.');
+  },
+});
+
 // https://github.com/chrisvfritz/vue-enterprise-boilerplate/blob/master/src/router/routes.js#L93-L131
 export function lazyLoadView(
-  asyncView: any,
+  asyncView: () => Promise<Component>,
   {
-    loadingComponent,
-    errorComponent,
+    loadingComponent = LoadingComponent,
+    errorComponent = ErrorComponent,
     delay = 200,
     timeout = 10000,
-  }: {
-    loadingComponent?: VueComponent;
-    errorComponent?: VueComponent;
-    delay?: number;
-    timeout?: number;
-  } = {},
+    suspensible = false,
+    onError,
+  }: Omit<AsyncComponentOptions, 'loader'> = {},
 ) {
-  const AsyncHandler = () => ({
-    component: asyncView,
+  const asyncHander = defineAsyncComponent({
+    loader: asyncView,
     // A component to use while the component is loading.
-    loading: loadingComponent || {
-      render: (h: any) => h('h1', {}, 'Loading...'),
-    },
+    loadingComponent,
     // Delay before showing the loading component.
     // Default: 200 (milliseconds).
     delay,
     // A fallback component in case the timeout is exceeded
     // when loading the component.
-    error: errorComponent || {
-      render: (h: any) => h('h1', {}, 'Load component error.'),
-    },
+    errorComponent,
     // Time before giving up trying to load the component.
     // Default: Infinity (milliseconds).
     timeout,
+    suspensible,
+    onError,
   });
 
-  return Promise.resolve({
-    options: {}, // nuxtjs options.layout error
-    functional: true,
-    render(h: any, { data, children }: any) {
-      // Transparently pass any props or children
-      // to the view component.
-      return h(AsyncHandler, data, children);
+  return defineComponent({
+    setup(props, context) {
+      return () => h(asyncHander, context.attrs, context.slots);
     },
   });
 }
