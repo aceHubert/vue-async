@@ -71,7 +71,7 @@ const scriptsCache = new Map<string, any>();
 const stylesCache = new Map<string, HTMLLinkElement>();
 
 export default defineResolver<WindowProxy>({
-  execScript(entry, proxy, container = 'body') {
+  execScript(entry, proxy, container = (proxy: WindowProxy) => proxy.document.body) {
     if (scriptsCache.has(entry)) return Promise.resolve(scriptsCache.get(entry)); // 从 catch 中获取
 
     const selector = typeof container === 'string' ? proxy.document.querySelector(container) : container(proxy);
@@ -99,11 +99,7 @@ export default defineResolver<WindowProxy>({
       selector!.appendChild(script);
     });
   },
-  async addStyles(
-    styles: string[],
-    proxy,
-    container = (proxy: WindowProxy) => proxy.document.getElementsByTagName('head')[0],
-  ) {
+  async addStyles(styles: string[], proxy, container = (proxy: WindowProxy) => proxy.document.head) {
     if (styles.length) {
       const selector = typeof container === 'string' ? proxy.document.querySelector(container) : container(proxy);
       if (!selector) {
