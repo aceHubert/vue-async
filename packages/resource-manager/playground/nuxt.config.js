@@ -1,17 +1,13 @@
-const path = require('path');
+import { fileURLToPath, URL } from 'node:url';
+import { defineNuxtConfig } from 'nuxt/config';
 
-module.exports = () => {
-  return {
-    ssr: true,
-    vue: {
-      config: {
-        productionTip: false,
-      },
-    },
-    plugins: [{ src: 'plugins/resource-manager' }],
-    buildModules: ['@nuxt/typescript-build'],
-    build: {
-      transpile: ['@vue-async/resource-manager'],
-    },
-  };
-};
+export default defineNuxtConfig({
+  ssr: true,
+  // plugins: [{ src: 'plugins/resource-manager' }],
+  build: {
+    transpile: ['@vue-async/*'],
+  },
+  alias: {
+    '@vue-async/resource-manager': fileURLToPath(new URL('../src', import.meta.url)),
+  },
+});

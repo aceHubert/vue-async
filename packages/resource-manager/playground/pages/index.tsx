@@ -1,47 +1,41 @@
-import Vue from 'vue';
+import { defineComponent } from 'vue-demi';
 import CreateResource from '../components/CreateResource';
 
-const LazyLoad1 = Vue.lazy(() => import('../components/Load1'), { message: { type: String, required: true } });
-const LazyLoad2 = Vue.lazy(() => import('../components/Load2'), { message: { type: String, required: true } });
+export default defineComponent({
+  setup() {
+    const times = ref(0);
 
-export default Vue.extend({
-  data() {
-    return {
-      visible: false,
-    };
-  },
-  methods: {
-    handleVisible(e: any) {
-      this.visible = e.target.checked;
-      Vue.setSuspenseOptions({ mode: this.visible ? 'visible' : 'hidden' });
-      this.$forceUpdate();
-    },
-  },
-  render() {
-    return (
-      <div id="app">
-        <div>
-          <h2>createResource:</h2>
-          {/* @ts-ignore */}
-          <CreateResource message="CreateResource" />
-        </div>
-        <div>
-          <h2>lazy:</h2>
+    onMounted(() => {
+      setInterval(() => {
+        times.value++;
+        if (times.value === 100) {
+          times.value = 0;
+        }
+      }, 1000);
+    });
+
+    return () => {
+      return (
+        <div id="app">
+          <p>(times:{times.value}s)</p>
           <div>
-            <label>
-              <input type="checkbox" onChange={this.handleVisible} />
-              mode: {this.visible ? 'visible' : 'hidden'}
-            </label>
+            <h2>createResource:</h2>
+            <CreateResource message="CreateResource" />
           </div>
-          <suspense>
-            {/* @ts-ignore */}
-            <LazyLoad1 message="Lazy Load 1" />
-            {/* @ts-ignore */}
-            <LazyLoad2 message="Lazy Load 2" />
-            <p slot="fallback">loading...</p>
-          </suspense>
+          <div>
+            <h2>Suspense:</h2>
+            <p>
+              <nuxt-link to={{ name: 'suspense' }}>Suspense</nuxt-link>
+            </p>
+            <p>
+              <nuxt-link to={{ name: 'suspensible' }}>Suspense suspensible</nuxt-link>
+            </p>
+            <p>
+              <nuxt-link to={{ name: 'prevent' }}>Suspense prevent</nuxt-link>
+            </p>
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
   },
 });

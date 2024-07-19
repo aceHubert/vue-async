@@ -1,47 +1,40 @@
-import Vue, { PropType } from 'vue';
+import { defineComponent } from 'vue-demi';
+import { createResource } from '@vue-async/resource-manager';
 
-// Types
-import { ResourceResult } from '@vue-async/resource-manager';
-
-export default Vue.extend({
+export default defineComponent({
   props: {
     message: String as PropType<string>,
   },
-  data(): { $dataRes: ResourceResult<never, string> | null } {
-    return {
-      $dataRes: null,
-    };
-  },
-  methods: {
-    createDataRes() {
-      return this.createResource(
-        () =>
-          new Promise<string>((resolve) => {
-            setTimeout(() => {
-              resolve('data shows after 5s');
-            }, 5000);
-          }),
-      );
-    },
-  },
-  created() {
-    this.$dataRes = this.createDataRes();
-    this.$dataRes.read();
-  },
-  render() {
-    const { $result: dataStr, $loading: dataLoading } = this.$dataRes!;
-
-    return (
-      <div>
-        {dataLoading ? (
-          <p>loading...</p>
-        ) : (
-          <p>
-            {dataStr}
-            {this.message ? `(${this.message})` : ''}
-          </p>
-        )}
-      </div>
+  setup(props) {
+    const $dataRes = createResource(
+      (time: number = 3) =>
+        new Promise<string>((resolve) => {
+          setTimeout(() => {
+            resolve(`data shows after ${time}s`);
+          }, time * 1000);
+        }),
     );
+
+    let time = 3;
+    $dataRes.read(time);
+
+    return () => {
+      const { $result: dataStr, $loading: dataLoading } = $dataRes;
+
+      return (
+        <div>
+          {dataLoading ? (
+            <p>loading...</p>
+          ) : (
+            <p>
+              {props.message ? `${props.message}: ` : ''} {dataStr}
+              <button type="button" style="display:block;" onClick={() => $dataRes.read(++time)}>
+                reload
+              </button>
+            </p>
+          )}
+        </div>
+      );
+    };
   },
 });
