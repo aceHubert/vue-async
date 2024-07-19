@@ -1,4 +1,4 @@
-import { ResourceManager, CreateResource, Lazy } from './types';
+import { createResource } from './core/createResource';
 
 // Extensions of Vue types to be appended manually
 // https://github.com/microsoft/rushstack/issues/2090
@@ -7,17 +7,19 @@ import { ResourceManager, CreateResource, Lazy } from './types';
 // @ts-ignore: works on Vue 2, fails in Vue 3
 declare module 'vue/types/vue' {
   interface Vue {
-    createResource: CreateResource;
-  }
-
-  interface VueConstructor<V extends Vue = Vue> {
-    lazy: Lazy;
+    /**
+     * Create a resource
+     */
+    $createResource: typeof createResource;
   }
 }
 
 // @ts-ignore: works on Vue 3, fails in Vue 2
 declare module '@vue/runtime-core' {
   export interface ComponentCustomProperties {
-    $aresource: ResourceManager;
+    /**
+     * Create a resource
+     */
+    $createResource: typeof createResource;
   }
 }

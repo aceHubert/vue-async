@@ -1,50 +1,50 @@
 import warning from 'warning';
 import { reactive, getCurrentInstance } from 'vue-demi';
 import { del, add } from './Suspense';
-import { currentSuspenseInstance, findSuspenseInstance } from '../shared/suspenseInstance';
+import { findSuspenseInstance } from '../shared/suspenseInstance';
 
 // Types
-import { AsyncFactory, ResourceOptions, ResourceResult } from '../types';
+import type { AsyncFactory, ResourceOptions, ResourceResult } from '../types';
 
 interface Result<R, E> {
-  $$promiser: Promise<R>;
+  $$promiser?: Promise<R>;
   $$result: R;
   $$error: E;
   $$loading: boolean;
   $$loaded: boolean;
 }
 
-export default function CreateResource<I extends any[], R, E>(
-  fetchFactory: AsyncFactory,
-  options?: ResourceOptions<I, R, E>,
+export function createResource<I extends any[] = any[], R = any, E = unknown>(
+  fetchFactory: AsyncFactory<I, R>,
+  options?: ResourceOptions<R, E>,
 ): ResourceResult<I, R, E> {
-  const $res = reactive<Result<R, E>>({
-    // @ts-expect-error will set it later
-    $$result: null,
-    // @ts-expect-error will set it later
-    $$error: null,
+  const $res = reactive<Result<any, any>>({
+    $$result: void 0,
+    $$error: void 0,
     $$loading: false,
     $$loaded: false, // it has loaded data successed once more
   });
 
-  const currInstance = getCurrentInstance();
-  fetchFactory.suspenseInstance = currentSuspenseInstance
-    ? currentSuspenseInstance
-    : findSuspenseInstance(currInstance!.proxy!);
+  let hasSuspenseInstance = false;
 
-  const hasSuspenseInstance = !!fetchFactory.suspenseInstance;
+  // 在组件内部创建, 查找Suspense实例
+  const currInstance = getCurrentInstance();
+  if (options?.suspensible !== false && currInstance?.proxy) {
+    fetchFactory.suspenseInstance = findSuspenseInstance(currInstance.proxy);
+    hasSuspenseInstance = !!fetchFactory.suspenseInstance;
+  }
 
   const resourceResult = {
-    read(...input: any[]) {
+    read(...input: I): Promise<R> {
       // prevent
       if (options && options.prevent && $res.$$loading) {
-        return $res.$$promiser;
+        return $res.$$promiser!;
       }
 
       $res.$$loading = true;
       // Because we don't need caching, this is just a unique identifier,
       // and each call to .read() is a completely new request.
-      const uniqueWrapFactory = (...i: any[]) => fetchFactory(...i);
+      const uniqueWrapFactory: AsyncFactory<I, R> = (...i) => fetchFactory(...i);
 
       if (hasSuspenseInstance) {
         // Establish a relationship between the fetchFactory and the current component instance
@@ -58,7 +58,7 @@ export default function CreateResource<I extends any[], R, E>(
       promise
         .then((res) => {
           // Trigger update
-          $res.$$result = options && options.onSuccess ? options.onSuccess(res) : res;
+          $res.$$result = options?.onSuccess ? options.onSuccess(res) : res;
           if (!$res.$$loaded) {
             $res.$$loaded = true;
           }
@@ -69,7 +69,7 @@ export default function CreateResource<I extends any[], R, E>(
         .catch((err) => {
           warning(process.env.NODE_ENV === 'production', err.message);
 
-          $res.$$error = options && options.onError ? options.onError(err) : err;
+          $res.$$error = options?.onError ? options.onError(err) : err;
 
           if (hasSuspenseInstance) {
             del(uniqueWrapFactory, err);
@@ -100,7 +100,7 @@ export default function CreateResource<I extends any[], R, E>(
       return $res.$$loaded;
     },
     fork() {
-      return CreateResource((...i: any[]) => fetchFactory(...i), options);
+      return createResource((...i: I) => fetchFactory(...i), options);
     },
   };
 

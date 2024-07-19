@@ -1,7 +1,6 @@
 export { setDebug } from './env';
-export { setSuspenseOptions } from './register';
-export { Suspense, lazy, createResource } from './core';
-export * from './createResManager';
+export { createResource, Suspense, setSuspenseOptions } from './core';
+export * from './createManager';
 export * from './types';
 export * from './version';
 export * from './globalExtensions';

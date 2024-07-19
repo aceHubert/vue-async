@@ -6,6 +6,7 @@ export const Fragment = '#fragment';
 let FragmentComponent: DefineComponent<{}>;
 
 if (isVue2) {
+  /* istanbul ignore next */
   FragmentComponent = {
     name: 'Fragment',
     ...FragmentV2,

@@ -1,34 +1,30 @@
 import { Vue2, isVue2 } from 'vue-demi';
-import Suspense from './core/Suspense';
-import lazy from './core/lazy';
-import createResource from './core/createResource';
+import { createResource } from './core/createResource';
+import { Suspense, setSuspenseOptions } from './core/Suspense';
 
-export function ResourceManagerVuePlugin(Vue: typeof Vue2) {
-  Vue.component('Suspense', Suspense);
+import type { SuspenseOptions } from './types';
 
-  Vue.lazy = lazy.bind(null);
+export class ResourceManagerVuePlugin {
+  static install(Vue: typeof Vue2, options: SuspenseOptions = {}) {
+    // Used to avoid multiple mixins being setup
+    // when in dev mode and hot module reload
+    // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
+    if (Vue.$__resource_manager_installed__) return;
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    Vue.$__resource_manager_installed__ = true;
 
-  Object.defineProperties(Vue.prototype, {
-    createResource: {
-      value: createResource.bind(null),
-      writable: false,
-      enumerable: true,
-      configurable: true,
-    },
-  });
+    Vue.component('Suspense', Suspense);
+    setSuspenseOptions(options);
 
-  // Used to avoid multiple mixins being setup
-  // when in dev mode and hot module reload
-  // https://github.com/vuejs/vue/issues/5089#issuecomment-284260111
-  if (Vue.$__resource_manager_installed__) return;
-  // eslint-disable-next-line @typescript-eslint/camelcase
-  Vue.$__resource_manager_installed__ = true;
-
-  // Vue.mixin({
-  //   created() {
-  //     setCurrentInstance(this);
-  //   },
-  // });
+    Object.defineProperties(Vue.prototype, {
+      $createResource: {
+        value: createResource.bind(null),
+        writable: false,
+        enumerable: true,
+        configurable: true,
+      },
+    });
+  }
 }
 
 // Auto install if it is not done yet and `window` has `Vue`.

@@ -5,9 +5,9 @@
 ## 安装
 
 ```bash
-yarn add @vue-async/resource-manager
+yarn add @vue-async/resource-manager@next
 或者
-npm i -S @vue-async/resource-manager
+npm i -S @vue-async/resource-manager@next
 ```
 
 <br>
@@ -15,91 +15,77 @@ npm i -S @vue-async/resource-manager
 ## 使用方法
 
 ```js
-import Vue from 'vue';
-import ResourceManager from '@vue-async/resource-manager';
+import { createResourceManager, ResourceManagerVuePlugin } from '@vue-async/resource-manager';
 
+const resourceManager = createResourceManager();
+
+// in Vue 2
+import Vue from 'vue';
 /*
  * mode
- * `Suspense` 组件显示模式  
- * 可选值：'hidden' | 'visible'  
+ * `Suspense` 组件显示模式
+ * 可选值：'hidden' | 'visible'
  * 默认值：'visible'
  */
-Vue.use(ResourceManager, { mode: 'hidden' });
+Vue.use(ResourceManagerVuePlugin, { mode: 'hidden' });
+
+// in Vue 3
+import { createApp } from 'vue';
+const app = createApp(App);
+app.use(ResourceManagerVuePlugin);
 ```
+
+### createResource
+
+> 创建一个 Resource 对象，返回 `read()`方法以及 `$result`, `$loading`, `$loaded`, `$error` 参数
 
 ```js
-// 父组件
-import Child1 from 'child1'
-import Child2 from 'child2'
+import { createResource } from '@vue-async/resource-manager';
 
-{
-  ...,
-  render(){
-    return <suspense>
-      <Child1/>
-      <Child2/>
-      <div slot="fallback">loading</div>
-    </suspense>
-  }
-}
+const $resource = createResource((time)=>{
+  return new Promise<string>((resolve) => {
+          setTimeout(() => {
+            resolve(`data shows after ${time}s`);
+          }, time * 1000);
+        }),
+});
 
-// 或者
+// exec read
+$resource.read(6)
 
-const Child1 = Vue.lazy(()=>import('child1'))
-const Child2 = Vue.lazy(()=>import('child2'))
-
-{
-  ...,
-  render(){
-    return <suspense>
-      <Child1/>
-      <Child2/>
-      <div slot="fallback">loading</div>
-    </suspense>
-  }
-}
-
-
-// 子组件
-{
-  ...,
-  created(){
-    this.$data = this.createResource((params)=>http.get('...'))
-    this.$data.read({...params})
-  },
-  render(){
-    // 参数是 Vue 响应的
-    const {$result, $loading, $error} = this.$data
-
-    return <div></div>
-  }
-}
+// result
+const { $result, $loading, $loaded, $error } = $resource;
 ```
-<br>
 
-## Vue 上下文注入方法 
-<b>`this.createResource(fetchFactory, options)`</b>  
-创建一个 Resource 对象，返回 `read()`方法以及 `$result`, `$loading`, `$loaded`, `$error` 参数  
-
-`fetchFactory`   
+`fetchFactory`  
 异步 `fetch` 函数
 
 `options`  
 &nbsp;&nbsp;&nbsp; `prevent`  
 &nbsp;&nbsp;&nbsp; type: `Boolean`  
-&nbsp;&nbsp;&nbsp; 在上一次执行未完成时，阻止当前执行  
+&nbsp;&nbsp;&nbsp; default: `false`  
+&nbsp;&nbsp;&nbsp; 在上一次执行未完成时，阻止当前执行。
+<br>
+
+&nbsp;&nbsp;&nbsp; `suspensible`  
+&nbsp;&nbsp;&nbsp; type: `Boolean`  
+&nbsp;&nbsp;&nbsp; type: `true`  
+&nbsp;&nbsp;&nbsp; Suspense 在组件显示 fallback。
+<br>
 
 &nbsp;&nbsp;&nbsp; `onSuccess`  
 &nbsp;&nbsp;&nbsp; type: `Function`  
-&nbsp;&nbsp;&nbsp; `fetchFactory` 执行成功时对返回值的处理函数  
+&nbsp;&nbsp;&nbsp; `fetchFactory` 执行成功时对返回值的处理函数，如下拉继续加载数据时的合并操作。
+<br>
 
 &nbsp;&nbsp;&nbsp; `onError`  
 &nbsp;&nbsp;&nbsp; type: `Function`  
-&nbsp;&nbsp;&nbsp; `fetchFactory` 执行异常时对错误的处理函数  
+&nbsp;&nbsp;&nbsp; `fetchFactory` 执行异常时对错误的处理函数，如记录错误日志。
 <br>
+
 `Returns`  
 &nbsp;&nbsp;&nbsp; `read(input)`  
-&nbsp;&nbsp;&nbsp; 执行`fetchFactory`, `input`参数将会传给`fetchFactory`  
+&nbsp;&nbsp;&nbsp; 执行`fetchFactory`, `input`参数将会传给`fetchFactory`
 
 &nbsp;&nbsp;&nbsp; 以下参数都已经支持 Vue 响应  
 &nbsp;&nbsp;&nbsp; `$result`：`fetchFactory` resolved 的值  
@@ -109,21 +95,96 @@ const Child2 = Vue.lazy(()=>import('child2'))
 
 <br/>
 
-## Vue 对象上注入方法
-<b>`Vue.lazy(asyncFactory, propsDef)`</b>  
-加载异步组件，可参考`React.lazy()`说明  
-区别于 Vue 的异步组件在于当使用在 `Suspense` 中时，异步组件的加载过程也会被计算
+### Suspense
 
-<b>`Vue.setSuspenseOptions(options)`</b>  
-修改 `Suspense` 的参数, `options` 同 Vue.use 时设置的参数一致  
+> 处理异步组件和 createResource 中`fetchFactory`加载过程。
 
+```js
+// 建议Vue3中使用官方提供的`Suspense`组件。
+import { Suspense, setSuspenseOptions } from '@vue-async/resource-manager';
+
+// ChildComponent
+export default defineComponent({
+  props: ['message'],
+  setup(props) {
+    const $dataRes = createResource(
+      (time = 3) =>
+        new Promise<string>((resolve) => {
+          setTimeout(() => {
+            resolve(`data shows after ${time}s`);
+          }, time * 1000);
+        }),
+      { suspensible: false },
+    );
+
+    $dataRes.read(6);
+
+    return () => {
+      const { $result: dataStr } = $dataRes;
+
+      return (
+        <p>
+          {props.message ? `${props.message}: ` : ''} {dataStr}
+        </p>
+      );
+    };
+  },
+});
+
+// ParentComponent
+export default defineComponent({
+  setup() {
+    const $dataRes = createResource(
+      (time = 3) =>
+        new Promise<string>((resolve) => {
+          setTimeout(() => {
+            resolve(`data shows after ${time}s`);
+          }, time * 1000);
+        }),
+    );
+
+    $dataRes.read(6);
+
+    setSuspenseOptions({ mode: 'hidden' });
+
+    return () => (
+      <Suspense>{{
+        default: () => <ChildComponent message="data" />,
+        fallback: ()=> <p>loading...</p>
+        }}
+      </Suspense>
+    );
+  },
+});
+
+```
+
+`props`  
+&nbsp;&nbsp;&nbsp; `timeout`  
+&nbsp;&nbsp;&nbsp; type: `Number`  
+&nbsp;&nbsp;&nbsp; default: `-`  
+&nbsp;&nbsp;&nbsp; 显示 fallback 延时时间。
+<br>
 <br>
 
-## Vue 注册的组件
-`Suspense`  
-处理异步组件和createResource中`fetchFactory`加载过程
+`events`  
+&nbsp;&nbsp;&nbsp; `resolve`  
+&nbsp;&nbsp;&nbsp; 当所有子组件中 `createResource` fetchFactory 执行完成时触发。
+<br>
 
-&nbsp;&nbsp;&nbsp; `slot`:  
+&nbsp;&nbsp;&nbsp; `pending`  
+&nbsp;&nbsp;&nbsp; 当 `Suspense` 处于等待时触发。
+<br>
+
 &nbsp;&nbsp;&nbsp; `fallback`  
-&nbsp;&nbsp;&nbsp; 在加载过程中显示的组件，通常是显示一个 `loading` 组件  
-  
+&nbsp;&nbsp;&nbsp; 当 `fallback` 显示时触发。
+<br>
+<br>
+
+`slot`  
+&nbsp;&nbsp;&nbsp; `fallback`  
+&nbsp;&nbsp;&nbsp; 在加载过程中显示的组件，通常是显示一个 `loading` 组件。
+<br>
+
+&nbsp;&nbsp;&nbsp; `error`  
+&nbsp;&nbsp;&nbsp; 在 fetchFactory 执行错误时显示的组件。
