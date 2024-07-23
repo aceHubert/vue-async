@@ -132,10 +132,16 @@ export const Suspense = defineComponent({
     });
 
     function createWrapper(children: any): VNode {
+      if (typeof children !== 'function') {
+        children = () => children;
+      }
       return _h(Fragment, children);
     }
 
     function createHiddenWrapper(children: any, display: boolean): VNode {
+      if (typeof children !== 'function') {
+        children = () => children;
+      }
       return _h(
         suspenseOptions.hiddleWrapperTag,
         {
