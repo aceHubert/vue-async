@@ -1,5 +1,5 @@
 import warning from 'warning';
-import { defineComponent, getCurrentInstance, ref, onMounted, h as _h, createCommentVNode, onUpdated } from 'vue-demi';
+import { isVue2, defineComponent, getCurrentInstance, ref, onMounted, onUpdated, h } from 'vue-demi';
 import { debug } from '../env';
 import { COMPONENT_NAME } from '../shared/context';
 import { pushSuspenseInstance, popSuspenseInstance } from '../shared/suspenseInstance';
@@ -131,52 +131,60 @@ export const Suspense = defineComponent({
       popSuspenseInstance();
     });
 
-    function createWrapper(children: any): VNode {
-      if (typeof children !== 'function') {
-        children = () => children;
-      }
-      return _h(Fragment, children);
-    }
-
-    function createHiddenWrapper(children: any, display: boolean): VNode {
-      if (typeof children !== 'function') {
-        children = () => children;
-      }
-      return _h(
-        suspenseOptions.hiddleWrapperTag,
-        {
-          style: { display: display ? 'block' : 'none' },
-          class: { 'suspense-hidden-wrapper': true },
-        },
-        children,
-      );
-    }
-
-    return () => {
-      const isVisible = suspenseOptions.mode === 'visible';
-      const fallback = displayFallback.value
-        ? slots.fallback?.() || (debug ? [createCommentVNode('no fallback')] : [])
-        : [];
-      // The `children` is the real content to be rendered
-      const children = slots.default?.() || (debug ? [createCommentVNode('no default slot')] : []);
-
-      let rendered;
-      if (rejected.value && slots.error) {
-        rendered = createWrapper(slots.error);
-      } else {
-        rendered = isVisible
-          ? createWrapper(resolved.value ? children : children.concat(fallback))
-          : createWrapper([
-              // We need to render the children, but we should not show the rendered content.
-              createHiddenWrapper(children, resolved.value),
-              fallback,
-            ]);
-      }
-
-      return rendered;
+    return {
+      resolved,
+      rejected,
+      displayFallback,
+      createWrapper,
+      createHiddenWrapper,
     };
   },
+  render() {
+    const isVisible = suspenseOptions.mode === 'visible';
+    // @ts-expect-error type error
+    // FIXME: warn in Vue 3 because of import problem
+    const emptyNode = isVue2 ? this._e('suspense') : h(null, 'suspense');
+    const fallback = this.displayFallback ? this.$slots.fallback?.() || (debug ? [emptyNode] : []) : [];
+    // The `children` is the real content to be rendered
+    const children = this.$slots.default?.() || (debug ? [emptyNode] : []);
+
+    let rendered;
+    if (this.rejected && this.$slots.error) {
+      rendered = createWrapper(this.$slots.error);
+    } else {
+      rendered = isVisible
+        ? createWrapper(this.resolved ? children : children.concat(fallback))
+        : createWrapper([
+            // We need to render the children, but we should not show the rendered content.
+            createHiddenWrapper(children, this.resolved),
+            fallback,
+          ]);
+    }
+
+    return rendered;
+  },
 });
+
+function createWrapper(children: any): VNode {
+  if (!isVue2 && typeof children !== 'function') {
+    children = () => children;
+  }
+  return h(Fragment, children);
+}
+
+function createHiddenWrapper(children: any, display: boolean): VNode {
+  if (!isVue2 && typeof children !== 'function') {
+    children = () => children;
+  }
+  return h(
+    suspenseOptions.hiddleWrapperTag,
+    {
+      style: { display: display ? 'block' : 'none' },
+      class: { 'suspense-hidden-wrapper': true },
+    },
+    children,
+  );
+}
 
 /**
  * @internal
