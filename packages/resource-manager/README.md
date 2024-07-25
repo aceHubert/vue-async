@@ -1,18 +1,18 @@
-# @vue-async/resource-manager
+# Resource Manager
 
-> React Suspense in Vue
+> Resource Manager for Vue3
 
-## 安装
+## Install
 
 ```bash
 yarn add @vue-async/resource-manager@next
-或者
+or
 npm i -S @vue-async/resource-manager@next
 ```
 
 <br>
 
-## 使用方法
+## Usage
 
 ```js
 import { createResourceManager, ResourceManagerVuePlugin } from '@vue-async/resource-manager';
@@ -23,9 +23,9 @@ const resourceManager = createResourceManager();
 import Vue from 'vue';
 /*
  * mode
- * `Suspense` 组件显示模式
- * 可选值：'hidden' | 'visible'
- * 默认值：'visible'
+ * Suspense Component display mode
+ * Options：'hidden' | 'visible'
+ * Default：'visible'
  */
 Vue.use(ResourceManagerVuePlugin, { mode: 'hidden' });
 
@@ -37,7 +37,7 @@ app.use(ResourceManagerVuePlugin);
 
 ### createResource
 
-> 创建一个 Resource 对象，返回 `read()`方法以及 `$result`, `$loading`, `$loaded`, `$error` 参数
+> Create a `Resource`，return `read()` method and `$result`, `$loading`, `$loaded`, `$error` status.
 
 ```js
 import { createResource } from '@vue-async/resource-manager';
@@ -57,51 +57,36 @@ $resource.read(6)
 const { $result, $loading, $loaded, $error } = $resource;
 ```
 
-`fetchFactory`  
-异步 `fetch` 函数
+`options`
 
-`options`  
-&nbsp;&nbsp;&nbsp; `prevent`  
-&nbsp;&nbsp;&nbsp; type: `Boolean`  
-&nbsp;&nbsp;&nbsp; default: `false`  
-&nbsp;&nbsp;&nbsp; 在上一次执行未完成时，阻止当前执行。
+| Prop          | Type       | Default | Required | Description                                                       |
+| ------------- | ---------- | ------- | -------- | ----------------------------------------------------------------- |
+| `prevent`     | `Boolean`  | `false` | `false`  | Return lastest uncomplete `fetchFactory` and stop current request |
+| `suspensible` | `Boolean`  | `true`  | `false`  | Show status in Suspense component                                 |
+| `onSuccess`   | `Function` | `-`     | `false`  | Success callback function                                         |
+| `onError`     | `Function` | `-`     | `false`  | Error callback function                                           |
+
 <br>
 
-&nbsp;&nbsp;&nbsp; `suspensible`  
-&nbsp;&nbsp;&nbsp; type: `Boolean`  
-&nbsp;&nbsp;&nbsp; type: `true`  
-&nbsp;&nbsp;&nbsp; Suspense 在组件显示 fallback。
-<br>
+`Return`
+| Prop | Description |
+| ---------- | ---------------------------------------------- |
+| `read` | execute `fetchFactory` |
+| `$result` | `fetchFactory` resolved value |
+| `$loading` | `fetchFactory` is executing |
+| `$loaded` | `fetchFactory` has been executed at least once |
+| `$error` | `fetchFactory` rejected |
 
-&nbsp;&nbsp;&nbsp; `onSuccess`  
-&nbsp;&nbsp;&nbsp; type: `Function`  
-&nbsp;&nbsp;&nbsp; `fetchFactory` 执行成功时对返回值的处理函数，如下拉继续加载数据时的合并操作。
-<br>
-
-&nbsp;&nbsp;&nbsp; `onError`  
-&nbsp;&nbsp;&nbsp; type: `Function`  
-&nbsp;&nbsp;&nbsp; `fetchFactory` 执行异常时对错误的处理函数，如记录错误日志。
-<br>
-
-`Returns`  
-&nbsp;&nbsp;&nbsp; `read(input)`  
-&nbsp;&nbsp;&nbsp; 执行`fetchFactory`, `input`参数将会传给`fetchFactory`
-
-&nbsp;&nbsp;&nbsp; 以下参数都已经支持 Vue 响应  
-&nbsp;&nbsp;&nbsp; `$result`：`fetchFactory` resolved 的值  
-&nbsp;&nbsp;&nbsp; `$loading`：`fetchFactory` 在执行中  
-&nbsp;&nbsp;&nbsp; `$loaded`：`fetchFactory` 已经被执行过至少一次  
-&nbsp;&nbsp;&nbsp; `$error`：`fetchFactory` 执行错误
-
+<br/>
 <br/>
 
 ### Suspense
 
-> 处理异步组件和 createResource 中`fetchFactory`加载过程。
+> Shown createResource `fetchFactory` status
 
 ```js
 // 建议Vue3中使用官方提供的`Suspense`组件。
-import { Suspense, setSuspenseOptions } from '@vue-async/resource-manager';
+import { Suspense } from '@vue-async/resource-manager';
 
 // ChildComponent
 export default defineComponent({
@@ -145,8 +130,6 @@ export default defineComponent({
 
     $dataRes.read(6);
 
-    setSuspenseOptions({ mode: 'hidden' });
-
     return () => (
       <Suspense>{{
         default: () => <ChildComponent message="data" />,
@@ -159,32 +142,24 @@ export default defineComponent({
 
 ```
 
-`props`  
-&nbsp;&nbsp;&nbsp; `timeout`  
-&nbsp;&nbsp;&nbsp; type: `Number`  
-&nbsp;&nbsp;&nbsp; default: `-`  
-&nbsp;&nbsp;&nbsp; 显示 fallback 延时时间。
-<br>
-<br>
+`props`
+| Prop | Type | Default | Requried | Description |
+| ---- | ---- | ------- | -------- | ----------- |
+| `timeout` | `Number` | `-` | `false` | Show fallback delay time |
 
-`events`  
-&nbsp;&nbsp;&nbsp; `resolve`  
-&nbsp;&nbsp;&nbsp; 当所有子组件中 `createResource` fetchFactory 执行完成时触发。
-<br>
+<br/>
 
-&nbsp;&nbsp;&nbsp; `pending`  
-&nbsp;&nbsp;&nbsp; 当 `Suspense` 处于等待时触发。
-<br>
+`events`
+| Prop | Description |
+| ---- | ----------- |
+| `resolve` | When all `createResource` fetchFactory executed |
+| `pending` | When `Suspense` is waiting |
+| `fallback` | When `fallback` is showing |
 
-&nbsp;&nbsp;&nbsp; `fallback`  
-&nbsp;&nbsp;&nbsp; 当 `fallback` 显示时触发。
-<br>
-<br>
+<br/>
 
-`slot`  
-&nbsp;&nbsp;&nbsp; `fallback`  
-&nbsp;&nbsp;&nbsp; 在加载过程中显示的组件，通常是显示一个 `loading` 组件。
-<br>
-
-&nbsp;&nbsp;&nbsp; `error`  
-&nbsp;&nbsp;&nbsp; 在 fetchFactory 执行错误时显示的组件。
+`slot`
+| Prop | Description |
+| ---- | ----------- |
+| `fallback` | `Suspense` fallback content |
+| `error` | `Suspense` error content |
