@@ -16,7 +16,7 @@
     "prepublishOnly": "yarn install --mode=skip-build && yarn changelog && yarn build && yarn test",
     "release": "lerna publish",
     "release:next": "lerna publish --canary major --dist-tag next",
-    "release:git": "lerna publish form-git",
+    "release:git": "lerna publish from-git",
     "release:package": "lerna publish from-package",
     "clean": "lerna clean --yes",
     "lint": "lerna run lint --parallel --stream",
