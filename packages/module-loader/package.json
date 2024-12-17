@@ -8,6 +8,30 @@
   "module": "esm/index.js",
   "unpkg": "dist/index.umd.production.js",
   "jsdelivr": "dist/index.umd.production.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
+    },
+    "./sub": {
+      "import": "./esm/sub/index.js",
+      "require": "./lib//sub/index.js"
+    },
+    "./*": {
+      "import": [
+        "./*",
+        "./esm/*"
+      ],
+      "require": [
+        "./*",
+        "./lib/*"
+      ],
+      "default": {
+        "import": "./esm/*/index.js",
+        "require": "./lib/*/index.js"
+      }
+    }
+  },
   "keywords": [
     "vue",
     "vue-async",
@@ -20,7 +44,7 @@
     "dist",
     "lib",
     "esm",
-    "sub"
+    "types"
   ],
   "scripts": {
     "serve": "nuxt dev playground -p 7001",
@@ -29,7 +53,6 @@
     "build:cjs": "run -T tsc --project tsconfig.build.json",
     "build:esm": "run -T tsc --project tsconfig.build.json --module es2015 --outDir esm",
     "build:umd": "run -T rollup --config",
-    "build:sub": "run -T tsc --project tsconfig.sub.json",
     "lint": "run -T eslint . --cache --report-unused-disable-directives --ignore-path=../../.eslintignore",
     "lint:fix": "run -T eslint . --cache --fix --ignore-path=../../.eslintignore"
   },
