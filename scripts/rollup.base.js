@@ -3,12 +3,12 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 // import typescript from 'rollup-plugin-typescript2';
+import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
 import externalGlobals from 'rollup-plugin-external-globals';
 import injectProcessEnv from 'rollup-plugin-inject-process-env';
 import dts from 'rollup-plugin-dts';
 import lisence from 'rollup-plugin-license';
-import { terser } from 'rollup-plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 
 const extensions = [...DEFAULT_EXTENSIONS, '.ts', '.tsx'];
@@ -40,6 +40,7 @@ const presets = (filename, targetName, externals) => {
       babelHelpers: 'bundled',
       extensions,
     }),
+    json(),
     externalGlobals(
       {
         vue: 'Vue',
