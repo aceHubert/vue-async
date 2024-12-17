@@ -4,15 +4,14 @@ import { debug } from '../env';
 import { promisify } from '../utils/promisify';
 
 // Types
-import { isVue2, Vue2, App } from 'vue-demi';
-import { Context as vmContext } from 'vm';
+import { Vue2, App } from 'vue-demi';
 import {
   ErrorHandler,
   InnerRegistrableModule,
   InnerRegisterSubModule,
   Lifecycle,
   RegisterProperties,
-  Resolver,
+  ModuleLoader,
 } from '../types';
 import { Bootstrap, Mount, Unmount } from '../sub/types';
 
@@ -36,11 +35,7 @@ function validateExportLifecycle(exports: any) {
 }
 
 /** 获取生命周期对象 */
-function getLifecyclesFromExports(
-  scriptExports: any,
-  name: string,
-  global: WindowProxy | vmContext,
-): SubModuleExportLifecycles {
+function getLifecyclesFromExports(scriptExports: any, name: string, global: any): SubModuleExportLifecycles {
   if (validateExportLifecycle(scriptExports)) {
     const _export = (scriptExports && scriptExports.default) || scriptExports;
     return isFunction(_export) ? { bootstrap: _export } : scriptExports;
@@ -79,14 +74,7 @@ function execLifecycle(lifecycles: Lifecycle | Lifecycle[], module: InnerRegistr
  * @param App instance from 'createApp' in Vue3, Vue constructor in Vue2
  * @param resolver resolver
  */
-export function createModuleLoader(
-  App: App | typeof Vue2,
-  resolver: {
-    isServer: boolean;
-    browser: (src: string) => Resolver<WindowProxy>;
-    server: (src: string) => Resolver<vmContext>;
-  },
-) {
+export function createModuleLoader(App: App | typeof Vue2, resolver: ModuleLoader['resolver']) {
   return function loader(
     /**
      * @internal
@@ -170,47 +158,18 @@ export function createModuleLoader(
         const {
           config: { name, entry, styles = [], props = {} },
         } = module;
-        // server render
-        // if (resolver.isServer) {
-        //   const global = ssr.createSandbox();
-
-        //   const serverResolver = resolver.server(entry);
-        //   return resolver.ssr
-        //     .execScript(entry, global)
-        //     .then((scriptExports: any) => {
-        //       const { bootstrap } = getLifecyclesFromExports(scriptExports, moduleName, global);
-        //       bootstrap.call(_self, Vue, args);
-        //     })
-        //     .catch((err: Error) => {
-        //       // 异常不阻止当前执行，error 中处理
-        //       try {
-        //         error(err.message, module);
-        //       } catch {}
-        //     });
-        // } else {
-
-        // browser render
-        // TODO: load in sandbox
-        const global: WindowProxy = window;
-
-        // 如果是Vue2, 把 Vue constructor 入到全局 context 上供子模块使用
-        if (!global.Vue && isVue2) {
-          global.Vue = App;
-        }
-
-        const browserResolver = resolver.browser(entry);
 
         try {
           // before load lifycycle
           await execLifecycle(lifecycles.beforeLoad!, module.config);
           // exec script
-          const scriptExports = await promisify(browserResolver.execScript(entry, global));
+          const scriptExports = await promisify(resolver.execScript(entry));
           // get sub module lifecycle functions
           const {
             bootstrap,
             mount: exportMount,
             unmount: exportUnmount,
-          } = getLifecyclesFromExports(scriptExports, name, global);
+          } = getLifecyclesFromExports(scriptExports, name, resolver.context);
           // bootstrap only exec in the first time
           await promisify(bootstrap?.call(_self, App));
           // exec in unmount
@@ -220,7 +179,7 @@ export function createModuleLoader(
             // before mount lifecycle
             await execLifecycle(lifecycles.beforeMount!, module.config);
             // add named styles
-            await promisify(browserResolver.addStyles(styles, global));
+            await promisify(resolver.addStyles(styles));
             // exec mount
             const registerProperties = await promisify(exportMount?.call(_self, App, props));
             // works on exectued mount function result
@@ -243,7 +202,7 @@ export function createModuleLoader(
             // before unmount lifecycle
             await execLifecycle(lifecycles.beforeUnmount!, module.config);
             // remove named styles
-            await promisify(browserResolver.removeStyles(styles, global));
+            await promisify(resolver.removeStyles(styles));
             // exec unmount
             await promisify(exportUnmount?.call(_self, App, props));
             // unregister function result
@@ -264,7 +223,6 @@ export function createModuleLoader(
             } catch {}
           });
         }
-        // }
       }
     }
 

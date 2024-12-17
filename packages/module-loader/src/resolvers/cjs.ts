@@ -6,7 +6,7 @@ import { defineResolver } from '../resolver';
 import { Context as vmContext } from 'vm';
 import { ClientRequest, IncomingMessage } from 'http';
 
-export function createSandbox() {
+function createSandbox() {
   const sandbox: Record<string, any> = {
     Buffer: Buffer,
     require: require,
@@ -43,37 +43,40 @@ function tryGetCwd(path: any) {
   return cwd;
 }
 
-export default defineResolver<vmContext>({
-  execScript(entry, _proxy = { exports: {} }) {
-    return new Promise((resolve, reject) => {
-      const http = require('http');
-      const request: ClientRequest = http.get(entry, (res: IncomingMessage) => {
-        const { statusCode } = res;
+export const getCjsResolver = defineResolver<vmContext>((container) => {
+  const proxy = createSandbox();
+  return {
+    context: proxy,
+    execScript(entry) {
+      return new Promise((resolve, reject) => {
+        const http = require('http');
+        const request: ClientRequest = http.get(entry, (res: IncomingMessage) => {
+          const { statusCode } = res;
 
-        if (statusCode !== 200) {
-          warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
-          reject(new Error(`script load error, statusCode: ${statusCode}`));
-        }
-        res.setEncoding('utf8');
-        res.setTimeout(10000);
+          if (statusCode !== 200) {
+            warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
+            reject(new Error(`script load error, statusCode: ${statusCode}`));
+          }
+          res.setEncoding('utf8');
+          res.setTimeout(10000);
 
-        let rawData = '';
-        res.on('data', (chunk) => {
-          rawData += chunk;
-        });
+          let rawData = '';
+          res.on('data', (chunk) => {
+            rawData += chunk;
+          });
 
-        res.on('end', () => {
-          try {
-            // https://github.com/nodejs/node/blob/6add5b31fcc4ae45a8603f886477c544a99e0188/lib/internal/bootstrap_node.js#L415
-            const exports = (function evalScript(name: string, body: string) {
-              const Module = require('module');
-              const path = require('path');
-              const cwd = tryGetCwd(path);
-              // @ts-ignore
-              const _module = new Module(name);
-              _module.filename = path.join(cwd, name);
-              _module.paths = Module._nodeModulePaths(cwd);
-              const script = `global.__filename = ${JSON.stringify(name)};
+          res.on('end', () => {
+            try {
+              // https://github.com/nodejs/node/blob/6add5b31fcc4ae45a8603f886477c544a99e0188/lib/internal/bootstrap_node.js#L415
+              const exports = (function evalScript(name: string, body: string) {
+                const Module = require('module');
+                const path = require('path');
+                const cwd = tryGetCwd(path);
+                // @ts-ignore
+                const _module = new Module(name);
+                _module.filename = path.join(cwd, name);
+                _module.paths = Module._nodeModulePaths(cwd);
+                const script = `global.__filename = ${JSON.stringify(name)};
                 global.exports = exports;
                 global.module = module;
                 global.__dirname = __dirname;
@@ -82,38 +85,39 @@ export default defineResolver<vmContext>({
                   filename: ${JSON.stringify(name)},
                   displayErrors: true
                 });`;
-              _module._compile(script, `${name}-wrapper`);
-              return _module.exports;
-            })(entry.substr(entry.lastIndexOf('/') + 1), rawData.toString());
+                _module._compile(script, `${name}-wrapper`);
+                return _module.exports;
+              })(entry.substr(entry.lastIndexOf('/') + 1), rawData.toString());
 
-            resolve(exports);
-          } catch (err: any) {
-            warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
-            reject(new Error(`script load error, error: ${err.message}`));
-          }
+              resolve(exports);
+            } catch (err: any) {
+              warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
+              reject(new Error(`script load error, error: ${err.message}`));
+            }
+          });
+        });
+
+        request.on('error', (err) => {
+          warning(!debug, `[@vue-async/module-loader] http.request error, entry：${entry}`);
+          reject(new Error(`script load error, error: ${err.message}`));
         });
       });
+    },
+    addStyles(styles: string[]) {
+      // load css
+      if (styles.length) {
+        // TODO: do something
+      }
+      return Promise.resolve();
+    },
+    removeStyles(styles: string[]) {
+      // unload css
+      if (styles.length) {
+        // TODO: do something
+      }
 
-      request.on('error', (err) => {
-        warning(!debug, `[@vue-async/module-loader] http.request error, entry：${entry}`);
-        reject(new Error(`script load error, error: ${err.message}`));
-      });
-    });
-  },
-  addStyles(styles: string[]) {
-    // load css
-    if (styles.length) {
-      // TODO: do something
-    }
-    return Promise.resolve();
-  },
-  removeStyles(styles: string[]) {
-    // unload css
-    if (styles.length) {
-      // TODO: do something
-    }
-
-    // remove css
-    return Promise.resolve();
-  },
+      // remove css
+      return Promise.resolve();
+    },
+  };
 });

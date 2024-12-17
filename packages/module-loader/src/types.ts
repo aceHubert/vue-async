@@ -1,7 +1,6 @@
 import type { App, Vue2, Component } from 'vue-demi';
-import type { Context as vmContext } from 'vm';
 
-export interface ModuleLoader {
+export interface ModuleLoader<Context = any> {
   /**
    * Alias of export setModuleLoaderOptions
    */
@@ -17,11 +16,9 @@ export interface ModuleLoader {
   /**
    * Resolver
    */
-  resolver: Readonly<{
-    isServer: boolean;
-    browser: (src: string) => Resolver<WindowProxy>;
-    server: (src: string) => Resolver<vmContext>;
-  }>;
+  resolver: ReturnType<GetResolver<Context>> & {
+    context: Context;
+  };
   /**
    * App linked to this ModuleLoader instance
    * @internal
@@ -210,34 +207,30 @@ export type ErrorHandler = (error: Error, module: InnerRegistrableModule) => voi
 /**
  * Loader resolver
  */
-export interface Resolver<Context = any> {
+export interface GetResolver<Context = any> {
   /**
-   * execute script
-   * @param entry remote script src
-   * @param proxy proxy context
-   * @param container container to append script, default is append to body
+   * Get resolver
+   * @param container container to append script, default is append to body in client side
    */
-  execScript<R = unknown>(
-    entry: string,
-    proxy: Context,
-    container?: string | ((proxy: Context) => Element),
-  ): R | Promise<R>;
-  /**
-   * add styles
-   * @param styles style href
-   * @param proxy proxy context
-   * @param container container to append script, default is append to body
-   */
-  addStyles(styles: string[], proxy: Context, container?: string | ((proxy: Context) => Element)): void | Promise<void>;
-  /**
-   * remove styles
-   * @param styles style href
-   * @param proxy proxy context
-   * @param container container to append script, default is append to body
-   */
-  removeStyles(
-    styles: string[],
-    proxy: Context,
-    container?: string | ((proxy: Context) => Element),
-  ): void | Promise<void>;
+  (container?: string | ((proxy: Context) => Element)): {
+    /**
+     * execution context
+     */
+    context: Context;
+    /**
+     * execute script
+     * @param entry remote script src
+     */
+    execScript<R = unknown>(entry: string): R | Promise<R>;
+    /**
+     * add styles
+     * @param styles style href
+     */
+    addStyles(styles: string[]): void | Promise<void>;
+    /**
+     * remove styles
+     * @param styles style href
+     */
+    removeStyles(styles: string[]): void | Promise<void>;
+  };
 }

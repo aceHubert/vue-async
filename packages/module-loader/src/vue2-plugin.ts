@@ -42,7 +42,7 @@ export class ModuleLoaderVuePlugin {
           setActiveLoader(loader);
 
           const moduleLoader = createModuleLoader(Vue, loader.resolver);
-          const componentLoader = createComponentLoader(Vue, loader.resolver);
+          const componentLoader = createComponentLoader(loader.resolver);
 
           loader._a = this as any;
           loader._moduleLoader = moduleLoader;

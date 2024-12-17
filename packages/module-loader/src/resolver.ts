@@ -1,5 +1,5 @@
-import type { Resolver } from './types';
+import type { GetResolver } from './types';
 
-export function defineResolver<Context>(resolver: Resolver<Context>) {
+export function defineResolver<Context>(resolver: GetResolver<Context>): GetResolver<Context> {
   return resolver;
 }

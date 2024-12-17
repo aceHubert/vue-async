@@ -70,71 +70,81 @@ function noteGlobalProps(global: WindowProxy) {
 const scriptsCache = new Map<string, any>();
 const stylesCache = new Map<string, HTMLLinkElement>();
 
-export default defineResolver<WindowProxy>({
-  execScript(entry, proxy, container = (proxy: WindowProxy) => proxy.document.body) {
-    if (scriptsCache.has(entry)) return Promise.resolve(scriptsCache.get(entry)); // 从 catch 中获取
+function createSandbox() {
+  // TODO: load in sandbox
+  const global: WindowProxy = window;
+  return global;
+}
 
-    const selector = typeof container === 'string' ? proxy.document.querySelector(container) : container(proxy);
-    if (!selector) {
-      return Promise.reject(new Error(`[@vue-async/module-loader] The container to append script is not found.`));
-    }
+export const getUmdResolver = defineResolver<WindowProxy>((container = (proxy) => proxy.document.body) => {
+  const proxy = createSandbox();
+  return {
+    context: proxy,
+    execScript(entry) {
+      if (scriptsCache.has(entry)) return Promise.resolve(scriptsCache.get(entry)); // 从 catch 中获取
 
-    return new Promise((resolve, reject) => {
-      noteGlobalProps(proxy);
-
-      const script = proxy.document.createElement('script');
-      script.src = entry;
-      script.onload = () => {
-        const propName = getGlobalProp(proxy);
-        const exports = propName ? proxy[propName] || {} : {};
-        scriptsCache.set(entry, exports); // add to catch
-        resolve(exports);
-      };
-      script.onerror = (err) => {
-        warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
-        selector.removeChild(script); // remove script
-        reject(new Error(`script load error, error: ${err.toString()}`));
-      };
-
-      selector!.appendChild(script);
-    });
-  },
-  async addStyles(styles: string[], proxy, container = (proxy: WindowProxy) => proxy.document.head) {
-    if (styles.length) {
       const selector = typeof container === 'string' ? proxy.document.querySelector(container) : container(proxy);
       if (!selector) {
-        return Promise.reject(new Error(`[@vue-async/module-loader] The container to append link is not found.`));
+        return Promise.reject(new Error(`[@vue-async/module-loader] The container to append script is not found.`));
       }
-      await Promise.all(
-        styles.map((href) => {
-          if (stylesCache.has(href)) return Promise.resolve(); // 从 catch 中获取
 
-          return new Promise<void>((resolve, reject) => {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = href;
-            link.onload = () => {
-              stylesCache.set(href, link);
-              resolve();
-            };
-            link.onerror = (err) => {
-              warning(!debug, `[@vue-async/module-loader] href had a problem to create, href${href}`);
-              selector.removeChild(link); // remove link
-              reject(new Error(`style load error, error: ${err.toString()}`));
-            };
-            selector.appendChild(link);
-          });
-        }),
-      );
-    }
-  },
-  removeStyles(styles: string[]) {
-    if (styles.length) {
-      styles.forEach((href) => {
-        const link = stylesCache.get(href);
-        link?.remove();
+      return new Promise((resolve, reject) => {
+        noteGlobalProps(proxy);
+
+        const script = proxy.document.createElement('script');
+        script.src = entry;
+        script.onload = () => {
+          const propName = getGlobalProp(proxy);
+          const exports = propName ? proxy[propName] || {} : {};
+          scriptsCache.set(entry, exports); // add to catch
+          resolve(exports);
+        };
+        script.onerror = (err) => {
+          warning(!debug, `[@vue-async/module-loader] script had a problem to create, entry：${entry}`);
+          selector.removeChild(script); // remove script
+          reject(new Error(`script load error, error: ${err.toString()}`));
+        };
+
+        selector!.appendChild(script);
       });
-    }
-  },
+    },
+    async addStyles(styles: string[]) {
+      if (styles.length) {
+        const selector = typeof container === 'string' ? proxy.document.querySelector(container) : container(proxy);
+        if (!selector) {
+          return Promise.reject(new Error(`[@vue-async/module-loader] The container to append link is not found.`));
+        }
+        await Promise.all(
+          styles.map((href) => {
+            if (stylesCache.has(href)) return Promise.resolve(); // 从 catch 中获取
+
+            return new Promise<void>((resolve, reject) => {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.type = 'text/css';
+              link.href = href;
+              link.onload = () => {
+                stylesCache.set(href, link);
+                resolve();
+              };
+              link.onerror = (err) => {
+                warning(!debug, `[@vue-async/module-loader] href had a problem to create, href${href}`);
+                selector.removeChild(link); // remove link
+                reject(new Error(`style load error, error: ${err.toString()}`));
+              };
+              selector.appendChild(link);
+            });
+          }),
+        );
+      }
+    },
+    removeStyles(styles: string[]) {
+      if (styles.length) {
+        styles.forEach((href) => {
+          const link = stylesCache.get(href);
+          link?.remove();
+        });
+      }
+    },
+  };
 });
