@@ -1,5 +1,5 @@
 {
-  "packages": ["packages/*", "docs"],
+  "packages": ["packages/module-loader", "docs"],
   "npmClient": "yarn",
   "command": {
     "publish": {
@@ -8,12 +8,14 @@
       "gitReset": true,
       "allowBranch": ["master", "next"],
       "ignoreChanges": [
+        "*/package.json",
         "**/CHANGELOG.md",
         "**/node_modules/**",
-        "**/package.json",
+        "**/playground/**",
         "**/*.md",
         "**/test/**",
-        "**/dev/**"
+        "**/dev/**",
+        "**/src/version.ts"
       ],
       "message": "chore(release): 😊 publish"
     }
