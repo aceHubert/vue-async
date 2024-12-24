@@ -1,4 +1,4 @@
-import { isVue2, markRaw } from 'vue-demi';
+import * as VueDemi from 'vue-demi';
 import { createModuleLoader } from './core/moduleLoader';
 import { createComponentLoader } from './core/componentLoader';
 import { ModuleLoaderSymbol, setActiveLoader, setOptions, addErrorHandler, removeErrorHandler } from './register';
@@ -15,15 +15,19 @@ export function createLoader<Context = any>(
   resolver?: GetResolver<Context>,
   container?: string | ((proxy: Context) => Element),
 ) {
+  if (window && !window.VueDemi) {
+    window.VueDemi = VueDemi;
+  }
+
   const _resolver = resolver?.(container) ?? getUmdResolver(container as any);
-  const loader: ModuleLoader = markRaw({
+  const loader: ModuleLoader = VueDemi.markRaw({
     install(app) {
       // this allows calling registerSubModules() outside of a component setup after
       setActiveLoader(loader);
 
-      if (!isVue2) {
+      if (!VueDemi.isVue2) {
         const moduleLoader = createModuleLoader(app, _resolver);
-        const componentLoader = createComponentLoader(_resolver);
+        const componentLoader = createComponentLoader(app, _resolver);
 
         loader._a = app;
         loader._moduleLoader = moduleLoader;

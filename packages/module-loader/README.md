@@ -21,7 +21,13 @@ const moduleLoader = createLoader(...options);
 
 moduleLoader
 // Set global options
-.setOptions(options)
+.setOptions(
+  ...options,
+  // handle register properties returned by sub modules mount lifecycle
+  register: (options) => {
+    // need handle the router resolve by yourself
+    router.addRoutes(options.routes);
+  },)
 // Add error handler
 .addErrorHandler(errorHandler)
 // Remove error handler
@@ -33,12 +39,6 @@ Vue.use(ModuleLoaderVuePlugin);
 // In Vue3
 app.use(moduleLoader);
 
-// Register sub modules
-const start = registerSubModules(ModuleConfig[], lifecycles);
-
-start(router).then(() => {
-  // do something
-});
 ```
 
 ### moduleLoader `setOptions`
@@ -57,6 +57,28 @@ start(router).then(() => {
 ```ts
 // error handler
  errorHandler: (error: Error, moduleName: string) => void
+```
+
+<br>
+<br>
+
+### Register SubModules
+
+```ts
+import { registerSubModules } from '@vue-async/module-loader';
+// Register sub modules
+const useSubModules = registerSubModules(ModuleConfig[], lifeCycles);
+
+
+// in Vue instance
+const submodules = useSubModules();
+// out of Vue instance
+const submodules = useSubModules(moduleLoader);
+
+// start sub modules loading
+submodules.start({router}).then(() => {
+  // do something
+});
 ```
 
 ### registerSubModules `ModuleConfig`
@@ -96,7 +118,7 @@ start(router).then(() => {
 | `activeRule` | `string` <br> `(location: Location) => boolean` | `false`  | active rule if you use vue-router, load modules when path match prefix string |
 | `props`      | `Object`                                        | `false`  | pass properties to sub modules                                                |
 
-### registerSubModules `lifecycles`
+### registerSubModules `LifeCycles`
 
 | lifecycle       | Description              |
 | --------------- | ------------------------ |
@@ -106,10 +128,18 @@ start(router).then(() => {
 | `beforeUnmount` | before unmount execute   |
 | `afterUnmount`  | after unmount execute    |
 
+### start `Options`
+
+| name       | Type        | Required | Description                                                                                                  |
+| ---------- | ----------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `router`   | `VueRouter` | false    | vue-router instance, will use beforeEach/afterEach if set, otherwise will use popstate/beforeunload listener |
+| `loading`  | `Function`  | `false`  | Override moduleLoader options                                                                                |
+| `register` | `Function`  | `false`  | Override moduleLoader options                                                                                |
+
 <br>
 <br>
 
-### Sub module
+### SubModule definition
 
 ```ts
 // index.ts
@@ -123,21 +153,26 @@ export const mount = defineMount(app: App, props: Props){
   // do something
 
   // return some properties to register in main program
-  return {};
+  return {
+    routes: [],
+  };
 })
 
 // only works in Vue3
 export const unmount = defineUnmount(app:App, props: Props){
   // do something
 })
+```
 
-// Declare the type of props
-declare module '@vue-async/module-loader/lib/types' {
+<br>
+
+### Declare the type of register properties
+
+```ts
+// Declare the type of register properties
+declare module '@vue-async/module-loader' {
   interface RegisterProperties {
     routes?: RouteRecordRaw[];
   }
 }
 ```
-
-
-<br>

@@ -141,7 +141,7 @@ export function registerSubModules(config: RegistrableModule | RegistrableModule
     loader = activeLoader!;
 
     return {
-      start: (options?: ModuleLoaderOptions & { router: Router }) =>
+      start: (options?: ModuleLoaderOptions & { router?: Router }) =>
         execute(loader!._moduleLoader, subModuleConfigs, Object.assign({}, loaderOptions, options), loader!._a),
     };
 
