@@ -40,7 +40,7 @@
     "url": "https://github.com/aceHubert/vue-async/issues"
   },
   "dependencies": {
-    "@ace-util/core": "^0.2.0",
+    "@ace-util/core": "^0.3.0",
     "vue-demi": "*",
     "vue-frag": "^1.4.0",
     "warning": "^4.0.3"
