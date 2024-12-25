@@ -1,10 +1,10 @@
 import type { App, Vue2, Component } from 'vue-demi';
 
-export interface ModuleLoader<Context = any> {
+export interface ModuleLoader<Props extends Record<string, any> = {}, Context = any> {
   /**
    * Alias of export setModuleLoaderOptions
    */
-  setOptions: (options: ModuleLoaderOptions) => ModuleLoader;
+  setOptions: (options: ModuleLoaderOptions<Props>) => ModuleLoader;
   /**
    * Alias of export addErrorHandler
    */
@@ -57,12 +57,17 @@ export interface RegisterProperties {
 /**
  * Main module loader typings
  */
-export type ModuleLoaderOptions = {
+export type ModuleLoaderOptions<Props extends Record<string, any> = {}> = {
   /**
    * Use sync mode to load submodules
    * @default false
    */
   sync?: boolean;
+  /**
+   * Global properties to pass to submodules,
+   * set it before registerSubModules, otherwise it will not apply to submodules
+   */
+  props?: Props | (() => Props);
   /**
    * Loading shown,
    * return a function to hide loading
@@ -78,7 +83,7 @@ export type ModuleLoaderOptions = {
 /**
  * Remote module
  */
-export type ModuleRemoteConfig = {
+export type ModuleRemoteConfig<Props extends Record<string, any> = {}> = {
   /**
    * Module name（Then name of submodule export to global）
    */
@@ -102,7 +107,7 @@ export type ModuleRemoteConfig = {
   /**
    * Props，pass to submodule "mount" and "unmount" lifecycle
    */
-  props?: Record<string, any>;
+  props?: Props;
 };
 
 /**

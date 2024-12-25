@@ -106,19 +106,29 @@ export function registerSubModules(config: RegistrableModule | RegistrableModule
 
   formatModules(config).map((config) => {
     let activeRule: InnerRegisterSubModule['activeRule'] = undefined;
-    if (!isFunction(config) && !isUndef(config.activeRule)) {
-      const activeRules = isArray(config.activeRule) ? config.activeRule : [config.activeRule!];
-      activeRule = activeRules.map((rule) => {
-        if (isFunction(rule)) {
-          return rule;
-        } else {
-          return (location: Location) => {
-            const path = getLocation(location);
-            const regex = compilePathRegex(rule, {});
-            return !!path.match(regex);
-          };
-        }
-      });
+
+    if (!isFunction(config)) {
+      // merge global props
+      if (!isUndef(loaderOptions.props)) {
+        const globalProps = typeof loaderOptions.props === 'function' ? loaderOptions.props() : loaderOptions.props;
+        config.props = { ...globalProps, ...config.props };
+      }
+
+      // format activeRule
+      if (!isUndef(config.activeRule)) {
+        const activeRules = isArray(config.activeRule) ? config.activeRule : [config.activeRule!];
+        activeRule = activeRules.map((rule) => {
+          if (isFunction(rule)) {
+            return rule;
+          } else {
+            return (location: Location) => {
+              const path = getLocation(location);
+              const regex = compilePathRegex(rule, {});
+              return !!path.match(regex);
+            };
+          }
+        });
+      }
     }
     subModuleConfigs.push({ config, lifecycles: innerLifecycles, activeRule, activated: false });
   });
@@ -141,7 +151,10 @@ export function registerSubModules(config: RegistrableModule | RegistrableModule
     loader = activeLoader!;
 
     return {
-      start: (options?: ModuleLoaderOptions & { router?: Router }) =>
+      /**
+       * Start module loader
+       */
+      start: (options?: Pick<ModuleLoaderOptions, 'loading' | 'register'> & { router?: Router }) =>
         execute(loader!._moduleLoader, subModuleConfigs, Object.assign({}, loaderOptions, options), loader!._a),
     };
 
