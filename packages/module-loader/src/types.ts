@@ -1,18 +1,18 @@
 import type { App, Vue2, Component } from 'vue-demi';
 
-export interface ModuleLoader<Props extends Record<string, any> = {}, Context = any> {
+export interface ModuleLoader<Props extends Record<string, any> = any, Context = any> {
   /**
    * Alias of export setModuleLoaderOptions
    */
-  setOptions: (options: ModuleLoaderOptions<Props>) => ModuleLoader;
+  setOptions: (options: ModuleLoaderOptions<Props>) => ModuleLoader<Props, Context>;
   /**
    * Alias of export addErrorHandler
    */
-  addErrorHandler: (handler: ErrorHandler) => ModuleLoader;
+  addErrorHandler: (handler: ErrorHandler) => ModuleLoader<Props, Context>;
   /**
    * Alias of export removeErrorHandler
    */
-  removeErrorHandler: (handler: ErrorHandler) => ModuleLoader;
+  removeErrorHandler: (handler: ErrorHandler) => ModuleLoader<Props, Context>;
   /**
    * Resolver
    */
@@ -57,7 +57,7 @@ export interface RegisterProperties {
 /**
  * Main module loader typings
  */
-export type ModuleLoaderOptions<Props extends Record<string, any> = {}> = {
+export type ModuleLoaderOptions<Props extends Record<string, any>> = {
   /**
    * Use sync mode to load submodules
    * @default false

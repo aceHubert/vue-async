@@ -26,7 +26,7 @@ let activeLoader: ModuleLoader | undefined;
 /**
  * Global options
  */
-const loaderOptions: ModuleLoaderOptions = {
+const loaderOptions: ModuleLoaderOptions<any> = {
   sync: false,
 };
 
@@ -58,7 +58,7 @@ export const getActiveLoader = () => (getCurrentInstance() && inject(ModuleLoade
  * Set ModuleLoader options
  * @param options Options
  */
-export function setOptions(options: ModuleLoaderOptions) {
+export function setOptions<Props extends Record<string, any>>(options: ModuleLoaderOptions<Props>) {
   Object.assign(loaderOptions, options);
 }
 
@@ -154,7 +154,7 @@ export function registerSubModules(config: RegistrableModule | RegistrableModule
       /**
        * Start module loader
        */
-      start: (options?: Pick<ModuleLoaderOptions, 'loading' | 'register'> & { router?: Router }) =>
+      start: (options?: Pick<ModuleLoaderOptions<any>, 'loading' | 'register'> & { router?: Router }) =>
         execute(loader!._moduleLoader, subModuleConfigs, Object.assign({}, loaderOptions, options), loader!._a),
     };
 
@@ -168,7 +168,7 @@ export function registerSubModules(config: RegistrableModule | RegistrableModule
     async function execute(
       moduleLoader: ModuleLoader['_moduleLoader'],
       subModuleConfigs: InnerRegisterSubModule[],
-      options: ModuleLoaderOptions & { router?: Router },
+      options: ModuleLoaderOptions<any> & { router?: Router },
       app?: App,
     ) {
       // 加载模块
