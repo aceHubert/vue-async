@@ -5,12 +5,12 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@ace-util/core@npm:^0.2.0":
-  version: 0.2.1
-  resolution: "@ace-util/core@npm:0.2.1"
+"@ace-util/core@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@ace-util/core@npm:0.3.2"
   dependencies:
     lodash.get: ^4.4.2
-  checksum: 62c7432f98097f2c97dcec0e10386754656ce75617c7100c46c19dcd5ff93572e5c6c8ea988d98a3bb9526d94fa90850fa9f76694e72d66bebb19f0819a259e3
+  checksum: 07b3f8a52ecc037bdc1c4ee3a1cd756fa75bf68ad172a84039fdad831dd4454c8b69fdf9c88c30dfa266b1b0fd8cde32afc03215cf721efe896936285fbfd39a
   languageName: node
   linkType: hard
 
@@ -5228,7 +5228,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vue-async/module-loader@workspace:packages/module-loader"
   dependencies:
-    "@ace-util/core": ^0.2.0
+    "@ace-util/core": ^0.3.0
     "@types/warning": ^3.0.0
     nuxt: ^3.0.0
     path-to-regexp: ^7.0.0
@@ -5247,7 +5247,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vue-async/resource-manager@workspace:packages/resource-manager"
   dependencies:
-    "@ace-util/core": ^0.2.0
+    "@ace-util/core": ^0.3.0
     "@types/warning": ^3.0.0
     nuxt: ^3.0.0
     vue-demi: "*"
