@@ -18,7 +18,7 @@ export type Bootstrap = (App: App | typeof Vue2) => void;
  */
 export type Mount = <Props extends ModuleLoaderCustomProperties = ModuleLoaderCustomProperties>(
   App: App | typeof Vue2,
-  props?: Props,
+  props: Props,
 ) => void | RegisterProperties | Promise<void | RegisterProperties>;
 
 /**
@@ -26,7 +26,7 @@ export type Mount = <Props extends ModuleLoaderCustomProperties = ModuleLoaderCu
  */
 export type Unmount = <Props extends ModuleLoaderCustomProperties = ModuleLoaderCustomProperties>(
   App: App | typeof Vue2,
-  props?: Props,
+  props: Props,
 ) => void;
 
 export interface ModuleLoaderCustomProperties {

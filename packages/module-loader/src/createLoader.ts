@@ -9,22 +9,34 @@ import type { ModuleLoader, GetResolver } from './types';
 
 /**
  * create module loader
- * @param options options
- * @param options.resolver remote module resolver, default to umd resolver
- * @param options.container container to append script, default is append to body in client side
  */
 export function createLoader<Props extends Record<string, any> = any, Context = any>(
   options: {
+    /**
+     * remote module resolver, default to umd resolver
+     */
     resolver?: GetResolver<Context>;
+    /**
+     * container to append script, default is append to body in client side
+     */
     container?: string | ((proxy: Context) => Element);
+    /**
+     * global variables to expose to remote module
+     */
+    globals?: Record<string, any>;
   } = {},
 ) {
-  // Set global VueDemi
-  if (window && !window.VueDemi) {
-    window.VueDemi = VueDemi;
+  const _resolver = options.resolver?.(options.container) ?? (getUmdResolver(options.container as any) as any);
+
+  // Set global variables
+  const proxy = _resolver.context;
+  if (!proxy.VueDemi) {
+    proxy.VueDemi = VueDemi;
+  }
+  if (options.globals) {
+    Object.assign(proxy, options.globals);
   }
 
-  const _resolver = options.resolver?.(options.container) ?? (getUmdResolver(options.container as any) as any);
   const loader: ModuleLoader<Props, Context> = VueDemi.markRaw({
     install(app) {
       // this allows calling registerSubModules() outside of a component setup after
