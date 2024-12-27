@@ -16,9 +16,7 @@ export interface ModuleLoader<Props extends Record<string, any> = any, Context =
   /**
    * Resolver
    */
-  resolver: ReturnType<GetResolver<Context>> & {
-    context: Context;
-  };
+  resolver: Resolver<Context>;
   /**
    * App linked to this ModuleLoader instance
    * @internal
@@ -210,32 +208,40 @@ export type Lifecycles = {
 export type ErrorHandler = (error: Error, module: InnerRegistrableModule) => void;
 
 /**
- * Loader resolver
+ * Resolver
  */
-export interface GetResolver<Context = any> {
+export interface Resolver<Context = any> {
   /**
-   * Get resolver
-   * @param container container to append script, default is append to body in client side
+   * execution context
    */
-  (container?: string | ((proxy: Context) => Element)): {
-    /**
-     * execution context
-     */
-    context: Context;
-    /**
-     * execute script
-     * @param entry remote script src
-     */
-    execScript<R = unknown>(entry: string): R | Promise<R>;
-    /**
-     * add styles
-     * @param styles style href
-     */
-    addStyles(styles: string[]): void | Promise<void>;
-    /**
-     * remove styles
-     * @param styles style href
-     */
-    removeStyles(styles: string[]): void | Promise<void>;
-  };
+  context: Context;
+  /**
+   * execute script
+   * @param entry remote script src
+   */
+  execScript<R = unknown>(entry: string): R | Promise<R>;
+  /**
+   * add styles
+   * @param styles style href
+   */
+  addStyles(styles: string[]): void | Promise<void>;
+  /**
+   * remove styles
+   * @param styles style href
+   */
+  removeStyles(styles: string[]): void | Promise<void>;
+}
+
+/**
+ * create resolver options
+ */
+export interface ResolverCreatorOptions<Context = any> {
+  /**
+   * container container to append script, default is append to body in client side
+   */
+  container?: string | ((proxy: Context) => Element);
+  /**
+   * global variables to extend to resolver context
+   */
+  globalVariables?: Record<string, any>;
 }

@@ -1,13 +1,14 @@
 import warning from 'warning';
 import { debug } from '../env';
-import { defineResolver } from '../resolver';
 
 // Types
 import { Context as vmContext } from 'vm';
 import { ClientRequest, IncomingMessage } from 'http';
+import { ResolverCreatorOptions, Resolver } from '../types';
 
-function createSandbox() {
+function createSandbox(globalVariables: Record<string, any> = {}) {
   const sandbox: Record<string, any> = {
+    ...globalVariables,
     Buffer: Buffer,
     require: require,
     console: console,
@@ -43,8 +44,8 @@ function tryGetCwd(path: any) {
   return cwd;
 }
 
-export const getCjsResolver = defineResolver<vmContext>((container) => {
-  const proxy = createSandbox();
+export function createCjsResolver({ globalVariables }: ResolverCreatorOptions): Resolver<vmContext> {
+  const proxy = createSandbox(globalVariables);
   return {
     context: proxy,
     execScript(entry) {
@@ -120,4 +121,4 @@ export const getCjsResolver = defineResolver<vmContext>((container) => {
       return Promise.resolve();
     },
   };
-});
+}

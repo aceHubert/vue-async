@@ -4,7 +4,9 @@
  */
 import warning from 'warning';
 import { debug } from '../env';
-import { defineResolver } from '../resolver';
+
+// Types
+import { ResolverCreatorOptions, Resolver } from '../types';
 
 const isIE11 = typeof navigator !== 'undefined' && navigator.userAgent.indexOf('Trident') !== -1;
 
@@ -70,14 +72,18 @@ function noteGlobalProps(global: WindowProxy) {
 const scriptsCache = new Map<string, any>();
 const stylesCache = new Map<string, HTMLLinkElement>();
 
-function createSandbox() {
+function createSandbox(globalVariables: Record<string, any> = {}) {
   // TODO: load in sandbox
   const global: WindowProxy = window;
+  Object.assign(global, globalVariables);
   return global;
 }
 
-export const getUmdResolver = defineResolver<WindowProxy>((container = (proxy) => proxy.document.body) => {
-  const proxy = createSandbox();
+export function createUmdResolver({
+  container = (proxy) => proxy.document.body,
+  globalVariables,
+}: ResolverCreatorOptions): Resolver<WindowProxy> {
+  const proxy = createSandbox(globalVariables);
   return {
     context: proxy,
     execScript(entry) {
@@ -147,4 +153,4 @@ export const getUmdResolver = defineResolver<WindowProxy>((container = (proxy) =
       }
     },
   };
-});
+}

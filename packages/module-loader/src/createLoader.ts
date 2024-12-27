@@ -2,40 +2,30 @@ import * as VueDemi from 'vue-demi';
 import { createModuleLoader } from './core/moduleLoader';
 import { createComponentLoader } from './core/componentLoader';
 import { ModuleLoaderSymbol, setActiveLoader, setOptions, addErrorHandler, removeErrorHandler } from './register';
-import { getUmdResolver } from './resolvers/umd';
+import { createUmdResolver } from './resolvers/umd';
 
 // Types
-import type { ModuleLoader, GetResolver } from './types';
+import type { ModuleLoader, Resolver, ResolverCreatorOptions } from './types';
+
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
 
 /**
  * create module loader
  */
 export function createLoader<Props extends Record<string, any> = any, Context = any>(
-  options: {
-    /**
-     * remote module resolver, default to umd resolver
-     */
-    resolver?: GetResolver<Context>;
-    /**
-     * container to append script, default is append to body in client side
-     */
-    container?: string | ((proxy: Context) => Element);
-    /**
-     * global variables to expose to remote module
-     */
-    globals?: Record<string, any>;
-  } = {},
+  options: XOR<
+    {
+      /**
+       * remote module resolver, default to umd resolver
+       */
+      resolver?: Resolver<Context>;
+    },
+    ResolverCreatorOptions<WindowProxy>
+  > = {},
 ) {
-  const _resolver = options.resolver?.(options.container) ?? (getUmdResolver(options.container as any) as any);
-
-  // Set global variables
-  const proxy = _resolver.context;
-  if (!proxy.VueDemi) {
-    proxy.VueDemi = VueDemi;
-  }
-  if (options.globals) {
-    Object.assign(proxy, options.globals);
-  }
+  const { resolver, ...resolverOptions } = options;
+  const _resolver = resolver ?? (createUmdResolver(resolverOptions) as Resolver<any>);
 
   const loader: ModuleLoader<Props, Context> = VueDemi.markRaw({
     install(app) {
