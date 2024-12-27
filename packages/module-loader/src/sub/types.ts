@@ -1,13 +1,6 @@
 import { App, Vue2 } from 'vue-demi';
 import { RegisterProperties } from '../types';
 
-declare global {
-  interface Window {
-    // 通过子模块加载
-    VUE_ASYNC_MODULE_LOADER?: true;
-  }
-}
-
 /**
  * Bootstrap根据 activeRule 仅在第一次加载时调用
  */
