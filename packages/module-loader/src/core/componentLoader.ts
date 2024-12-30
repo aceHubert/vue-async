@@ -5,7 +5,7 @@ import { promisify } from '../utils/promisify';
 
 // Types
 import { isVue2, Vue2, App, Component } from 'vue-demi';
-import { ModuleLoader } from '../types';
+import { Resolver } from '../types';
 
 /** 验证组件导出是否正确 */
 function validateExportComponent(exports: any) {
@@ -48,12 +48,14 @@ function getComponentFromExport(scriptExports: any, componentName: string, globa
  * create module loader
  * @param resolver resolver
  */
-export function createComponentLoader(App: App | typeof Vue2, resolver: ModuleLoader['resolver']) {
+export function createComponentLoader<Context>(App: App | typeof Vue2, resolver: Resolver<Context>) {
   return async function loader<T = any>(
     componentName: string,
     src: string,
     styles?: string | string[],
   ): Promise<Component<T>> {
+    const context = resolver.getContext();
+
     // load styles
     if (styles) {
       if (typeof styles === 'string') {
@@ -64,6 +66,6 @@ export function createComponentLoader(App: App | typeof Vue2, resolver: ModuleLo
 
     // exec script
     const scriptExports = await promisify(resolver.execScript<object>(src));
-    return getComponentFromExport(scriptExports, componentName, resolver.context);
+    return getComponentFromExport(scriptExports, componentName, context);
   };
 }

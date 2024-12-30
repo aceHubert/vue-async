@@ -72,20 +72,21 @@ function noteGlobalProps(global: WindowProxy) {
 const scriptsCache = new Map<string, any>();
 const stylesCache = new Map<string, HTMLLinkElement>();
 
-function createSandbox(globalVariables: Record<string, any> = {}) {
+function createSandbox() {
   // TODO: load in sandbox
   const global: WindowProxy = window;
-  Object.assign(global, globalVariables);
   return global;
 }
 
 export function createUmdResolver({
   container = (proxy) => proxy.document.body,
-  globalVariables,
 }: ResolverCreatorOptions): Resolver<WindowProxy> {
-  const proxy = createSandbox(globalVariables);
+  const proxy = createSandbox();
   return {
-    context: proxy,
+    getContext: () => proxy,
+    setGlobalVariables(variables) {
+      Object.assign(proxy, variables);
+    },
     execScript(entry) {
       if (scriptsCache.has(entry)) return Promise.resolve(scriptsCache.get(entry)); // 从 catch 中获取
 

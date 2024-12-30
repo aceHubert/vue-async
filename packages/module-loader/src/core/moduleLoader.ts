@@ -11,7 +11,7 @@ import {
   InnerRegisterSubModule,
   Lifecycle,
   RegisterProperties,
-  ModuleLoader,
+  Resolver,
 } from '../types';
 import { Bootstrap, Mount, Unmount } from '../sub/types';
 
@@ -74,7 +74,7 @@ function execLifecycle(lifecycles: Lifecycle | Lifecycle[], module: InnerRegistr
  * @param App instance from 'createApp' in Vue3, Vue constructor in Vue2
  * @param resolver resolver
  */
-export function createModuleLoader(App: App | typeof Vue2, resolver: ModuleLoader['resolver']) {
+export function createModuleLoader<Context>(App: App | typeof Vue2, resolver: Resolver<Context>) {
   return function loader(
     /**
      * @internal
@@ -92,7 +92,8 @@ export function createModuleLoader(App: App | typeof Vue2, resolver: ModuleLoade
     },
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const _self = this;
+    const _self = this,
+      context = resolver.getContext();
 
     return new Promise((resolve) => {
       // 按顺序同步执行
@@ -169,7 +170,7 @@ export function createModuleLoader(App: App | typeof Vue2, resolver: ModuleLoade
             bootstrap,
             mount: exportMount,
             unmount: exportUnmount,
-          } = getLifecyclesFromExports(scriptExports, name, resolver.context);
+          } = getLifecyclesFromExports(scriptExports, name, context);
           // bootstrap only exec in the first time
           await promisify(bootstrap?.call(_self, App));
           // exec in unmount

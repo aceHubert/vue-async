@@ -14,7 +14,9 @@ type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T
  * create module loader
  */
 export function createLoader<Props extends Record<string, any> = any, Context = any>(
-  options: XOR<
+  options: {
+    globalVariables?: Record<string, any>;
+  } & XOR<
     {
       /**
        * remote module resolver, default to umd resolver
@@ -24,8 +26,12 @@ export function createLoader<Props extends Record<string, any> = any, Context = 
     ResolverCreatorOptions<WindowProxy>
   > = {},
 ) {
-  const { resolver, ...resolverOptions } = options;
-  const _resolver = resolver ?? (createUmdResolver(resolverOptions) as Resolver<any>);
+  const { resolver: customResolver, globalVariables, ...resolverOptions } = options;
+  const resolver = customResolver ?? (createUmdResolver(resolverOptions) as Resolver<any>);
+  resolver.setGlobalVariables({
+    ...globalVariables,
+    VueDemi,
+  });
 
   const loader: ModuleLoader<Props, Context> = VueDemi.markRaw({
     install(app) {
@@ -33,8 +39,8 @@ export function createLoader<Props extends Record<string, any> = any, Context = 
       setActiveLoader(loader);
 
       if (!VueDemi.isVue2) {
-        const moduleLoader = createModuleLoader(app, _resolver);
-        const componentLoader = createComponentLoader(app, _resolver);
+        const moduleLoader = createModuleLoader(app, resolver);
+        const componentLoader = createComponentLoader(app, resolver);
 
         loader._a = app;
         loader._moduleLoader = moduleLoader;
@@ -55,7 +61,7 @@ export function createLoader<Props extends Record<string, any> = any, Context = 
       removeErrorHandler.call(null, handler);
       return this;
     },
-    resolver: Object.freeze(_resolver),
+    resolver: Object.freeze(resolver),
     // it's actually undefined here
     // @ts-expect-error set in install when using Vue 3
     _a: null,

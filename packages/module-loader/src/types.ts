@@ -212,9 +212,14 @@ export type ErrorHandler = (error: Error, module: InnerRegistrableModule) => voi
  */
 export interface Resolver<Context = any> {
   /**
-   * execution context
+   * get execution context
    */
-  context: Context;
+  getContext: () => Context;
+  /**
+   * set global variables to extend to resolver context
+   * @param variables global variables
+   */
+  setGlobalVariables(variables: Record<string, any>): void;
   /**
    * execute script
    * @param entry remote script src
@@ -240,8 +245,4 @@ export interface ResolverCreatorOptions<Context = any> {
    * container container to append script, default is append to body in client side
    */
   container?: string | ((proxy: Context) => Element);
-  /**
-   * global variables to extend to resolver context
-   */
-  globalVariables?: Record<string, any>;
 }

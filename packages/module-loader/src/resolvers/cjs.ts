@@ -6,9 +6,8 @@ import { Context as vmContext } from 'vm';
 import { ClientRequest, IncomingMessage } from 'http';
 import { ResolverCreatorOptions, Resolver } from '../types';
 
-function createSandbox(globalVariables: Record<string, any> = {}) {
+function createSandbox() {
   const sandbox: Record<string, any> = {
-    ...globalVariables,
     Buffer: Buffer,
     require: require,
     console: console,
@@ -24,7 +23,7 @@ function createSandbox(globalVariables: Record<string, any> = {}) {
   sandbox.exports = {};
   sandbox.module = {};
 
-  return {};
+  return sandbox;
 }
 
 function tryGetCwd(path: any) {
@@ -44,10 +43,13 @@ function tryGetCwd(path: any) {
   return cwd;
 }
 
-export function createCjsResolver({ globalVariables }: ResolverCreatorOptions): Resolver<vmContext> {
-  const proxy = createSandbox(globalVariables);
+export function createCjsResolver(_: ResolverCreatorOptions): Resolver<vmContext> {
+  const proxy = createSandbox();
   return {
-    context: proxy,
+    getContext: () => proxy,
+    setGlobalVariables(variables) {
+      proxy.global = { ...proxy.global, ...variables };
+    },
     execScript(entry) {
       return new Promise((resolve, reject) => {
         const http = require('http');
