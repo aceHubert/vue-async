@@ -3,7 +3,7 @@ import * as Vue from 'vue';
 import { defineNuxtPlugin } from 'nuxt/app';
 import { Router, RouteRecordRaw } from 'vue-router';
 import { createLoader, registerSubModules, registerComponents } from '@vue-async/module-loader';
-import { root, megreRoutes, lazyLoadView } from '../router/utils';
+import { lazyLoadView } from '../router/utils';
 
 // make Vue as global in Vue 3
 // @ts-ignore

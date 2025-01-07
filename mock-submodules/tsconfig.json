@@ -10,7 +10,7 @@
     "noImplicitAny": false,
     "jsx": "preserve",
     "paths": {
-      "@vue-async/module-loader/esm/*": ["../packages/module-loader/src/*"]
+      "@vue-async/module-loader/*": ["../packages/module-loader/src/*"]
     }
   },
   "include": ["src"]

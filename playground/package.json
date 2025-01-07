@@ -1,0 +1,12 @@
+{
+  "name": "@test/playground",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "serve": "nuxt dev -p 7001"
+  },
+  "dependencies": {
+    "nuxt": "^3.0.0"
+  }
+}

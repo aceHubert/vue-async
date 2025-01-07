@@ -1,4 +1,4 @@
-import { defineBootstrap, defineMount } from '@vue-async/module-loader/esm/sub';
+import { defineBootstrap, defineMount } from '@vue-async/module-loader/sub';
 // 模块的路由配置数组
 import routes from './router';
 import './assets/index.css';

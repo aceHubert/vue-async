@@ -16,7 +16,7 @@
     </NuxtLink>
     <h3>设置错误entry（无法正常加载）：</h3>
     <NuxtLink style="margin: 0 10px 5px; display: block" :to="{ name: 'wrong-entry-remote-component' }">
-      setted wrong component entry
+      setted wrong component entry (show error component after 5s)
     </NuxtLink>
     <h3>vue-router 异步组件加载过程：</h3>
     <NuxtLink style="margin: 0 10px 5px; display: block" :to="{ name: 'lazy-loading-remote-component' }">

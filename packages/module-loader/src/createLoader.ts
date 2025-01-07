@@ -15,6 +15,9 @@ type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T
  */
 export function createLoader<Props extends Record<string, any> = any, Context = any>(
   options: {
+    /**
+     * global variables for the resolver
+     */
     globalVariables?: Record<string, any>;
   } & XOR<
     {

@@ -10,7 +10,7 @@
   "scripts": {
     "serve:mock-data": "nodemon --delay 1 --watch mock-data/apis mock-data/server.js",
     "serve:mock-submodules": "cd mock-submodules && yarn serve",
-    "serve:mock": "concurrently --raw \"yarn serve:mock-data\" \"yarn serve:mock-submodules\" ",
+    "serve": "concurrently --raw \"yarn serve:mock-data\" \"yarn serve:mock-submodules\" \"nuxt dev playground -p 7001\"",
     "build": "lerna run build --sort --stream --scope='@vue-async/*'",
     "test": "jest --coverage --passWithNoTests",
     "prepublishOnly": "yarn install --mode=skip-build && yarn changelog && yarn build && yarn test",
@@ -102,6 +102,7 @@
   },
   "workspaces": {
     "packages": [
+      "playground",
       "packages/*"
     ]
   }
