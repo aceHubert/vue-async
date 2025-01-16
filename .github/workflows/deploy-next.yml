@@ -55,6 +55,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish
         run: |
-          npx lerna publish --yes --canary major --dist-tag next
+          npx lerna publish --yes --no-granular-pathspec --canary major --dist-tag next
         env:
           GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}

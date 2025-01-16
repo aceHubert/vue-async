@@ -13,6 +13,7 @@
     "serve": "concurrently --raw \"yarn serve:mock-data\" \"yarn serve:mock-submodules\" \"nuxt dev playground -p 7001\"",
     "build": "lerna run build --sort --stream --scope='@vue-async/*'",
     "test": "jest --coverage --passWithNoTests",
+    "version": "lerna run build:version --sort --stream --scope=@vue-async/*",
     "prepublishOnly": "yarn install --mode=skip-build && yarn changelog && yarn build && yarn test",
     "release": "lerna publish",
     "release:next": "lerna publish --canary major --dist-tag next",
