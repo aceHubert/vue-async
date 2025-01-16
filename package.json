@@ -10,6 +10,7 @@
   "scripts": {
     "build": "lerna run build --sort --stream --scope=@vue-async/*",
     "test": "jest --coverage --passWithNoTests",
+    "version": "lerna run build:version --sort --stream --scope=@vue-async/*",
     "prepublishOnly": "yarn install --ignore-scripts && yarn changelog && yarn build && yarn test",
     "release": "lerna publish",
     "release:git": "lerna publish form-git",

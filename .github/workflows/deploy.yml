@@ -55,6 +55,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish
         run: |
-          npx lerna publish --yes
+          npx lerna publish --yes --no-granular-pathspec
         env:
           GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
